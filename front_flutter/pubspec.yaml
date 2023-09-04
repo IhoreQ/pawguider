@@ -1,0 +1,33 @@
+name: front_flutter
+description: Mobile frontend part for PawGuider application.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  salomon_bottom_bar: ^3.3.2
+  auto_route: ^7.7.0
+  fluentui_icons: ^1.0.0
+  gap: ^2.0.0
+  cupertino_icons: ^1.0.2
+  flutter_svg: ^2.0.7
+  google_fonts: ^5.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  auto_route_generator: ^7.2.0
+  build_runner: ^2.4.6
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+    - assets/images/

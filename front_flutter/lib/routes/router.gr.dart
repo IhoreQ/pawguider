@@ -1,0 +1,327 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+// **************************************************************************
+// AutoRouterGenerator
+// **************************************************************************
+
+// ignore_for_file: type=lint
+// coverage:ignore-file
+
+part of 'router.dart';
+
+abstract class _$AppRouter extends RootStackRouter {
+  // ignore: unused_element
+  _$AppRouter({super.navigatorKey});
+
+  @override
+  final Map<String, PageFactory> pagesMap = {
+    DogsRouter.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const DogsRouterPage(),
+      );
+    },
+    HomeRouter.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const HomeRouterPage(),
+      );
+    },
+    MapRouter.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const MapRouterPage(),
+      );
+    },
+    PlacesRouter.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const PlacesRouterPage(),
+      );
+    },
+    UserProfileRouter.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const UserProfileRouterPage(),
+      );
+    },
+    BottomBarRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const BottomBar(),
+      );
+    },
+    AddDogRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const AddDogScreen(),
+      );
+    },
+    DogsRoute.name: (routeData) {
+      final args =
+          routeData.argsAs<DogsRouteArgs>(orElse: () => const DogsRouteArgs());
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DogsScreen(key: args.key),
+      );
+    },
+    SingleDogRoute.name: (routeData) {
+      final pathParams = routeData.inheritedPathParams;
+      final args = routeData.argsAs<SingleDogRouteArgs>(
+          orElse: () =>
+              SingleDogRouteArgs(dogId: pathParams.getString('dogId')));
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: SingleDogScreen(
+          key: args.key,
+          dogId: args.dogId,
+        ),
+      );
+    },
+    HomeRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const HomeScreen(),
+      );
+    },
+    MapRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const MapScreen(),
+      );
+    },
+    PlacesRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const PlacesScreen(),
+      );
+    },
+    UserProfileRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const UserProfileScreen(),
+      );
+    },
+  };
+}
+
+/// generated route for
+/// [DogsRouterPage]
+class DogsRouter extends PageRouteInfo<void> {
+  const DogsRouter({List<PageRouteInfo>? children})
+      : super(
+          DogsRouter.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'DogsRouter';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [HomeRouterPage]
+class HomeRouter extends PageRouteInfo<void> {
+  const HomeRouter({List<PageRouteInfo>? children})
+      : super(
+          HomeRouter.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'HomeRouter';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [MapRouterPage]
+class MapRouter extends PageRouteInfo<void> {
+  const MapRouter({List<PageRouteInfo>? children})
+      : super(
+          MapRouter.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'MapRouter';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [PlacesRouterPage]
+class PlacesRouter extends PageRouteInfo<void> {
+  const PlacesRouter({List<PageRouteInfo>? children})
+      : super(
+          PlacesRouter.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'PlacesRouter';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [UserProfileRouterPage]
+class UserProfileRouter extends PageRouteInfo<void> {
+  const UserProfileRouter({List<PageRouteInfo>? children})
+      : super(
+          UserProfileRouter.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'UserProfileRouter';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [BottomBar]
+class BottomBarRoute extends PageRouteInfo<void> {
+  const BottomBarRoute({List<PageRouteInfo>? children})
+      : super(
+          BottomBarRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'BottomBarRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [AddDogScreen]
+class AddDogRoute extends PageRouteInfo<void> {
+  const AddDogRoute({List<PageRouteInfo>? children})
+      : super(
+          AddDogRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'AddDogRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DogsScreen]
+class DogsRoute extends PageRouteInfo<DogsRouteArgs> {
+  DogsRoute({
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DogsRoute.name,
+          args: DogsRouteArgs(key: key),
+          initialChildren: children,
+        );
+
+  static const String name = 'DogsRoute';
+
+  static const PageInfo<DogsRouteArgs> page = PageInfo<DogsRouteArgs>(name);
+}
+
+class DogsRouteArgs {
+  const DogsRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'DogsRouteArgs{key: $key}';
+  }
+}
+
+/// generated route for
+/// [SingleDogScreen]
+class SingleDogRoute extends PageRouteInfo<SingleDogRouteArgs> {
+  SingleDogRoute({
+    Key? key,
+    required String dogId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          SingleDogRoute.name,
+          args: SingleDogRouteArgs(
+            key: key,
+            dogId: dogId,
+          ),
+          rawPathParams: {'dogId': dogId},
+          initialChildren: children,
+        );
+
+  static const String name = 'SingleDogRoute';
+
+  static const PageInfo<SingleDogRouteArgs> page =
+      PageInfo<SingleDogRouteArgs>(name);
+}
+
+class SingleDogRouteArgs {
+  const SingleDogRouteArgs({
+    this.key,
+    required this.dogId,
+  });
+
+  final Key? key;
+
+  final String dogId;
+
+  @override
+  String toString() {
+    return 'SingleDogRouteArgs{key: $key, dogId: $dogId}';
+  }
+}
+
+/// generated route for
+/// [HomeScreen]
+class HomeRoute extends PageRouteInfo<void> {
+  const HomeRoute({List<PageRouteInfo>? children})
+      : super(
+          HomeRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'HomeRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [MapScreen]
+class MapRoute extends PageRouteInfo<void> {
+  const MapRoute({List<PageRouteInfo>? children})
+      : super(
+          MapRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'MapRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [PlacesScreen]
+class PlacesRoute extends PageRouteInfo<void> {
+  const PlacesRoute({List<PageRouteInfo>? children})
+      : super(
+          PlacesRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'PlacesRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [UserProfileScreen]
+class UserProfileRoute extends PageRouteInfo<void> {
+  const UserProfileRoute({List<PageRouteInfo>? children})
+      : super(
+          UserProfileRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'UserProfileRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
