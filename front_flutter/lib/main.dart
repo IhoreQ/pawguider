@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:front_flutter/routes/router.dart';
+import 'models/dog.dart';
 import 'styles.dart';
 
 void main() {

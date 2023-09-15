@@ -30,7 +30,7 @@ class BottomBar extends StatelessWidget {
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: AppColor.primaryOrange,
             statusBarBrightness: Brightness.light,
-            statusBarIconBrightness: Brightness.dark,
+            statusBarIconBrightness: Brightness.light,
           ),
         );
       },

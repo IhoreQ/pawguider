@@ -11,24 +11,69 @@ abstract class AppColor {
 }
 
 abstract class AppTextStyle {
-  static TextStyle heading1 = const TextStyle(
+  static TextStyle whiteHeading = GoogleFonts.montserrat(
+    fontWeight: FontWeight.w700,
+    fontSize: 25.0,
+    color: Colors.white
+  );
+
+  static TextStyle semiBoldOrange = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w600,
+      fontSize: 16.0,
+      color: AppColor.primaryOrange
+  );
+
+  static TextStyle regularOrange = GoogleFonts.montserrat(
+    fontWeight: FontWeight.w400,
+    fontSize: 16.0,
+    color: AppColor.primaryOrange
+  );
+
+  static TextStyle mediumOrange = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w500,
+      fontSize: 16.0,
+      color: AppColor.primaryOrange
+  );
+
+  static TextStyle mediumWhite = GoogleFonts.montserrat(
+    fontWeight: FontWeight.w500,
+    fontSize: 16.0,
+    color: Colors.white
+  );
+
+  static TextStyle mediumLight = GoogleFonts.montserrat(
+    fontWeight: FontWeight.w500,
+    fontSize: 16.0,
+    color: AppColor.lightText
+  );
+
+  static TextStyle heading1 = GoogleFonts.montserrat(
     fontWeight: FontWeight.w700,
     fontSize: 30.0,
     color: AppColor.darkText
   );
-  static TextStyle heading2 = const TextStyle(
-      fontWeight: FontWeight.w700,
-      fontSize: 20.0,
+  static TextStyle heading2 = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w600,
+      fontSize: 17.0,
       color: AppColor.darkText
   );
-  static TextStyle heading3 = const TextStyle(
-      fontWeight: FontWeight.w500,
-      fontSize: 17.0,
+  static TextStyle heading3 = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w600,
+      fontSize: 14.0,
       color: AppColor.lightText
   );
-  static TextStyle appBarTitleHeading = const TextStyle(
+  static TextStyle appBarTitleHeading = GoogleFonts.montserrat(
     fontWeight: FontWeight.w500,
     fontSize: 20.0,
     color: AppColor.darkText,
+  );
+}
+
+abstract class AppShadow {
+  static BoxShadow infoBoxShadow = BoxShadow(
+    blurRadius: 15.0,
+    spreadRadius: 0.0,
+    offset: const Offset(0, 5),
+    color: Colors.black.withOpacity(0.1)
   );
 }

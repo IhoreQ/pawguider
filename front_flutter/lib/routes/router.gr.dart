@@ -65,15 +65,13 @@ abstract class _$AppRouter extends RootStackRouter {
         child: DogsScreen(key: args.key),
       );
     },
-    SingleDogRoute.name: (routeData) {
-      final pathParams = routeData.inheritedPathParams;
-      final args = routeData.argsAs<SingleDogRouteArgs>(
-          orElse: () =>
-              SingleDogRouteArgs(dogId: pathParams.getString('dogId')));
+    DogProfileRoute.name: (routeData) {
+      final args = routeData.argsAs<DogProfileRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: SingleDogScreen(
+        child: DogProfileScreen(
           key: args.key,
+          dog: args.dog,
           dogId: args.dogId,
         ),
       );
@@ -232,41 +230,46 @@ class DogsRouteArgs {
 }
 
 /// generated route for
-/// [SingleDogScreen]
-class SingleDogRoute extends PageRouteInfo<SingleDogRouteArgs> {
-  SingleDogRoute({
+/// [DogProfileScreen]
+class DogProfileRoute extends PageRouteInfo<DogProfileRouteArgs> {
+  DogProfileRoute({
     Key? key,
+    required Dog dog,
     required String dogId,
     List<PageRouteInfo>? children,
   }) : super(
-          SingleDogRoute.name,
-          args: SingleDogRouteArgs(
+          DogProfileRoute.name,
+          args: DogProfileRouteArgs(
             key: key,
+            dog: dog,
             dogId: dogId,
           ),
           rawPathParams: {'dogId': dogId},
           initialChildren: children,
         );
 
-  static const String name = 'SingleDogRoute';
+  static const String name = 'DogProfileRoute';
 
-  static const PageInfo<SingleDogRouteArgs> page =
-      PageInfo<SingleDogRouteArgs>(name);
+  static const PageInfo<DogProfileRouteArgs> page =
+      PageInfo<DogProfileRouteArgs>(name);
 }
 
-class SingleDogRouteArgs {
-  const SingleDogRouteArgs({
+class DogProfileRouteArgs {
+  const DogProfileRouteArgs({
     this.key,
+    required this.dog,
     required this.dogId,
   });
 
   final Key? key;
 
+  final Dog dog;
+
   final String dogId;
 
   @override
   String toString() {
-    return 'SingleDogRouteArgs{key: $key, dogId: $dogId}';
+    return 'DogProfileRouteArgs{key: $key, dog: $dog, dogId: $dogId}';
   }
 }
 

@@ -1,54 +1,153 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:front_flutter/models/behavior.dart';
 import 'package:front_flutter/models/dog.dart';
 import 'package:front_flutter/routes/router.dart';
+import 'package:front_flutter/widgets/routing_circle_add_button.dart';
 import 'package:front_flutter/widgets/dog_info_box.dart';
 import 'package:gap/gap.dart';
+import 'package:front_flutter/styles.dart';
 
 import '../../styles.dart';
 
 @RoutePage()
 class DogsScreen extends StatelessWidget {
-  DogsScreen({super.key});
+  DogsScreen({Key? key}) : super(key: key);
 
-  final Dog exampleDog = Dog('12', 'Ciapek', 'Jack Russel Terrier', true, 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG');
-  final Dog exampleDog2 = Dog('13', 'Ciapek', 'Jack Russel Terrier', true, 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG');
+  final List<Behavior> exampleBehaviors = [Behavior('Friendly'), Behavior('Calm'), Behavior('Curious'), Behavior('Independent')];
+
+  late final Dog exampleDog = Dog('12', 'Ciapek', 'Jack Russel Terrier', true, 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10);
+  late final Dog exampleDog2 = Dog('13', 'Binia', 'Mongrel', false, 2, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', '', 10, exampleBehaviors, 11);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.symmetric(
-          vertical: 10.0,
-          horizontal: 25.0
-        ),
+    List<Dog> userDogs = [exampleDog, exampleDog2];
+
+    return userDogs.isNotEmpty ?
+        DogsList(userDogs: userDogs) :
+        _buildNoDogsPage(context);
+  }
+
+  Widget _buildNoDogsPage(BuildContext context) {
+    double dogImageSize = 100.0;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: Text(
-              "Your dogs",
-              style: AppTextStyle.heading1
-            ),
+          Image.asset(
+            'assets/images/first_dog.png',
+            width: dogImageSize,
           ),
-          const Gap(30.0),
-          // Pobranie listy psów z API oraz wyświetlenie
-          DogInfoBox(dog: exampleDog),
-          const Gap(15.0),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(10.0),
-              backgroundColor: AppColor.primaryOrange,
-            ),
-            child: const Icon(
-              Icons.add,
-              size: 30,
-              color: AppColor.orangeAccent,
-            ),
-            onPressed: () => context.router.push(const AddDogRoute()),
-          ),
+          const Gap(10.0),
+          Text('Add your first dog', style: AppTextStyle.semiBoldOrange.copyWith(fontSize: 18)),
+          const Gap(10.0),
+          const RoutingCircleAddButton(route: AddDogRoute()),
         ],
-      )
+      );
+  }
+}
+
+class DogsList extends StatelessWidget {
+  final List<Dog> userDogs;
+
+  const DogsList({
+    Key? key,
+    required this.userDogs
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+        body: ListView(
+          children: [
+            Container(
+              height: 60.0,
+              clipBehavior: Clip.hardEdge,
+              decoration: const BoxDecoration(
+                color: AppColor.primaryOrange,
+              ),
+              child: Center(
+                  child: Text('Your dogs', style: AppTextStyle.whiteHeading)
+              ),
+            ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      height: 30.0,
+                      clipBehavior: Clip.hardEdge,
+                      decoration: const BoxDecoration(
+                          color: AppColor.primaryOrange,
+                          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30.0))
+                      ),
+                    ),
+                    SizedBox(
+                      width: deviceWidth,
+                      height: 30.0,
+                    )
+                  ],
+                ),
+                Container(
+                  width: deviceWidth,
+                  height: 40.0,
+                  margin: const EdgeInsets.symmetric(horizontal: 30.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            offset: const Offset(0, 9),
+                            blurRadius: 20,
+                            spreadRadius: 0,
+                            color: Colors.black.withOpacity(0.15)
+                        )
+                      ]
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const Icon(
+                          FluentSystemIcons.ic_fluent_search_regular,
+                          color: AppColor.primaryOrange,
+                          size: 20.0,
+                        ),
+                        const Gap(5.0),
+                        Expanded(
+                            child: Text('Search', style: AppTextStyle.regularOrange,)
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+            const Gap(20.0),
+            // TODO Pobranie listy psów z API oraz wyświetlenie
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: userDogs.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    DogInfoBox(dog: userDogs[index]),
+                    const Gap(15.0),
+                  ],
+                );
+              },
+            ),
+            const RoutingCircleAddButton(route: AddDogRoute())
+          ],
+        )
     );
   }
+
+
 }
