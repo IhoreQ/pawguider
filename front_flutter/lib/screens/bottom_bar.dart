@@ -5,7 +5,6 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:front_flutter/routes/router.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import '../styles.dart';
 

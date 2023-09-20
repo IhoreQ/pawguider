@@ -8,7 +8,7 @@ import 'package:front_flutter/widgets/custom_vertical_divider.dart';
 import 'package:front_flutter/widgets/two_elements_column.dart';
 import 'package:gap/gap.dart';
 
-import '../../models/dog.dart';
+import '../../models/dog/dog.dart';
 
 @RoutePage()
 class DogProfileScreen extends StatelessWidget {
@@ -19,8 +19,11 @@ class DogProfileScreen extends StatelessWidget {
   final String dogId;
   final Dog dog;
 
+  // TODO wywalić parametr 'dog' i zamiast tego pobierać z bazy
+
   @override
   Widget build(BuildContext context) {
+    print(context.router.currentPath);
     return Scaffold(
       body: Stack(fit: StackFit.expand, children: [
         Container(
@@ -104,7 +107,7 @@ class _TopBarState extends State<TopBar> {
                           child: IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
-                              onPressed: () => context.router.push(const AddDogRoute()),
+                              onPressed: () => context.router.push(EditDogRoute(dog: widget.dog)),
                               icon: const Icon(
                                 FluentSystemIcons.ic_fluent_edit_filled,
                                 size: iconSize,

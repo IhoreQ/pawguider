@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-import 'behavior.dart';
+import '../behavior.dart';
 
 class Dog {
   final String _id;
@@ -14,6 +14,9 @@ class Dog {
   int _likes;
   final List<Behavior> _exampleBehaviors;
   final int _ownerId;
+
+  Dog.clone(Dog dog) : this(dog.id, dog.name, dog.breed, dog.gender, dog.age,
+      dog.photoUrl, dog.size, dog.description, dog.likes, dog.exampleBehaviors, dog.ownerId);
 
   Dog(this._id, this._name, this._breed, this._gender, this._age,
       this._photoUrl, this._size, this._description, this._likes, this._exampleBehaviors,

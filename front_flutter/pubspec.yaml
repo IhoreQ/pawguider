@@ -11,15 +11,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  salomon_bottom_bar: ^3.3.2
-  auto_route: ^7.7.0
+  auto_route: 7.7.0
   fluentui_icons: ^1.0.0
-  gap: ^2.0.0
+  gap: ^3.0.1
   cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.7
-  google_fonts: ^5.1.0
+  google_fonts: ^6.0.0
   provider: ^6.0.5
   flutter_session_manager: ^1.0.3
+  image_picker: ^1.0.4
+  http: ^1.1.0
+  path_provider: ^2.1.1
+
 
 dev_dependencies:
   flutter_test:

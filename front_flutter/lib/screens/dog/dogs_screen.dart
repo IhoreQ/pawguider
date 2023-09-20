@@ -3,7 +3,7 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:front_flutter/models/behavior.dart';
-import 'package:front_flutter/models/dog.dart';
+import 'package:front_flutter/models/dog/dog.dart';
 import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/widgets/routing_circle_add_button.dart';
 import 'package:front_flutter/widgets/dog_info_box.dart';
@@ -16,7 +16,7 @@ import '../../styles.dart';
 class DogsScreen extends StatelessWidget {
   DogsScreen({Key? key}) : super(key: key);
 
-  final List<Behavior> exampleBehaviors = [Behavior('Friendly'), Behavior('Calm'), Behavior('Curious'), Behavior('Independent')];
+  final List<Behavior> exampleBehaviors = [Behavior(1, 'Friendly'), Behavior(2, 'Calm'), Behavior(3, 'Curious'), Behavior(4, 'Independent')];
 
   late final Dog exampleDog = Dog('12', 'Ciapek', 'Jack Russel Terrier', true, 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10);
   late final Dog exampleDog2 = Dog('13', 'Binia', 'Mongrel', false, 2, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', '', 10, exampleBehaviors, 11);
@@ -43,7 +43,7 @@ class DogsScreen extends StatelessWidget {
           const Gap(10.0),
           Text('Add your first dog', style: AppTextStyle.semiBoldOrange.copyWith(fontSize: 18)),
           const Gap(10.0),
-          const RoutingCircleAddButton(route: AddDogRoute()),
+          const RoutingCircleAddButton(route: DogAdditionRoute()),
         ],
       );
   }
@@ -143,7 +143,7 @@ class DogsList extends StatelessWidget {
                 );
               },
             ),
-            const RoutingCircleAddButton(route: AddDogRoute())
+            const RoutingCircleAddButton(route: DogAdditionRoute())
           ],
         )
     );

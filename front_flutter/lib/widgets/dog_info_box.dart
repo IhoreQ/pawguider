@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:front_flutter/models/dog.dart';
+import 'package:front_flutter/models/dog/dog.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:gap/gap.dart';
 
