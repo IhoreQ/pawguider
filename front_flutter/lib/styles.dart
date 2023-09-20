@@ -86,6 +86,11 @@ abstract class AppTextStyle {
     fontSize: 20.0,
     color: Colors.white,
   );
+  static TextStyle errorText = GoogleFonts.montserrat(
+    fontWeight: FontWeight.w500,
+    fontSize: 12.0,
+    color: Colors.red
+  );
 }
 
 abstract class AppShadow {

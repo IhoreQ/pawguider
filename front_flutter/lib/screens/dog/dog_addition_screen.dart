@@ -41,6 +41,9 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
   late String selectedGender = genders.first;
   List<Behavior> selectedBehaviors = [];
 
+  int behaviorsMinCount = 3;
+  bool minBehaviorCountSelected = true;
+
   final _formKey = GlobalKey<FormState>();
 
   Future _getImage(ImageSource source) async {
@@ -110,17 +113,7 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
           IconButton(
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  // TODO wysyłka na API
-                  print(_nameController.text.capitalize());
-                  print(_ageController.text);
-                  print(selectedBreed);
-                  print(selectedGender);
-                  print(_descriptionController.text);
-                  // context.router.pop();
-                }
-              },
+              onPressed: () => onSubmit(),
               icon: const Icon(
                 FluentSystemIcons.ic_fluent_checkmark_filled,
                 size: iconSize,
@@ -267,16 +260,26 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
                       style: AppTextStyle.heading2.copyWith(fontSize: 20.0),
                     )
                 ),
+                !minBehaviorCountSelected ? Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'You have to select at least $behaviorsMinCount traits',
+                      style: AppTextStyle.errorText,
+                    )
+                ) : const SizedBox(),
                 const Gap(10.0),
                 Wrap(
                   spacing: 5.0,
                   runSpacing: 10.0 ,
                   children: behaviors.map((behavior) {
-                    final isSelected = selectedBehaviors.contains(behavior);
                     return SelectableBehaviorBox(
-                        label: behavior.name,
+                      label: behavior.name,
                       onSelected: (isSelected) {
-                          isSelected ? selectedBehaviors.add(behavior) : selectedBehaviors.remove(behavior);
+                        if (isSelected) {
+                          selectedBehaviors.add(behavior);
+                        } else {
+                          selectedBehaviors.remove(behavior);
+                        }
                       },
                     );
                   }).toList(),
@@ -314,5 +317,17 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
         ),
       ),
     );
+  }
+
+  void onSubmit() {
+    setState(() {
+      minBehaviorCountSelected = selectedBehaviors.length >= behaviorsMinCount;
+    });
+
+    if (_formKey.currentState!.validate() && minBehaviorCountSelected) {
+      // TODO wysyłka na API
+      // TODO capitalize() na name
+      // context.router.pop();
+    }
   }
 }
