@@ -11,6 +11,7 @@ import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:front_flutter/utilities/extensions.dart';
 
 import '../../models/behavior.dart';
 import '../../repositories/behavior_repository.dart';
@@ -112,12 +113,12 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   // TODO wysyłka na API
-                  print(_nameController.text);
+                  print(_nameController.text.capitalize());
                   print(_ageController.text);
                   print(selectedBreed);
                   print(selectedGender);
                   print(_descriptionController.text);
-                  context.router.pop();
+                  // context.router.pop();
                 }
               },
               icon: const Icon(
@@ -213,7 +214,7 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
                     ),
                   ],
                   validator: (value) {
-                    return value == null || value.isEmpty ? 'Enter correct name' : null;
+                    return Validator.isNamevalid(value) ? null : 'Enter correct name';
                   },
                 ),
                 DropdownButtonFormField(
