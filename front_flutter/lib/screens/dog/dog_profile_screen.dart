@@ -23,7 +23,6 @@ class DogProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(context.router.currentPath);
     return Scaffold(
       body: Stack(fit: StackFit.expand, children: [
         Container(
@@ -107,7 +106,7 @@ class _TopBarState extends State<TopBar> {
                           child: IconButton(
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
-                              onPressed: () => context.router.push(EditDogRoute(dog: widget.dog)),
+                              onPressed: () => context.router.push(DogDetailsRoute(dog: widget.dog)),
                               icon: const Icon(
                                 FluentSystemIcons.ic_fluent_edit_filled,
                                 size: iconSize,
@@ -240,7 +239,7 @@ class DogContentPage extends StatelessWidget {
             Wrap(
               spacing: 10.0,
               runSpacing: 10.0,
-              children: dog.exampleBehaviors
+              children: dog.behaviors
                   .map((behavior) => BehaviorBox(label: behavior.name))
                   .toList(),
             ),

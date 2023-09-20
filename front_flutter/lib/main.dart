@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/dog_addition_form_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:front_flutter/routes/router.dart';
-import 'models/dog/dog.dart';
 import 'styles.dart';
 
 void main() {
@@ -26,7 +25,7 @@ class App extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Bottom navbar with nested routing',
         theme: ThemeData(
-          textSelectionTheme: TextSelectionThemeData(
+          textSelectionTheme: const TextSelectionThemeData(
             cursorColor: AppColor.primaryOrange,
             selectionColor: AppColor.backgroundOrange2,
             selectionHandleColor: AppColor.primaryOrange

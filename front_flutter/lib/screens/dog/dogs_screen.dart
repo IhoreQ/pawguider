@@ -13,7 +13,7 @@ import 'package:front_flutter/styles.dart';
 class DogsScreen extends StatelessWidget {
   DogsScreen({Key? key}) : super(key: key);
 
-  final List<Behavior> exampleBehaviors = [Behavior(1, 'Friendly'), Behavior(2, 'Calm'), Behavior(3, 'Curious'), Behavior(4, 'Independent')];
+  final List<Behavior> exampleBehaviors = [Behavior(1, 'Friendly'), Behavior(6, 'Calm'), Behavior(12, 'Curious'), Behavior(10, 'Independent')];
 
   late final Dog exampleDog = Dog('12', 'Ciapek', 'Jack Russel Terrier', true, 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10);
   late final Dog exampleDog2 = Dog('13', 'Binia', 'Mongrel', false, 2, 'https://www.pedigree.pl/cdn-cgi/image/width=520,format=auto,q=90/sites/g/files/fnmzdf4096/files/2023-01/jack-russell-terrier_1640009953951.png', 'Small', '', 10, exampleBehaviors, 11);

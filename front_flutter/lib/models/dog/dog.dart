@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 import '../behavior.dart';
 
 class Dog {
@@ -12,14 +10,14 @@ class Dog {
   final String _size;
   final String _description;
   int _likes;
-  final List<Behavior> _exampleBehaviors;
+  final List<Behavior> _behaviors;
   final int _ownerId;
 
   Dog.clone(Dog dog) : this(dog.id, dog.name, dog.breed, dog.gender, dog.age,
-      dog.photoUrl, dog.size, dog.description, dog.likes, dog.exampleBehaviors, dog.ownerId);
+      dog.photoUrl, dog.size, dog.description, dog.likes, dog.behaviors.map((e) => Behavior(e.id, e.name)).toList(), dog.ownerId);
 
   Dog(this._id, this._name, this._breed, this._gender, this._age,
-      this._photoUrl, this._size, this._description, this._likes, this._exampleBehaviors,
+      this._photoUrl, this._size, this._description, this._likes, this._behaviors,
       this._ownerId);
 
   String get id => _id;
@@ -60,7 +58,7 @@ class Dog {
 
   String get photoUrl => _photoUrl;
 
-  List<Behavior> get exampleBehaviors => _exampleBehaviors;
+  List<Behavior> get behaviors => _behaviors;
 
   int get ownerId => _ownerId;
 }

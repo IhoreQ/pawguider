@@ -14,17 +14,22 @@ import 'package:http/http.dart' as http;
 import 'package:front_flutter/utilities/extensions.dart';
 
 import '../../models/behavior.dart';
+import '../../models/dog/dog.dart';
 import '../../repositories/behavior_repository.dart';
 
+// TODO zamień to wszędzie zamiast DogAdditionScreen
+
 @RoutePage()
-class DogAdditionScreen extends StatefulWidget {
-  const DogAdditionScreen({super.key});
+class DogDetailsScreen extends StatefulWidget {
+  const DogDetailsScreen({super.key, this.dog});
+
+  final Dog? dog;
 
   @override
-  State<DogAdditionScreen> createState() => _DogAdditionScreenState();
+  State<DogDetailsScreen> createState() => _DogDetailsScreenState();
 }
 
-class _DogAdditionScreenState extends State<DogAdditionScreen> {
+class _DogDetailsScreenState extends State<DogDetailsScreen> {
 
   final _picker = ImagePicker();
   File? image;
@@ -37,14 +42,31 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
   final List<String> genders = <String>['Male', 'Female'];
   final List<Behavior> behaviors = BehaviorRepository.getAllBehaviors();
 
-  late String selectedBreed = breeds.first;
-  late String selectedGender = genders.first;
-  List<Behavior> selectedBehaviors = [];
+  late String _selectedBreed = breeds.first;
+  late String _selectedGender = genders.first;
+  List<Behavior> _selectedBehaviors = [];
 
   int behaviorsMinCount = 3;
   bool minBehaviorCountSelected = true;
 
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.dog != null) {
+      _nameController.text = widget.dog!.name;
+      _ageController.text = '${widget.dog!.age}';
+      _descriptionController.text = widget.dog!.description;
+      _selectedGender = genders.firstWhere((element) {
+        String dogGender = widget.dog!.gender ? 'Male' : 'Female';
+        return element == dogGender;
+      });
+      _selectedBreed = breeds.firstWhere((element) => element == widget.dog!.breed);
+      _selectedBehaviors = Dog.clone(widget.dog!).behaviors;
+    }
+  }
 
   Future _getImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
@@ -96,7 +118,7 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add a dog"),
+        title: Text(widget.dog != null ? "Edit a dog" : "Add a dog"),
         titleTextStyle: AppTextStyle.appBarTitleHeading,
         titleSpacing: 0.0,
         backgroundColor: AppColor.primaryOrange,
@@ -113,7 +135,7 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
           IconButton(
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
-              onPressed: () => onSubmit(),
+              onPressed: () => widget.dog != null ? updateDog() : addDog(),
               icon: const Icon(
                 FluentSystemIcons.ic_fluent_checkmark_filled,
                 size: iconSize,
@@ -130,17 +152,17 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
               children: [
                 const Gap(25.0),
                 Container(
-                  child: image == null ?
-                    Column(
-                      children: [
-                        Center(
+                  child: image == null && widget.dog == null ?
+                  Column(
+                    children: [
+                      Center(
                           child: ElevatedButton(
                             onPressed: () => _selectPhoto(),
                             style: ElevatedButton.styleFrom(
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(25.0),
-                              backgroundColor: AppColor.lightGray,
-                              foregroundColor: Colors.white
+                                shape: const CircleBorder(),
+                                padding: const EdgeInsets.all(25.0),
+                                backgroundColor: AppColor.lightGray,
+                                foregroundColor: Colors.white
                             ),
                             child: const Icon(
                               FluentSystemIcons.ic_fluent_camera_filled,
@@ -148,18 +170,18 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
                               color: AppColor.lightText,
                             ),
                           )
-                        ),
-                        const Gap(10.0),
-                        GestureDetector(
+                      ),
+                      const Gap(10.0),
+                      GestureDetector(
                           onTap: () => _selectPhoto(),
                           child: Text('Add dog picture', style: AppTextStyle.semiBoldLight)
-                        )
-                      ],
-                    ) :
-                    Column(
-                      children: [
-                        Center(
-                            child: Stack(
+                      )
+                    ],
+                  ) :
+                  Column(
+                    children: [
+                      Center(
+                          child: Stack(
                               children: <Widget>[
                                 Container(
                                   decoration: BoxDecoration(
@@ -170,32 +192,39 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(50.0),
-                                    child: Image.file(
+                                    child: image != null ?
+                                      Image.file(
                                         File(image!.path).absolute,
                                         height: 80,
                                         width: 80,
                                         fit: BoxFit.cover
-                                    ),
+                                      ) :
+                                      Image.network(
+                                        widget.dog!.photoUrl,
+                                        height: 80,
+                                        width: 80,
+                                        fit: BoxFit.cover
+                                      ),
                                   ),
                                 ),
                                 Positioned.fill(
                                   child: Material(
                                     color: Colors.transparent,
                                     child: InkWell(
-                                      borderRadius: BorderRadius.circular(50),
-                                      onTap: () => _selectPhoto()),
-                                    ),
+                                        borderRadius: BorderRadius.circular(50),
+                                        onTap: () => _selectPhoto()),
                                   ),
+                                ),
                               ]
-                            )
-                        ),
-                        const Gap(10.0),
-                        GestureDetector(
-                            onTap: () => _selectPhoto(),
-                            child: Text('Change picture', style: AppTextStyle.semiBoldOrange)
-                        ),
-                      ],
-                    ),
+                          )
+                      ),
+                      const Gap(10.0),
+                      GestureDetector(
+                          onTap: () => _selectPhoto(),
+                          child: Text('Change picture', style: AppTextStyle.semiBoldOrange)
+                      ),
+                    ],
+                  ),
                 ),
                 const Gap(20.0),
                 CustomFormField(
@@ -211,7 +240,7 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
                   },
                 ),
                 DropdownButtonFormField(
-                    value: selectedBreed,
+                    value: _selectedBreed,
                     items: breeds.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -229,27 +258,27 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
                     ),
                     onChanged: (String? value) {
                       setState(() {
-                        selectedBreed = value!;
+                        _selectedBreed = value!;
                       });
                     }
                 ),
                 CustomFormField(
-                    labelText: 'Age',
-                    controller: _ageController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly
-                    ],
+                  labelText: 'Age',
+                  controller: _ageController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
                   validator: (value) => Validator.isAgeValid(value) ? null : 'Enter correct age',
                 ),
                 CustomDropdownButton(
-                    dropdownValue: selectedGender,
-                    valuesList: genders,
-                    labelText: 'Gender',
+                  dropdownValue: _selectedGender,
+                  valuesList: genders,
+                  labelText: 'Gender',
                   onChanged: (value) {
-                      setState(() {
-                        selectedGender = value!;
-                      });
+                    setState(() {
+                      _selectedGender = value!;
+                    });
                   },
                 ),
                 const Gap(20.0),
@@ -272,13 +301,15 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
                   spacing: 5.0,
                   runSpacing: 10.0 ,
                   children: behaviors.map((behavior) {
+                    final isBehaviorSelected = _selectedBehaviors.any((selectedBehavior) => selectedBehavior.id == behavior.id);
                     return SelectableBehaviorBox(
                       label: behavior.name,
+                      initValue: isBehaviorSelected,
                       onSelected: (isSelected) {
                         if (isSelected) {
-                          selectedBehaviors.add(behavior);
+                          _selectedBehaviors.add(behavior);
                         } else {
-                          selectedBehaviors.remove(behavior);
+                          _selectedBehaviors.removeWhere((selectedBehavior) => selectedBehavior.id == behavior.id);
                         }
                       },
                     );
@@ -286,10 +317,10 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
                 ),
                 const Gap(20.0),
                 Align(
-                  alignment: Alignment.topLeft,
+                    alignment: Alignment.topLeft,
                     child: Text(
                       'About dog',
-                        style: AppTextStyle.heading2.copyWith(fontSize: 20.0),
+                      style: AppTextStyle.heading2.copyWith(fontSize: 20.0),
                     )
                 ),
                 const Gap(10.0),
@@ -320,9 +351,10 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
     );
   }
 
-  void onSubmit() {
+  void addDog() {
+    print('add');
     setState(() {
-      minBehaviorCountSelected = selectedBehaviors.length >= behaviorsMinCount;
+      minBehaviorCountSelected = _selectedBehaviors.length >= behaviorsMinCount;
     });
 
     if (_formKey.currentState!.validate() && minBehaviorCountSelected) {
@@ -330,5 +362,9 @@ class _DogAdditionScreenState extends State<DogAdditionScreen> {
       // TODO capitalize() na name
       // context.router.pop();
     }
+  }
+
+  void updateDog() {
+    print('update');
   }
 }

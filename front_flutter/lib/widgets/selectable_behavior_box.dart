@@ -2,17 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:front_flutter/styles.dart';
 
 class SelectableBehaviorBox extends StatefulWidget {
-  const SelectableBehaviorBox({Key? key, required this.label, required this.onSelected}) : super(key: key);
+  const SelectableBehaviorBox({Key? key, required this.label, required this.onSelected, this.initValue}) : super(key: key);
 
   final String label;
   final ValueChanged<bool> onSelected;
+  final bool? initValue;
 
   @override
   State<SelectableBehaviorBox> createState() => _BehaviorBoxState();
 }
 
 class _BehaviorBoxState extends State<SelectableBehaviorBox> {
-  bool isSelected = false;
+
+  late bool isSelected;
+
+  @override
+  void initState() {
+    super.initState();
+    isSelected = widget.initValue ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {

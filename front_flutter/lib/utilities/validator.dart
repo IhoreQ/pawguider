@@ -4,12 +4,12 @@ abstract class Validator {
     return value == null || value.isEmpty;
   }
 
-  static bool isNamevalid(String? name) {
+  static bool isDogNameValid(String? name) {
     if (_basicValidation(name)) {
       return false;
     }
     final nameRegExp = RegExp(r'^[A-Za-z]*$');
-    return nameRegExp.hasMatch(name!);
+    return nameRegExp.hasMatch(name!) && name.length > 2 && name.length < 13;
   }
 
   static bool isAgeValid(String? age) {

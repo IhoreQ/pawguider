@@ -51,18 +51,28 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const BottomBar(),
       );
     },
-    DogAdditionRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const DogAdditionScreen(),
-      );
-    },
     DogsRoute.name: (routeData) {
       final args =
           routeData.argsAs<DogsRouteArgs>(orElse: () => const DogsRouteArgs());
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: DogsScreen(key: args.key),
+      );
+    },
+    DogAdditionRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const DogAdditionScreen(),
+      );
+    },
+    DogEditRoute.name: (routeData) {
+      final args = routeData.argsAs<DogEditRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DogEditScreen(
+          key: args.key,
+          dog: args.dog,
+        ),
       );
     },
     DogProfileRoute.name: (routeData) {
@@ -100,11 +110,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const UserProfileScreen(),
       );
     },
-    EditDogRoute.name: (routeData) {
-      final args = routeData.argsAs<EditDogRouteArgs>();
+    DogDetailsRoute.name: (routeData) {
+      final args = routeData.argsAs<DogDetailsRouteArgs>(
+          orElse: () => const DogDetailsRouteArgs());
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: EditDogScreen(
+        child: DogDetailsScreen(
           key: args.key,
           dog: args.dog,
         ),
@@ -198,20 +209,6 @@ class BottomBarRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [DogAdditionScreen]
-class DogAdditionRoute extends PageRouteInfo<void> {
-  const DogAdditionRoute({List<PageRouteInfo>? children})
-      : super(
-          DogAdditionRoute.name,
-          initialChildren: children,
-        );
-
-  static const String name = 'DogAdditionRoute';
-
-  static const PageInfo<void> page = PageInfo<void>(name);
-}
-
-/// generated route for
 /// [DogsScreen]
 class DogsRoute extends PageRouteInfo<DogsRouteArgs> {
   DogsRoute({
@@ -236,6 +233,58 @@ class DogsRouteArgs {
   @override
   String toString() {
     return 'DogsRouteArgs{key: $key}';
+  }
+}
+
+/// generated route for
+/// [DogAdditionScreen]
+class DogAdditionRoute extends PageRouteInfo<void> {
+  const DogAdditionRoute({List<PageRouteInfo>? children})
+      : super(
+          DogAdditionRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'DogAdditionRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DogEditScreen]
+class DogEditRoute extends PageRouteInfo<DogEditRouteArgs> {
+  DogEditRoute({
+    Key? key,
+    required Dog dog,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DogEditRoute.name,
+          args: DogEditRouteArgs(
+            key: key,
+            dog: dog,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DogEditRoute';
+
+  static const PageInfo<DogEditRouteArgs> page =
+      PageInfo<DogEditRouteArgs>(name);
+}
+
+class DogEditRouteArgs {
+  const DogEditRouteArgs({
+    this.key,
+    required this.dog,
+  });
+
+  final Key? key;
+
+  final Dog dog;
+
+  @override
+  String toString() {
+    return 'DogEditRouteArgs{key: $key, dog: $dog}';
   }
 }
 
@@ -340,39 +389,39 @@ class UserProfileRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [EditDogScreen]
-class EditDogRoute extends PageRouteInfo<EditDogRouteArgs> {
-  EditDogRoute({
+/// [DogDetailsScreen]
+class DogDetailsRoute extends PageRouteInfo<DogDetailsRouteArgs> {
+  DogDetailsRoute({
     Key? key,
-    required Dog dog,
+    Dog? dog,
     List<PageRouteInfo>? children,
   }) : super(
-          EditDogRoute.name,
-          args: EditDogRouteArgs(
+          DogDetailsRoute.name,
+          args: DogDetailsRouteArgs(
             key: key,
             dog: dog,
           ),
           initialChildren: children,
         );
 
-  static const String name = 'EditDogRoute';
+  static const String name = 'DogDetailsRoute';
 
-  static const PageInfo<EditDogRouteArgs> page =
-      PageInfo<EditDogRouteArgs>(name);
+  static const PageInfo<DogDetailsRouteArgs> page =
+      PageInfo<DogDetailsRouteArgs>(name);
 }
 
-class EditDogRouteArgs {
-  const EditDogRouteArgs({
+class DogDetailsRouteArgs {
+  const DogDetailsRouteArgs({
     this.key,
-    required this.dog,
+    this.dog,
   });
 
   final Key? key;
 
-  final Dog dog;
+  final Dog? dog;
 
   @override
   String toString() {
-    return 'EditDogRouteArgs{key: $key, dog: $dog}';
+    return 'DogDetailsRouteArgs{key: $key, dog: $dog}';
   }
 }
