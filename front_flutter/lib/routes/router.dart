@@ -14,6 +14,7 @@ import 'package:front_flutter/screens/dog/dogs_screen.dart';
 import '../models/dog/dog.dart';
 import '../screens/dog/dog_details_screen.dart';
 import '../screens/home_screen.dart';
+import '../screens/place/place_profile_screen.dart';
 
 part 'router.gr.dart';
 
@@ -36,6 +37,7 @@ class AppRouter extends _$AppRouter {
           ]),
           AutoRoute(path: 'places', page: PlacesRouter.page, children: [
             AutoRoute(path: '', page: PlacesRoute.page),
+            CustomRoute(path: ':placeId', page: PlaceProfileRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
           ]),
           AutoRoute(path: 'profile', page: UserProfileRouter.page, children: [
             AutoRoute(path: '', page: UserProfileRoute.page),

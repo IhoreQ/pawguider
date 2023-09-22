@@ -15,7 +15,7 @@ class BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AutoTabsScaffold(
-      backgroundColor: Colors. white,
+      backgroundColor: Colors.white,
       routes: const [
         HomeRouter(),
         DogsRouter(),

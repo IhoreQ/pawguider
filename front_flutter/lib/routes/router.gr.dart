@@ -83,9 +83,11 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     PlacesRoute.name: (routeData) {
+      final args = routeData.argsAs<PlacesRouteArgs>(
+          orElse: () => const PlacesRouteArgs());
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const PlacesScreen(),
+        child: PlacesScreen(key: args.key),
       );
     },
     UserProfileRoute.name: (routeData) {
@@ -102,6 +104,19 @@ abstract class _$AppRouter extends RootStackRouter {
         child: DogDetailsScreen(
           key: args.key,
           dog: args.dog,
+        ),
+      );
+    },
+    PlaceProfileRoute.name: (routeData) {
+      final pathParams = routeData.inheritedPathParams;
+      final args = routeData.argsAs<PlaceProfileRouteArgs>(
+          orElse: () =>
+              PlaceProfileRouteArgs(placeId: pathParams.getInt('placeId')));
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: PlaceProfileScreen(
+          key: args.key,
+          placeId: args.placeId,
         ),
       );
     },
@@ -294,16 +309,30 @@ class MapRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [PlacesScreen]
-class PlacesRoute extends PageRouteInfo<void> {
-  const PlacesRoute({List<PageRouteInfo>? children})
-      : super(
+class PlacesRoute extends PageRouteInfo<PlacesRouteArgs> {
+  PlacesRoute({
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
           PlacesRoute.name,
+          args: PlacesRouteArgs(key: key),
           initialChildren: children,
         );
 
   static const String name = 'PlacesRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<PlacesRouteArgs> page = PageInfo<PlacesRouteArgs>(name);
+}
+
+class PlacesRouteArgs {
+  const PlacesRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'PlacesRouteArgs{key: $key}';
+  }
 }
 
 /// generated route for
@@ -355,5 +384,44 @@ class DogDetailsRouteArgs {
   @override
   String toString() {
     return 'DogDetailsRouteArgs{key: $key, dog: $dog}';
+  }
+}
+
+/// generated route for
+/// [PlaceProfileScreen]
+class PlaceProfileRoute extends PageRouteInfo<PlaceProfileRouteArgs> {
+  PlaceProfileRoute({
+    Key? key,
+    required int placeId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          PlaceProfileRoute.name,
+          args: PlaceProfileRouteArgs(
+            key: key,
+            placeId: placeId,
+          ),
+          rawPathParams: {'placeId': placeId},
+          initialChildren: children,
+        );
+
+  static const String name = 'PlaceProfileRoute';
+
+  static const PageInfo<PlaceProfileRouteArgs> page =
+      PageInfo<PlaceProfileRouteArgs>(name);
+}
+
+class PlaceProfileRouteArgs {
+  const PlaceProfileRouteArgs({
+    this.key,
+    required this.placeId,
+  });
+
+  final Key? key;
+
+  final int placeId;
+
+  @override
+  String toString() {
+    return 'PlaceProfileRouteArgs{key: $key, placeId: $placeId}';
   }
 }

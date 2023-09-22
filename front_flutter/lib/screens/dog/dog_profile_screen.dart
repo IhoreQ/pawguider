@@ -20,6 +20,7 @@ class DogProfileScreen extends StatelessWidget {
   final Dog dog;
 
   // TODO wywalić parametr 'dog' i zamiast tego pobierać z bazy
+  // TODO dodać klikalne serduszko
 
   @override
   Widget build(BuildContext context) {

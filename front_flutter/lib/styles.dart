@@ -18,6 +18,12 @@ abstract class AppTextStyle {
     color: Colors.white
   );
 
+  static TextStyle mediumWhite = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w500,
+      fontSize: 16.0,
+      color: Colors.white
+  );
+
   static TextStyle mediumDark = GoogleFonts.montserrat(
       fontWeight: FontWeight.w500,
       fontSize: 16.0,
@@ -40,12 +46,6 @@ abstract class AppTextStyle {
       fontWeight: FontWeight.w500,
       fontSize: 16.0,
       color: AppColor.primaryOrange
-  );
-
-  static TextStyle mediumWhite = GoogleFonts.montserrat(
-    fontWeight: FontWeight.w500,
-    fontSize: 16.0,
-    color: Colors.white
   );
 
   static TextStyle regularLight = GoogleFonts.montserrat(
