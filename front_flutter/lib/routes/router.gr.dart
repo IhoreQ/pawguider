@@ -59,22 +59,6 @@ abstract class _$AppRouter extends RootStackRouter {
         child: DogsScreen(key: args.key),
       );
     },
-    DogAdditionRoute.name: (routeData) {
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: const DogAdditionScreen(),
-      );
-    },
-    DogEditRoute.name: (routeData) {
-      final args = routeData.argsAs<DogEditRouteArgs>();
-      return AutoRoutePage<dynamic>(
-        routeData: routeData,
-        child: DogEditScreen(
-          key: args.key,
-          dog: args.dog,
-        ),
-      );
-    },
     DogProfileRoute.name: (routeData) {
       final args = routeData.argsAs<DogProfileRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -233,58 +217,6 @@ class DogsRouteArgs {
   @override
   String toString() {
     return 'DogsRouteArgs{key: $key}';
-  }
-}
-
-/// generated route for
-/// [DogAdditionScreen]
-class DogAdditionRoute extends PageRouteInfo<void> {
-  const DogAdditionRoute({List<PageRouteInfo>? children})
-      : super(
-          DogAdditionRoute.name,
-          initialChildren: children,
-        );
-
-  static const String name = 'DogAdditionRoute';
-
-  static const PageInfo<void> page = PageInfo<void>(name);
-}
-
-/// generated route for
-/// [DogEditScreen]
-class DogEditRoute extends PageRouteInfo<DogEditRouteArgs> {
-  DogEditRoute({
-    Key? key,
-    required Dog dog,
-    List<PageRouteInfo>? children,
-  }) : super(
-          DogEditRoute.name,
-          args: DogEditRouteArgs(
-            key: key,
-            dog: dog,
-          ),
-          initialChildren: children,
-        );
-
-  static const String name = 'DogEditRoute';
-
-  static const PageInfo<DogEditRouteArgs> page =
-      PageInfo<DogEditRouteArgs>(name);
-}
-
-class DogEditRouteArgs {
-  const DogEditRouteArgs({
-    this.key,
-    required this.dog,
-  });
-
-  final Key? key;
-
-  final Dog dog;
-
-  @override
-  String toString() {
-    return 'DogEditRouteArgs{key: $key, dog: $dog}';
   }
 }
 

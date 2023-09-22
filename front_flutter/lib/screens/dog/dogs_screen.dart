@@ -47,7 +47,7 @@ class EmptyDogsListPage extends StatelessWidget {
         const Gap(10.0),
         Text('Add your first dog', style: AppTextStyle.semiBoldOrange.copyWith(fontSize: 18)),
         const Gap(10.0),
-        const RoutingCircleAddButton(route: DogAdditionRoute()),
+        RoutingCircleAddButton(route: DogDetailsRoute()),
       ],
     );
   }
@@ -147,8 +147,8 @@ class DogsListPage extends StatelessWidget {
                 );
               },
             ),
-            const Center(
-                child: RoutingCircleAddButton(route: DogAdditionRoute())
+            Center(
+                child: RoutingCircleAddButton(route: DogDetailsRoute())
             ),
             const Gap(20.0),
           ],

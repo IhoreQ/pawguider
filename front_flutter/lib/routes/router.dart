@@ -11,10 +11,8 @@ import 'package:front_flutter/screens/user/user_profile_screen.dart';
 import 'package:front_flutter/screens/map/map_screen.dart';
 import 'package:front_flutter/screens/place/places_screen.dart';
 import 'package:front_flutter/screens/dog/dogs_screen.dart';
-import 'package:front_flutter/screens/dog/dog_addition_screen.dart';
 import '../models/dog/dog.dart';
 import '../screens/dog/dog_details_screen.dart';
-import '../screens/dog/dog_edit_screen.dart';
 import '../screens/home_screen.dart';
 
 part 'router.gr.dart';
@@ -29,7 +27,7 @@ class AppRouter extends _$AppRouter {
           ]),
           AutoRoute(path: 'dogs', page: DogsRouter.page, children: [
             AutoRoute(path: '', page: DogsRoute.page),
-            CustomRoute(path: 'add', page: DogAdditionRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
+            CustomRoute(path: 'add', page: DogDetailsRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
             CustomRoute(path: ':dogId', page: DogProfileRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
             CustomRoute(path: 'edit', page: DogDetailsRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
           ]),

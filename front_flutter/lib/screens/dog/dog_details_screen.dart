@@ -38,16 +38,16 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   final _ageController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  final List<String> breeds = <String>['Mongrel', 'Jack Russel Terrier', 'Yorkshire Terrier'];
-  final List<String> genders = <String>['Male', 'Female'];
-  final List<Behavior> behaviors = BehaviorRepository.getAllBehaviors();
+  final List<String> _breeds = <String>['Mongrel', 'Jack Russel Terrier', 'Yorkshire Terrier'];
+  final List<String> _genders = <String>['Male', 'Female'];
+  final List<Behavior> _behaviors = BehaviorRepository.getAllBehaviors();
 
-  late String _selectedBreed = breeds.first;
-  late String _selectedGender = genders.first;
+  late String _selectedBreed = _breeds.first;
+  late String _selectedGender = _genders.first;
   List<Behavior> _selectedBehaviors = [];
 
-  int behaviorsMinCount = 3;
-  bool minBehaviorCountSelected = true;
+  final int _behaviorsMinCount = 3;
+  bool _minBehaviorCountSelected = true;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -59,11 +59,11 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
       _nameController.text = widget.dog!.name;
       _ageController.text = '${widget.dog!.age}';
       _descriptionController.text = widget.dog!.description;
-      _selectedGender = genders.firstWhere((element) {
+      _selectedGender = _genders.firstWhere((element) {
         String dogGender = widget.dog!.gender ? 'Male' : 'Female';
         return element == dogGender;
       });
-      _selectedBreed = breeds.firstWhere((element) => element == widget.dog!.breed);
+      _selectedBreed = _breeds.firstWhere((element) => element == widget.dog!.breed);
       _selectedBehaviors = Dog.clone(widget.dog!).behaviors;
     }
   }
@@ -241,7 +241,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                 ),
                 DropdownButtonFormField(
                     value: _selectedBreed,
-                    items: breeds.map<DropdownMenuItem<String>>((String value) {
+                    items: _breeds.map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -273,7 +273,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                 ),
                 CustomDropdownButton(
                   dropdownValue: _selectedGender,
-                  valuesList: genders,
+                  valuesList: _genders,
                   labelText: 'Gender',
                   onChanged: (value) {
                     setState(() {
@@ -289,10 +289,10 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                       style: AppTextStyle.heading2.copyWith(fontSize: 20.0),
                     )
                 ),
-                !minBehaviorCountSelected ? Align(
+                !_minBehaviorCountSelected ? Align(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      'You have to select at least $behaviorsMinCount traits',
+                      'You have to select at least $_behaviorsMinCount traits',
                       style: AppTextStyle.errorText,
                     )
                 ) : const SizedBox(),
@@ -300,7 +300,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                 Wrap(
                   spacing: 5.0,
                   runSpacing: 10.0 ,
-                  children: behaviors.map((behavior) {
+                  children: _behaviors.map((behavior) {
                     final isBehaviorSelected = _selectedBehaviors.any((selectedBehavior) => selectedBehavior.id == behavior.id);
                     return SelectableBehaviorBox(
                       label: behavior.name,
@@ -352,12 +352,11 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   }
 
   void addDog() {
+    // TODO działanie
     print('add');
-    setState(() {
-      minBehaviorCountSelected = _selectedBehaviors.length >= behaviorsMinCount;
-    });
+    validateBehaviorsCount();
 
-    if (_formKey.currentState!.validate() && minBehaviorCountSelected) {
+    if (_formKey.currentState!.validate() && _minBehaviorCountSelected) {
       // TODO wysyłka na API
       // TODO capitalize() na name
       // context.router.pop();
@@ -365,6 +364,23 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   }
 
   void updateDog() {
+    // TODO działanie
     print('update');
+
+    validateBehaviorsCount();
+    if (_formKey.currentState!.validate() && _minBehaviorCountSelected) {
+      // TODO wysyłka na API
+      // TODO capitalize() na name
+
+      // context.router.pop();
+    }
+  }
+
+  void validateBehaviorsCount() {
+    setState(() {
+      _minBehaviorCountSelected = _selectedBehaviors.length >= _behaviorsMinCount;
+    });
   }
 }
+
+
