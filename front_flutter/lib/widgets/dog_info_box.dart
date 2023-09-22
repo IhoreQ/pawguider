@@ -70,7 +70,7 @@ class DogInfoBox extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
-                    onTap: () => context.router.push(DogProfileRoute(dog: dog, dogId: dog.id)),
+                    onTap: () => context.router.push(DogProfileRoute(dogId: dog.id)),
                   ),
                 ),
               )
@@ -155,7 +155,7 @@ class DogInfoBox extends StatelessWidget {
                 child: InkWell(
                   borderRadius:
                       const BorderRadius.horizontal(right: Radius.circular(20.0)),
-                  onTap: () => context.router.push(DogProfileRoute(dog: dog, dogId: dog.id)),
+                  onTap: () => context.router.push(DogProfileRoute(dogId: dog.id)),
                 ),
               ),
             )

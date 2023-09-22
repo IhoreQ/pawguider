@@ -38,10 +38,12 @@ class AppRouter extends _$AppRouter {
           AutoRoute(path: 'places', page: PlacesRouter.page, children: [
             AutoRoute(path: '', page: PlacesRoute.page),
             CustomRoute(path: ':placeId', page: PlaceProfileRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
+            CustomRoute(path: 'dog/:dogId', page:DogProfileRoute.page, transitionsBuilder: TransitionsBuilders.noTransition)
           ]),
           AutoRoute(path: 'profile', page: UserProfileRouter.page, children: [
             AutoRoute(path: '', page: UserProfileRoute.page),
           ])
         ],),
+      RedirectRoute(path: '*', redirectTo: '/'),
       ];
 }

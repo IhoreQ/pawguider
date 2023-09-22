@@ -47,8 +47,6 @@ class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
 
-    print(context.router.currentPath);
-
     return Scaffold(
       body: Stack(children: [
         SizedBox(
@@ -248,12 +246,6 @@ class MainContentBox extends StatelessWidget {
                   );
                 },
               ),
-              ElevatedButton(onPressed: () {
-              }, child: Container(
-                width: 30,
-                height: 30,
-                color: Colors.red
-              ))
             ],
           ),
         ),
