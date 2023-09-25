@@ -18,8 +18,20 @@ abstract class AppTextStyle {
     color: Colors.white
   );
 
+  static TextStyle boldOrange = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w700,
+      fontSize: 16.0,
+      color: AppColor.primaryOrange
+  );
+
   static TextStyle mediumWhite = GoogleFonts.montserrat(
       fontWeight: FontWeight.w500,
+      fontSize: 16.0,
+      color: Colors.white
+  );
+
+  static TextStyle semiBoldWhite = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w600,
       fontSize: 16.0,
       color: Colors.white
   );

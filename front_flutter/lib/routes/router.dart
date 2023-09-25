@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/routes/guard/auth_guard.dart';
+import 'package:front_flutter/routes/router_pages/authentication_router_page.dart';
 import 'package:front_flutter/routes/router_pages/home_router_page.dart';
 import 'package:front_flutter/routes/router_pages/user_profile_router_page.dart';
 import 'package:front_flutter/routes/router_pages/dogs_router_page.dart';
@@ -25,7 +27,10 @@ part 'router.gr.dart';
 class AppRouter extends _$AppRouter {
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(path: '/', page: BottomBarRoute.page, children: [
+
+    CustomRoute(path: '/login', page: LoginRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
+    CustomRoute(path: '/register', page: RegisterRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
+    AutoRoute(path: '/dashboard', page: BottomBarRoute.page, initial: true, guards: [AuthGuard()], children: [
           AutoRoute(path: 'home', page: HomeRouter.page, children: [
             AutoRoute(path: '', page: HomeRoute.page),
           ]),
@@ -47,7 +52,6 @@ class AppRouter extends _$AppRouter {
           AutoRoute(path: 'profile', page: UserProfileRouter.page, children: [
             AutoRoute(path: '', page: UserProfileRoute.page),
           ])
-        ],),
-      RedirectRoute(path: '*', redirectTo: '/'),
+        ]),
       ];
 }

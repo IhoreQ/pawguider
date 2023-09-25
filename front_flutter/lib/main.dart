@@ -11,7 +11,7 @@ void main() {
 
 class App extends StatelessWidget {
   App({super.key});
-  final appRouter = AppRouter();
+  final _appRouter = AppRouter();
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +34,8 @@ class App extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primaryOrange),
         ),
-        routerDelegate: appRouter.delegate(),
-        routeInformationParser: appRouter.defaultRouteParser(),
+        routerDelegate: _appRouter.delegate(),
+        routeInformationParser: _appRouter.defaultRouteParser(includePrefixMatches: true),
       ),
     );
   }

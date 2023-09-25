@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/custom_dropdown_button.dart';
-import 'package:front_flutter/widgets/custom_form_field.dart';
+import 'package:front_flutter/widgets/form_field/custom_form_field.dart';
 import 'package:front_flutter/widgets/selectable_behavior_box.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
