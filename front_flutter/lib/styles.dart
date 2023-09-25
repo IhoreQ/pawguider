@@ -30,6 +30,12 @@ abstract class AppTextStyle {
       color: AppColor.darkText
   );
 
+  static TextStyle semiBoldDark = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w600,
+      fontSize: 16.0,
+      color: AppColor.darkText
+  );
+
   static TextStyle semiBoldOrange = GoogleFonts.montserrat(
       fontWeight: FontWeight.w600,
       fontSize: 16.0,

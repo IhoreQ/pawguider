@@ -61,4 +61,12 @@ class Dog {
   List<Behavior> get behaviors => _behaviors;
 
   int get ownerId => _ownerId;
+
+  void addLike() {
+    _likes++;
+  }
+
+  void subtractLike() {
+    _likes--;
+  }
 }

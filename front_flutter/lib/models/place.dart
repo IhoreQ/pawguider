@@ -8,7 +8,7 @@ class Place {
   String? _city;
   String? _description;
   final int _dogsCount;
-  final double _averageScore;
+  double _averageScore;
   final String _photoUrl;
 
   Place.basicInfo(this._id, this._name, this._street, this._dogsCount,
@@ -34,4 +34,8 @@ class Place {
   String get street => _street;
 
   String get name => _name;
+
+  set averageScore(double value) {
+    _averageScore = value;
+  }
 }

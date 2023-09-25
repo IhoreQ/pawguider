@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:front_flutter/main.dart';
 import 'package:front_flutter/models/dog/dog.dart';
 import 'package:front_flutter/routes/router.dart';
@@ -87,14 +88,14 @@ class TopBar extends StatefulWidget {
 
 class _TopBarState extends State<TopBar> {
 
-  late bool likeClicked;
+  late bool _liked;
 
   @override
   void initState() {
     super.initState();
 
     // TODO pobranie czy użytkownik już ma polajkowane miejsce
-    likeClicked = false;
+    _liked = false;
   }
 
   @override
@@ -138,12 +139,12 @@ class _TopBarState extends State<TopBar> {
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 200),
                   child: IconButton(
-                    key: ValueKey<bool>(likeClicked),
+                    key: ValueKey<bool>(_liked),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () => addLike(),
                       icon: Icon(
-                        likeClicked ? FluentSystemIcons.ic_fluent_heart_filled : FluentSystemIcons.ic_fluent_heart_regular,
+                        _liked ? FluentSystemIcons.ic_fluent_heart_filled : FluentSystemIcons.ic_fluent_heart_regular,
                         size: iconSize,
                         color: Colors.white,
                       )
@@ -159,16 +160,24 @@ class _TopBarState extends State<TopBar> {
 
   void addLike() {
     setState(() {
-      likeClicked = !likeClicked;
+      _liked = !_liked;
     });
   }
 }
 
-class MainContentBox extends StatelessWidget {
+class MainContentBox extends StatefulWidget {
   const MainContentBox({super.key, required this.place, required this.dogs});
 
   final Place place;
   final List<Dog> dogs;
+
+  @override
+  State<MainContentBox> createState() => _MainContentBoxState();
+}
+
+class _MainContentBoxState extends State<MainContentBox> {
+
+  double _placeRating = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -194,9 +203,9 @@ class MainContentBox extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Expanded(child: Text(place.name, style: AppTextStyle.heading2.copyWith(fontSize: 25.0),)),
+                  Expanded(child: Text(widget.place.name, style: AppTextStyle.heading2.copyWith(fontSize: 25.0),)),
                   TextButton(
-                      onPressed: () => {},
+                      onPressed: () => onReviewsClick(),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -206,7 +215,7 @@ class MainContentBox extends StatelessWidget {
                             color: AppColor.primaryOrange,
                           ),
                           const Gap(2.0),
-                          Text('${place.averageScore}', style: AppTextStyle.regularLight,),
+                          Text('${widget.place.averageScore}', style: AppTextStyle.regularLight,),
                         ],
                       )
                   )
@@ -219,28 +228,28 @@ class MainContentBox extends StatelessWidget {
                     size: 20.0,
                     color: AppColor.primaryOrange,
                   ),
-                  Text('${place.street}, ${place.zipCode} ${place.city}', style: AppTextStyle.mediumLight.copyWith(fontSize: 14.0),),
+                  Text('${widget.place.street}, ${widget.place.zipCode} ${widget.place.city}', style: AppTextStyle.mediumLight.copyWith(fontSize: 14.0),),
                 ],
               ),
               const Gap(20.0),
-              Text('${place.description}', style: AppTextStyle.regularLight.copyWith(fontSize: 14.0)),
+              Text('${widget.place.description}', style: AppTextStyle.regularLight.copyWith(fontSize: 14.0)),
               const Gap(10.0),
               Row(
                 children: [
                   Text('Dogs here', style: AppTextStyle.heading2.copyWith(fontSize: 20.0)),
                   const Gap(5.0),
-                  Text('(${dogs.length})', style: AppTextStyle.mediumLight,)
+                  Text('(${widget.dogs.length})', style: AppTextStyle.mediumLight,)
                 ],
               ),
               const Gap(10.0),
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: dogs.length,
+                itemCount: widget.dogs.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      DogInfoBox(dog: dogs[index]),
+                      DogInfoBox(dog: widget.dogs[index]),
                       const Gap(15.0),
                     ],
                   );
@@ -251,5 +260,91 @@ class MainContentBox extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future onReviewsClick() async {
+    await showModalBottomSheet(useRootNavigator: true, context: context, builder: (context) => BottomSheet(
+      enableDrag: false,
+      backgroundColor: Colors.white,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Gap(15.0),
+          Text('Rate this place', style: AppTextStyle.semiBoldDark.copyWith(fontSize: 18.0),),
+          const Gap(10.0),
+          RatingBar(
+            minRating: 1,
+            maxRating: 5,
+            glowColor: AppColor.primaryOrange,
+            onRatingUpdate: (rating) {
+              // TODO wysyłka na API i odbiór
+              _placeRating = rating;
+              setState(() {});
+            },
+            allowHalfRating: false,
+            ratingWidget: RatingWidget(
+              full: const Icon(
+                FluentSystemIcons.ic_fluent_star_filled,
+                color: AppColor.primaryOrange,
+              ),
+              half: const Icon(
+                  FluentSystemIcons.ic_fluent_star_filled
+              ),
+              empty: const Icon(
+                  FluentSystemIcons.ic_fluent_star_regular,
+                color: AppColor.primaryOrange,
+              ),
+            ),
+          ),
+          const Gap(10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              OutlinedButton(
+                onPressed: () {
+                  context.router.pop();
+                },
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shadowColor: Colors.black.withOpacity(0.3),
+                  elevation: 15,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  side: const BorderSide(
+                    color: AppColor.primaryOrange,
+                    width: 1.5,
+                  )
+                ),
+                child: Text(
+                  'Cancel',
+                  style: AppTextStyle.mediumOrange.copyWith(fontSize: 14.0),
+                )
+              ),
+              const Gap(20.0),
+              FilledButton(
+                onPressed: () {
+                  // TODO wysyłka opinii na API i pobranie nowej wartości i przypisanie do place'a
+                  context.router.pop();
+                },
+                style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColor.primaryOrange,
+                    shadowColor: Colors.black.withOpacity(0.3),
+                    elevation: 15,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                ),
+                child: Text(
+                  'Submit',
+                  style: AppTextStyle.mediumWhite.copyWith(fontSize: 14.0),
+                )
+              )
+            ],
+          ),
+          const Gap(15.0),
+        ],
+      ), onClosing: () {},
+    ));
   }
 }

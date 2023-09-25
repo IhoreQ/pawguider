@@ -342,12 +342,77 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                     border: const OutlineInputBorder(),
                   ),
                 ),
-                const Gap(20.0)
+                const Gap(20.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                  child: widget.dog != null ? OutlinedButton(
+                    onPressed: () => showAlertDialog(context),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(
+                        width: 2.0,
+                        color: AppColor.primaryOrange
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          FluentSystemIcons.ic_fluent_delete_regular,
+                          color: AppColor.primaryOrange,
+                          size: 20.0,
+                        ),
+                        const Gap(5.0),
+                        Text(
+                          'Delete dog',
+                          style: AppTextStyle.mediumOrange,
+                        )
+                      ],
+                    )
+                  ) : null,
+                ),
+                const Gap(20.0),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  showAlertDialog(BuildContext context) {
+    Widget deleteButton = TextButton(
+      child: Text("Delete", style: AppTextStyle.mediumOrange,),
+      onPressed:  () {
+        // TODO usunięcie psa
+        Navigator.of(context, rootNavigator: true).pop();
+        context.router.popUntilRoot();
+        // Zamknij dialog
+      },
+    );
+    Widget cancelButton = TextButton(
+      child: Text("Cancel", style: AppTextStyle.mediumOrange,),
+      onPressed:  () {
+        // Zamknij dialog
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      surfaceTintColor: Colors.white,
+      title: Text("Delete your dog", style: AppTextStyle.semiBoldDark.copyWith(fontSize: 20.0)),
+      content: Text("Are you sure you want to delete this dog?", style: AppTextStyle.mediumLight,),
+      actions: [
+        cancelButton,
+        deleteButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 

@@ -13,7 +13,7 @@ import '../../models/dog/dog.dart';
 
 @RoutePage()
 class DogProfileScreen extends StatefulWidget {
-  DogProfileScreen(
+  const DogProfileScreen(
       {Key? key, @PathParam() required this.dogId})
       : super(key: key);
 
@@ -39,7 +39,6 @@ class _DogProfileScreenState extends State<DogProfileScreen> {
     super.initState();
   }
 
-  // TODO wywalić parametr 'dog' i zamiast tego pobierać z bazy
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +79,13 @@ class TopBar extends StatefulWidget {
 
 class _TopBarState extends State<TopBar> {
   final int userId = 10;
+  late bool _liked;
+
+  @override
+  void initState() {
+    super.initState();
+    _liked = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -175,15 +181,25 @@ class _TopBarState extends State<TopBar> {
                     SizedBox(
                       width: iconSize,
                       height: iconSize,
-                      child: IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          onPressed: () => {},
-                          icon: const Icon(
-                            FluentSystemIcons.ic_fluent_heart_regular,
-                            size: iconSize,
-                            color: Colors.white,
-                          )),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: IconButton(
+                            key: ValueKey<bool>(_liked),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () => _liked ? subtractLike() : addLike(),
+                            icon: _liked ? const Icon(
+                              FluentSystemIcons.ic_fluent_heart_filled,
+                              size: iconSize,
+                              color: Colors.white,
+                            )
+                            : const Icon(
+                              FluentSystemIcons.ic_fluent_heart_regular,
+                              size: iconSize,
+                              color: Colors.white,
+                            )
+                        ),
+                      )
                     )
                   ],
                 ),
@@ -202,6 +218,18 @@ class _TopBarState extends State<TopBar> {
               ),
             ],
           );
+  }
+
+  void addLike() {
+    widget.dog.addLike();
+    _liked = !_liked;
+    setState(() {});
+  }
+
+  void subtractLike() {
+    widget.dog.subtractLike();
+    _liked = !_liked;
+    setState(() {});
   }
 }
 
@@ -265,6 +293,7 @@ class DogContentPage extends StatelessWidget {
             const Gap(25.0),
             Text('About dog',
                 style: AppTextStyle.heading2.copyWith(fontSize: 20.0)),
+            const Gap(10.0),
             Text(dog.description,
                 style: AppTextStyle.mediumLight.copyWith(fontSize: 14.0)),
             const Gap(20.0),
