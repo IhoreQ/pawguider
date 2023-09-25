@@ -126,3 +126,9 @@ abstract class AppShadow {
       color: Colors.black.withOpacity(0.15)
   );
 }
+
+abstract class AppButtonStyle {
+  static ButtonStyle orangeSplashColor = ButtonStyle(
+    overlayColor: MaterialStateColor.resolveWith((states) => AppColor.backgroundOrange2),
+  );
+}
