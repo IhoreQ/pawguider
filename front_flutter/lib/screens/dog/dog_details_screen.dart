@@ -3,6 +3,7 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:front_flutter/styles.dart';
+import 'package:front_flutter/utilities/image_getter.dart';
 import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/custom_dropdown_button.dart';
 import 'package:front_flutter/widgets/form_field/custom_form_field.dart';
@@ -79,39 +80,6 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
 
   Future<void> uploadImage() async {}
 
-  Future _selectPhoto() async {
-    await showModalBottomSheet(useRootNavigator: true, context: context, builder: (context) => BottomSheet(
-      enableDrag: false,
-      backgroundColor: Colors.white,
-      builder: (context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          InkWell(
-            onTap: () => _getImage(ImageSource.camera),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(25.0)),
-            child: ListTile(
-              leading: const Icon(
-                FluentSystemIcons.ic_fluent_camera_filled,
-                size: 25.0,
-                color: AppColor.lightText,
-              ),
-              title: Text('Camera', style: AppTextStyle.mediumLight),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(
-              FluentSystemIcons.ic_fluent_image_filled,
-              size: 25.0,
-              color: AppColor.lightText,
-            ),
-            title: Text('Pick a photo', style: AppTextStyle.mediumLight,),
-            onTap: () => _getImage(ImageSource.gallery),
-          ),
-        ],
-      ), onClosing: () {},
-    ));
-  }
-
   @override
   Widget build(BuildContext context) {
     const double iconSize = 30.0;
@@ -157,7 +125,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                     children: [
                       Center(
                           child: ElevatedButton(
-                            onPressed: () => _selectPhoto(),
+                            onPressed: () => ImageGetter.selectPhoto(context, _getImage),
                             style: ElevatedButton.styleFrom(
                                 shape: const CircleBorder(),
                                 padding: const EdgeInsets.all(25.0),
@@ -173,7 +141,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                       ),
                       const Gap(10.0),
                       GestureDetector(
-                          onTap: () => _selectPhoto(),
+                          onTap: () => ImageGetter.selectPhoto(context, _getImage),
                           child: Text('Add dog picture', style: AppTextStyle.semiBoldLight)
                       )
                     ],
@@ -212,7 +180,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                                     color: Colors.transparent,
                                     child: InkWell(
                                         borderRadius: BorderRadius.circular(50),
-                                        onTap: () => _selectPhoto()),
+                                        onTap: () => ImageGetter.selectPhoto(context, _getImage)),
                                   ),
                                 ),
                               ]
@@ -220,7 +188,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                       ),
                       const Gap(10.0),
                       GestureDetector(
-                          onTap: () => _selectPhoto(),
+                          onTap: () => ImageGetter.selectPhoto(context, _getImage),
                           child: Text('Change picture', style: AppTextStyle.semiBoldOrange)
                       ),
                     ],

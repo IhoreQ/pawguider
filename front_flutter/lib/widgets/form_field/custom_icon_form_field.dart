@@ -1,5 +1,6 @@
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:front_flutter/styles.dart';
 
 class CustomIconFormField extends StatelessWidget {
@@ -9,6 +10,7 @@ class CustomIconFormField extends StatelessWidget {
     required this.hintText,
     required this.controller,
     required this.prefixIcon,
+    this.inputFormatters,
     this.validator,
     this.onChange,
     this.keyboardType,
@@ -16,6 +18,7 @@ class CustomIconFormField extends StatelessWidget {
 
   final String hintText;
   final TextEditingController controller;
+  final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
   final void Function(String?)? onChange;
   final TextInputType? keyboardType;
@@ -26,6 +29,7 @@ class CustomIconFormField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       style: AppTextStyle.mediumDark,
+      inputFormatters: inputFormatters,
       validator: validator,
       cursorColor: AppColor.primaryOrange,
       keyboardType: keyboardType,
