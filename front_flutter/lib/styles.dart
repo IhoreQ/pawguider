@@ -9,6 +9,7 @@ abstract class AppColor {
   static const Color darkText = Color.fromRGBO(64, 63, 69, 1.0);
   static const Color lightText = Color.fromRGBO(143, 143, 143, 1.0);
   static const Color lightGray = Color.fromRGBO(220, 220, 220, 1.0);
+  static const Color error = Color.fromRGBO(192, 52, 53, 1.0);
 }
 
 abstract class AppTextStyle {
@@ -24,6 +25,12 @@ abstract class AppTextStyle {
       color: AppColor.primaryOrange
   );
 
+  static TextStyle regularWhite = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w400,
+      fontSize: 16.0,
+      color: Colors.white
+  );
+
   static TextStyle mediumWhite = GoogleFonts.montserrat(
       fontWeight: FontWeight.w500,
       fontSize: 16.0,
@@ -32,6 +39,12 @@ abstract class AppTextStyle {
 
   static TextStyle semiBoldWhite = GoogleFonts.montserrat(
       fontWeight: FontWeight.w600,
+      fontSize: 16.0,
+      color: Colors.white
+  );
+
+  static TextStyle boldWhite = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w700,
       fontSize: 16.0,
       color: Colors.white
   );
@@ -47,6 +60,13 @@ abstract class AppTextStyle {
       fontSize: 16.0,
       color: AppColor.darkText
   );
+
+  static TextStyle boldDark = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w700,
+      fontSize: 16.0,
+      color: AppColor.darkText
+  );
+
 
   static TextStyle semiBoldOrange = GoogleFonts.montserrat(
       fontWeight: FontWeight.w600,
@@ -107,7 +127,7 @@ abstract class AppTextStyle {
   static TextStyle errorText = GoogleFonts.montserrat(
     fontWeight: FontWeight.w500,
     fontSize: 12.0,
-    color: Colors.red
+    color: AppColor.error
   );
 }
 

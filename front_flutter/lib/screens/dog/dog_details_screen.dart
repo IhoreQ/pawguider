@@ -18,8 +18,6 @@ import '../../models/behavior.dart';
 import '../../models/dog/dog.dart';
 import '../../repositories/behavior_repository.dart';
 
-// TODO zamień to wszędzie zamiast DogAdditionScreen
-
 @RoutePage()
 class DogDetailsScreen extends StatefulWidget {
   const DogDetailsScreen({super.key, this.dog});

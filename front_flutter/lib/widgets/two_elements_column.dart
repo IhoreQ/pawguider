@@ -10,7 +10,7 @@ class TwoElementsColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 100.0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

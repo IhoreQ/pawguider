@@ -17,7 +17,7 @@ import '../screens/authentication/login_screen.dart';
 import '../screens/authentication/register_details_screen.dart';
 import '../screens/authentication/register_screen.dart';
 import '../screens/dog/dog_details_screen.dart';
-import '../screens/home_screen.dart';
+import '../screens/home/home_screen.dart';
 import '../screens/place/place_profile_screen.dart';
 
 part 'router.gr.dart';
@@ -33,6 +33,9 @@ class AppRouter extends _$AppRouter {
     AutoRoute(path: '/dashboard', page: BottomBarRoute.page, initial: true, guards: [AuthGuard()], children: [
           AutoRoute(path: 'home', page: HomeRouter.page, children: [
             AutoRoute(path: '', page: HomeRoute.page),
+            CustomRoute(path: 'place/:placeId', page: PlaceProfileRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
+            CustomRoute(path: 'dog/:dogId', page: DogProfileRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
+            CustomRoute(path: 'dog/edit', page: DogDetailsRoute.page, transitionsBuilder: TransitionsBuilders.noTransition)
           ]),
           AutoRoute(path: 'dogs', page: DogsRouter.page, children: [
             AutoRoute(path: '', page: DogsRoute.page),

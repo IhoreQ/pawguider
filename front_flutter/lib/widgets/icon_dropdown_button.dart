@@ -52,6 +52,14 @@ class _IconDropdownButtonState extends State<IconDropdownButton> {
             borderRadius: BorderRadius.circular(10.0),
             borderSide: const BorderSide(color: AppColor.primaryOrange)
         ),
+        errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: AppColor.error)
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: AppColor.error)
+        ),
         hintText: widget.labelText,
         hintStyle: AppTextStyle.mediumLight,
       ),

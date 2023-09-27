@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 
 import '../models/place.dart';
 import '../routes/router.dart';
+import 'overlay_inkwell.dart';
 
 class PlaceInfoBox extends StatelessWidget {
   const PlaceInfoBox({Key? key, required this.place}) : super(key: key);
@@ -61,15 +62,7 @@ class PlaceInfoBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )),
-              Positioned.fill(
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(10),
-                    onTap: () => context.router.push(PlaceProfileRoute(placeId: place.id)),
-                  ),
-                ),
-              )
+              OverlayInkwell(onTap: () => context.router.push(PlaceProfileRoute(placeId: place.id))),
             ],
           ),
           Stack(children: <Widget>[
@@ -148,16 +141,7 @@ class PlaceInfoBox extends StatelessWidget {
                 ],
               ),
             ),
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius:
-                  const BorderRadius.horizontal(right: Radius.circular(20.0)),
-                  onTap: () => context.router.push(PlaceProfileRoute(placeId: place.id)),
-                ),
-              ),
-            )
+            OverlayInkwell(onTap: () => context.router.push(PlaceProfileRoute(placeId: place.id))),
           ])
         ],
       ),

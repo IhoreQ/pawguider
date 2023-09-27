@@ -46,6 +46,14 @@ class CustomIconFormField extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
             borderSide: const BorderSide(color: AppColor.primaryOrange)
         ),
+        errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: AppColor.error)
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: AppColor.error)
+        ),
         hintText: hintText,
         hintStyle: AppTextStyle.mediumLight,
         prefixIcon: prefixIcon,

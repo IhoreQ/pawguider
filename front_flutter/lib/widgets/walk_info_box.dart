@@ -1,22 +1,23 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:front_flutter/models/dog/dog.dart';
-import 'package:front_flutter/styles.dart';
+import 'package:front_flutter/widgets/overlay_inkwell.dart';
 import 'package:gap/gap.dart';
 
+import '../models/walk.dart';
 import '../routes/router.dart';
-import 'overlay_inkwell.dart';
+import '../styles.dart';
 
-class DogInfoBox extends StatelessWidget {
-  const DogInfoBox({Key? key, required this.dog}) : super(key: key);
+class WalkInfoBox extends StatefulWidget {
+  const WalkInfoBox({super.key, required this.walk});
 
-  final Dog dog;
+  final Walk walk;
 
-  Icon getGenderIcon(bool gender) {
-    return Icon(gender ? Icons.male : Icons.female,
-        size: 20.0, color: AppColor.primaryOrange);
-  }
+  @override
+  State<WalkInfoBox> createState() => _WalkInfoBoxState();
+}
 
+class _WalkInfoBoxState extends State<WalkInfoBox> {
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -42,7 +43,7 @@ class DogInfoBox extends StatelessWidget {
             width: deviceWidth - imageSize - 2 * widthPadding,
             decoration: BoxDecoration(
                 borderRadius:
-                    const BorderRadius.horizontal(right: Radius.circular(20.0)),
+                const BorderRadius.horizontal(right: Radius.circular(20.0)),
                 boxShadow: [
                   AppShadow.infoBoxShadow,
                 ]),
@@ -60,13 +61,13 @@ class DogInfoBox extends StatelessWidget {
                   child: Container(
                     color: Colors.white,
                     child: Image.network(
-                      dog.photoUrl,
+                      widget.walk.place.photoUrl,
                       width: imageSize,
                       height: imageSize,
                       fit: BoxFit.cover,
                     ),
                   )),
-              OverlayInkwell(onTap: () => context.router.push(DogProfileRoute(dogId: dog.id))),
+              OverlayInkwell(onTap: () => context.router.push(PlaceProfileRoute(placeId: widget.walk.place.id))),
             ],
           ),
           Stack(children: <Widget>[
@@ -77,7 +78,7 @@ class DogInfoBox extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: AppColor.orangeAccent,
                 borderRadius:
-                    BorderRadius.horizontal(right: Radius.circular(20.0)),
+                BorderRadius.horizontal(right: Radius.circular(20.0)),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -87,11 +88,11 @@ class DogInfoBox extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        dog.name,
+                        widget.walk.place.name,
                         style: AppTextStyle.heading2,
                       ),
                       Text(
-                        dog.breed,
+                        widget.walk.place.street,
                         style: AppTextStyle.heading3,
                       ),
                     ],
@@ -101,48 +102,30 @@ class DogInfoBox extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                              decoration: BoxDecoration(
-                                  color: AppColor.backgroundOrange2,
-                                  borderRadius: BorderRadius.circular(50.0)),
-                              width: 30,
-                              height: 30,
-                              alignment: Alignment.center,
-                              child: getGenderIcon(dog.gender)),
-                          const Gap(3.0),
-                          Text(
-                            'Gender',
-                            style: AppTextStyle.regularOrange.copyWith(fontSize: 14.0)
-                          )
-                        ],
-                      ),
-                      const Gap(10.0),
-                      Row(
-                        children: [
-                          Container(
                             decoration: BoxDecoration(
-                              color: AppColor.backgroundOrange2,
-                              borderRadius: BorderRadius.circular(50.0),
-                            ),
+                                color: AppColor.backgroundOrange2,
+                                borderRadius: BorderRadius.circular(50.0)),
                             width: 30,
                             height: 30,
                             alignment: Alignment.center,
-                            child: Text("${dog.age}",
-                                style: AppTextStyle.mediumOrange.copyWith(fontSize: 14.0)
+                            child: const Icon(
+                              FluentSystemIcons.ic_fluent_timer_regular,
+                              color: AppColor.primaryOrange,
                             )
                           ),
                           const Gap(3.0),
                           Text(
-                            "Age",
-                            style: AppTextStyle.regularOrange.copyWith(fontSize: 14.0)
+                              widget.walk.getTime(),
+                              style: AppTextStyle.regularOrange.copyWith(fontSize: 14.0)
                           )
                         ],
-                      )
+                      ),
                     ],
                   )
                 ],
               ),
             ),
-            OverlayInkwell(onTap: () => context.router.push(DogProfileRoute(dogId: dog.id))),
+            OverlayInkwell(onTap: () => context.router.push(PlaceProfileRoute(placeId: widget.walk.place.id))),
           ])
         ],
       ),
