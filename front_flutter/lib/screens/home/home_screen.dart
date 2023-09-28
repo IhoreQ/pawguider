@@ -6,11 +6,13 @@ import 'package:front_flutter/widgets/favorite_place_box.dart';
 import 'package:front_flutter/widgets/walk_info_box.dart';
 import 'package:front_flutter/widgets/walk_partner_box.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/behavior.dart';
 import '../../models/dog/dog.dart';
 import '../../models/user.dart';
 import '../../models/walk.dart';
+import '../../providers/user_provider.dart';
 import '../../styles.dart';
 
 @RoutePage()
@@ -23,18 +25,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  late final User _user;
   late final Place _place;
-  late final Walk _walk;
+  late final Walk? _walk;
   late final Dog _dog;
+  late final UserProvider userProvider;
 
   @override
   void initState() {
     super.initState();
-    _user = User(1, 'Igor', 'Bobek', 'https://i.imgur.com/hLqHXi7.jpg');
 
     _place = Place(1, 'Kleparski wybieg', 'Park kleparski', '30-002', 'Kraków', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est.', 2, 5.0, 'https://lh6.googleusercontent.com/UdJXDyQXNwEtD91robiwnZPWjRcztSi1bZpWpmusPthVk32iD8nkGHtmaiWVI-VE4cCZrvUk9YQnBsdLgsRtMTmjH4GhtvWBkZ2nF-eZTVhei7_hYwvNb4oxsfqmypV0q70THeqGuThliKDEMpI7qhg');
-    _walk = Walk(1, _place, 0);
+    _walk = null;
+    userProvider = context.read<UserProvider>();
+    userProvider.fetchUser();
     final List<Behavior> exampleBehaviors = [Behavior(1, 'Friendly'), Behavior(6, 'Calm'), Behavior(12, 'Curious'), Behavior(10, 'Independent')];
     _dog = Dog('12', 'Ciapek', 'Jack Russel Terrier', true, 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10);
   }
@@ -64,17 +67,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Ready to walk,', style: AppTextStyle.semiBoldWhite.copyWith(fontSize: 18.0)),
-                          Text('${_user.firstName}?', style: AppTextStyle.boldWhite.copyWith(fontSize: 25.0),)
+                          Consumer<UserProvider>(builder: (context, userProvider, _) {
+                            return Text('${userProvider.user?.firstName}?', style: AppTextStyle.boldWhite.copyWith(fontSize: 25.0),);
+                          }),
                         ],
                       ),
                       PhysicalModel(
                         color: Colors.black,
                         shape: BoxShape.circle,
                         elevation: 10.0,
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(_user.photoUrl!),
-                          radius: 40.0,
-                        ),
+                        child: Consumer<UserProvider>(builder: (context, userProvider, _) {
+                          return CircleAvatar(
+                            backgroundImage: NetworkImage(userProvider.user!.photoUrl!),
+                            radius: 40.0,
+                          );
+                        }),
                       ),
                     ],
                   ),
@@ -144,15 +151,15 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
+                child: _walk != null ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('You\'re here', style: AppTextStyle.boldDark.copyWith(fontSize: 25.0)),
                     const Gap(10.0),
-                    WalkInfoBox(walk: _walk),
+                    WalkInfoBox(walk: _walk!),
                     const Gap(20.0),
                   ],
-                ),
+                ) : null,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),

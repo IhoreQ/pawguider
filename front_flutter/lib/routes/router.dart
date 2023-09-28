@@ -30,7 +30,7 @@ class AppRouter extends _$AppRouter {
     CustomRoute(path: '/login', page: LoginRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
     CustomRoute(path: '/register', page: RegisterRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
     CustomRoute(path: '/register-details', page: RegisterDetailsRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
-    AutoRoute(path: '/dashboard', page: BottomBarRoute.page, initial: true, guards: [AuthGuard()], children: [
+    AutoRoute(path: '/dashboard', page: BottomBarRoute.page, initial: true, children: [
           AutoRoute(path: 'home', page: HomeRouter.page, children: [
             AutoRoute(path: '', page: HomeRoute.page),
             CustomRoute(path: 'place/:placeId', page: PlaceProfileRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),

@@ -5,7 +5,9 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:front_flutter/routes/router.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/user_provider.dart';
 import '../styles.dart';
 
 @RoutePage(name: 'BottomBarRoute')

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:front_flutter/providers/dog_addition_form_provider.dart';
+import 'package:front_flutter/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:front_flutter/routes/router.dart';
 import 'styles.dart';
@@ -24,14 +24,14 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final providers = [
-      ChangeNotifierProvider(create: (context) =>  DogAdditionFormProvider()),
+      ChangeNotifierProvider(create: (context) =>  UserProvider()),
     ];
 
     return MultiProvider(
       providers: providers,
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        title: 'Bottom navbar with nested routing',
+        title: 'PawGuider',
         theme: ThemeData(
           textSelectionTheme: const TextSelectionThemeData(
             cursorColor: AppColor.primaryOrange,

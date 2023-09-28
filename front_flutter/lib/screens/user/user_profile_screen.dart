@@ -1,6 +1,8 @@
 import 'package:auto_route/annotations.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../styles.dart';
 
@@ -10,24 +12,20 @@ class UserProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    FluentSystemIcons.ic_fluent_settings_regular,
-                    size: 30,
-                    color: AppColor.primaryOrange,
-                  ),
-                )
-              ],
+            Consumer<UserProvider>(
+              builder: (context, userProvider, _) {
+                return Text(userProvider.user?.firstName ?? '');
+              },
             ),
-
+            ElevatedButton(onPressed: ()  {
+              var user = context.read<UserProvider>();
+              user.updateUser();
+            }, child: Text('klik')),
           ],
         ),
       ),

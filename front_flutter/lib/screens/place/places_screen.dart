@@ -23,7 +23,7 @@ class PlacesScreen extends StatelessWidget {
       body: ListView(
         children: [
           Container(
-            height: 90.0,
+            height: 80.0,
             clipBehavior: Clip.hardEdge,
             decoration: const BoxDecoration(
               color: AppColor.primaryOrange,
