@@ -31,6 +31,12 @@ abstract class AppTextStyle {
       color: Colors.white
   );
 
+  static TextStyle regularDark = GoogleFonts.montserrat(
+      fontWeight: FontWeight.w400,
+      fontSize: 16.0,
+      color: AppColor.darkText
+  );
+
   static TextStyle mediumWhite = GoogleFonts.montserrat(
       fontWeight: FontWeight.w500,
       fontSize: 16.0,
@@ -150,5 +156,9 @@ abstract class AppShadow {
 abstract class AppButtonStyle {
   static ButtonStyle orangeSplashColor = ButtonStyle(
     overlayColor: MaterialStateColor.resolveWith((states) => AppColor.backgroundOrange2),
+  );
+
+  static ButtonStyle lightSplashColor = ButtonStyle(
+    overlayColor: MaterialStateColor.resolveWith((states) => AppColor.lightGray.withOpacity(0.3)),
   );
 }

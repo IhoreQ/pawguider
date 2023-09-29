@@ -353,17 +353,14 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
         // TODO usunięcie psa
         Navigator.of(context, rootNavigator: true).pop();
         context.router.popUntilRoot();
-        // Zamknij dialog
       },
     );
     Widget cancelButton = TextButton(
       child: Text("Cancel", style: AppTextStyle.mediumOrange,),
       onPressed:  () {
-        // Zamknij dialog
         Navigator.of(context, rootNavigator: true).pop();
       },
     );
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       surfaceTintColor: Colors.white,
       title: Text("Delete your dog", style: AppTextStyle.semiBoldDark.copyWith(fontSize: 20.0)),
@@ -373,7 +370,6 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
         deleteButton,
       ],
     );
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {

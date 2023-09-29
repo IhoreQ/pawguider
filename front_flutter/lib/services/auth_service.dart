@@ -15,7 +15,7 @@ class AuthService {
       );
       return response.data;
     } on DioException catch (e) {
-      return e.response!.data;
+      return {'error': 'DioError occurred', 'details': e.toString()};
     }
   }
 }

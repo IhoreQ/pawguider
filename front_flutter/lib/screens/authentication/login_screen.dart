@@ -1,11 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:front_flutter/providers/loading_provider.dart';
 import 'package:front_flutter/services/auth_service.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/utilities/validator.dart';
+import 'package:front_flutter/widgets/dialogs/error_dialog.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/form_field/password_form_field.dart';
 import 'package:front_flutter/widgets/submit_button.dart';
@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  bool _error = false;
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       dynamic res = await _authService.login(_emailController.text, _passwordController.text);
 
-      if (res['ErrorCode'] == null) {
+      if (res['error'] == null) {
         String jwtToken = res['jwtToken'];
 
         if (jwtToken.isNotEmpty) {
@@ -130,10 +131,36 @@ class _LoginScreenState extends State<LoginScreen> {
         else {
           // TODO wyświetlenie błędu
           print('Wrong data');
+          loadingProvider.setLoading(false);
+          if (context.mounted) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return const ErrorDialog(
+                    title: 'Login error',
+                    content: 'You provided wrong email or password. Please try again.',
+                );
+              },
+            );
+          }
         }
       }
       else {
         print('Error');
+        loadingProvider.setLoading(false);
+
+        // TODO komunikat że brak połączenia z serwerem
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const ErrorDialog(
+                title: 'Connection timed out',
+                content: 'Unable to connect to PawGuider server.',
+              );
+            },
+          );
+        }
       }
     }
   }
