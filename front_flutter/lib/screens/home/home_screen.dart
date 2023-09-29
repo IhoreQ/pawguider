@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 
 import '../../models/behavior.dart';
 import '../../models/dog/dog.dart';
-import '../../models/user.dart';
 import '../../models/walk.dart';
 import '../../providers/user_provider.dart';
 import '../../styles.dart';
@@ -163,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
-                child: Text('You\'re walk partners', style: AppTextStyle.boldDark.copyWith(fontSize: 25.0)),
+                child: Text('You\'re walk partners', style: AppTextStyle.boldDark.copyWith(fontSize: 22.0)),
               ),
               const Gap(10.0),
               SingleChildScrollView(
@@ -200,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const Gap(10.0),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0),
-                child: Text('Favorite places', style: AppTextStyle.boldDark.copyWith(fontSize: 25.0)),
+                child: Text('Favorite places', style: AppTextStyle.boldDark.copyWith(fontSize: 22.0)),
               ),
               const Gap(10.0),
               SingleChildScrollView(

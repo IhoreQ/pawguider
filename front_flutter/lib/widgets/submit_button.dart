@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:front_flutter/providers/loading_provider.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+import 'package:provider/provider.dart';
 
 import '../styles.dart';
 
@@ -19,12 +22,23 @@ class SubmitButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(10.0),
           ),
           minimumSize: const Size.fromHeight(50.0),
+          maximumSize: const Size.fromHeight(50.0),
         ),
         onPressed: () => onPressed(),
-        child: Text(
-          label,
-          style: AppTextStyle.semiBoldWhite,
-        )
+        child: Consumer<LoadingProvider>(builder: (context, loadingProvider, _) {
+          return loadingProvider.isLoading ? const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.0),
+              child: LoadingIndicator(
+                indicatorType: Indicator.circleStrokeSpin,
+                colors: [Colors.white],
+                strokeWidth: 2,
+              )
+          )
+              : Text(
+            label,
+            style: AppTextStyle.semiBoldWhite,
+          );
+        }),
     );
   }
 }

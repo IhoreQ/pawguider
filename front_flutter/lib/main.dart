@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter/providers/loading_provider.dart';
 import 'package:front_flutter/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:front_flutter/routes/router.dart';
@@ -25,6 +26,7 @@ class App extends StatelessWidget {
 
     final providers = [
       ChangeNotifierProvider(create: (context) =>  UserProvider()),
+      ChangeNotifierProvider(create: (context) => LoadingProvider()),
     ];
 
     return MultiProvider(
