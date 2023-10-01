@@ -46,7 +46,13 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/api/v1/auth/authenticate", "/api/v1/auth/signup", "/api/v1/image/**")
+                                .requestMatchers(
+                                        "/api/v1/auth/authenticate",
+                                        "/api/v1/auth/signup",
+                                        "/api/v1/image/**",
+                                        "/api/v1/city/all",
+                                        "/api/v1/gender/all"
+                                )
                                 .permitAll()
                 )
                 .authorizeHttpRequests(

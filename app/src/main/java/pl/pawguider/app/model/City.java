@@ -1,5 +1,6 @@
 package pl.pawguider.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Collection;
@@ -7,6 +8,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "cities", schema = "public", catalog = "dogout")
 public class City {
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_city")

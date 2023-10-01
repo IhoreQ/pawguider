@@ -12,11 +12,17 @@ public class UserDetails {
     @Column(name = "id_user_details")
     private Long idUserDetails;
 
-    @Column
-    private String name;
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
 
     @Column
-    private String surname;
+    private String phone;
+
+    @Column(name = "photo_name")
+    private String photoName;
 
     @OneToOne(mappedBy = "details")
     private User user;
@@ -24,20 +30,25 @@ public class UserDetails {
     @JoinColumn(name = "id_city", referencedColumnName = "id_city", nullable = false)
     private City city;
 
+    @ManyToOne
+    @JoinColumn(name = "id_gender", referencedColumnName = "id_gender", nullable = false)
+    private Gender gender;
+
     public UserDetails() {
     }
 
-    public UserDetails(String name, String surname) {
-        this.name = name;
-        this.surname = surname;
+    public UserDetails(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.city = new City(1L);
+        this.gender = new Gender(1L);
     }
 
-    public UserDetails(Long idUserDetails, String name, String surname, User user, City city) {
-        this.idUserDetails = idUserDetails;
-        this.name = name;
-        this.surname = surname;
-        this.user = user;
+    public UserDetails(String firstName, String lastName, String phone, City city, Gender gender) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
         this.city = city;
+        this.gender = gender;
     }
 }

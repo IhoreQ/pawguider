@@ -19,7 +19,7 @@ public class CityController {
     }
 
     @GetMapping("/all")
-    public List<City> getALlPlaces() {
+    public List<City> getAllCities() {
         return cityService.getAllCities();
     }
 }
