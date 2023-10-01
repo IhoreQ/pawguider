@@ -3,14 +3,20 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter/services/city_service.dart';
+import 'package:front_flutter/services/gender_service.dart';
 import 'package:front_flutter/styles.dart';
+import 'package:front_flutter/widgets/common_loading_indicator.dart';
+import 'package:front_flutter/widgets/dialogs/error_dialog.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/icon_dropdown_button.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
+import '../../providers/register_details_provider.dart';
 import '../../routes/router.dart';
 import '../../utilities/image_getter.dart';
 import '../../widgets/submit_button.dart';
@@ -28,10 +34,16 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
   File? image;
 
   final _phoneController = TextEditingController();
-  final List<String> _cities = ['Kraków', 'Warszawa'];
   String? _selectCity;
-  final List<String> _genders = ['Male', 'Female'];
   String? _selectedGender;
+
+  final _genderService = GenderService();
+  final _cityService = CityService();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -125,48 +137,71 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
                         color: AppColor.lightText,
                       )),
                   const Gap(15.0),
-                  IconDropdownButton(
-                    dropdownValue: _selectedGender,
-                    valuesList: _genders,
-                    labelText: 'Gender',
-                    prefixIcon: const Icon(
-                        FluentSystemIcons.ic_fluent_people_team_regular,
-                        color: AppColor.lightText),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGender = value!;
-                      });
+                  FutureBuilder<List<String>>(
+                    future: _genderService.getAllGenders(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return IconDropdownButton(
+                          dropdownValue: _selectedGender,
+                          valuesList: snapshot.data!,
+                          labelText: 'Gender',
+                          validator: (value) {
+                            return value != null ? null : 'Choose a gender';
+                          },
+                          prefixIcon: const Icon(
+                              FluentSystemIcons.ic_fluent_people_team_regular,
+                              color: AppColor.lightText),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedGender = value!;
+                            });
+                          },
+                        );
+                      }
+
+                      return SizedBox(
+                        height: 48.0,
+                        child: snapshot.hasError ?
+                        Align(alignment: Alignment.center, child: Text('Unable to retrieve data. A timeout has occurred.', style: AppTextStyle.errorText,))
+                            : const CommonLoadingIndicator(color: AppColor.lightGray),
+                      );
                     },
                   ),
                   const Gap(15.0),
-                  IconDropdownButton(
-                    dropdownValue: _selectCity,
-                    valuesList: _cities,
-                    validator: (value) {
-                      return value != null ? null : 'Choose a city';
-                    },
-                    labelText: 'City',
-                    prefixIcon: const Icon(
-                        FluentSystemIcons.ic_fluent_city_regular,
-                        color: AppColor.lightText),
-                    onChanged: (value) {
-                      setState(() {
-                        _selectCity = value!;
-                      });
+                  FutureBuilder<List<String>>(
+                    future: _cityService.getAllCities(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return IconDropdownButton(
+                          dropdownValue: _selectCity,
+                          valuesList: snapshot.data!,
+                          validator: (value) {
+                            return value != null ? null : 'Choose a city';
+                          },
+                          labelText: 'City',
+                          prefixIcon: const Icon(
+                              FluentSystemIcons.ic_fluent_city_regular,
+                              color: AppColor.lightText),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectCity = value!;
+                            });
+                          },
+                        );
+                      }
+
+                      return SizedBox(
+                          height: 48.0,
+                          child: snapshot.hasError ?
+                          Align(alignment: Alignment.center, child: Text('Unable to retrieve data. A timeout has occurred.', style: AppTextStyle.errorText,))
+                          : const CommonLoadingIndicator(color: AppColor.lightGray),
+                      );
                     },
                   ),
                   const Gap(35.0),
                   SubmitButton(
                       label: 'Submit',
-                      onPressed: () {
-                        // TODO proces rejestracji dodatkowych danych
-                        if (_formKey.currentState!.validate()) {
-                          print('register');
-                          print(_selectedGender);
-                          print(_selectCity);
-                          context.router.navigate(LoginRoute(onResult: (result) {}));
-                        }
-                      }
+                      onPressed: register,
                   ),
                   const Gap(10.0),
                 ],
@@ -184,6 +219,14 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
     if (pickedFile != null) {
       image = File(pickedFile.path);
       setState(() {});
+    }
+  }
+
+  Future<void> register() async {
+    if (_formKey.currentState!.validate()) {
+      var registerProvider = context.read<RegisterDetailsProvider>();
+      registerProvider.addAdditionalInfo(_phoneController.text, _selectedGender!, _selectedGender!);
+      //context.router.navigate(LoginRoute(onResult: (result) {}));
     }
   }
 }

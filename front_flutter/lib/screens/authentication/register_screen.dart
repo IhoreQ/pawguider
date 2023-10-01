@@ -2,11 +2,13 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter/providers/register_details_provider.dart';
 import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/form_field/password_form_field.dart';
 import 'package:front_flutter/widgets/submit_button.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
 import '../../styles.dart';
 import '../../utilities/validator.dart';
@@ -115,13 +117,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const Gap(50.0),
                     SubmitButton(
                         label: 'Sign up',
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            print('register');
-                            // TODO proces rejestracji
-                            context.router.navigate(const RegisterDetailsRoute());
-                          }
-                        }
+                        onPressed: register,
                     ),
                     const Gap(10.0),
                     Row(
@@ -151,5 +147,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  void register() {
+    if (_formKey.currentState!.validate()) {
+      var registerProvider = context.read<RegisterDetailsProvider>();
+      registerProvider.addBasicInfo(_firstNameController.text, _lastNameController.text, _emailController.text, _passwordController.text);
+      context.router.navigate(const RegisterDetailsRoute());
+    }
   }
 }

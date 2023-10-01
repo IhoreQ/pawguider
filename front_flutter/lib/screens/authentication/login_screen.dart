@@ -120,7 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
         String jwtToken = res['jwtToken'];
 
         if (jwtToken.isNotEmpty) {
-          // TODO dodanie do sharedpreferences tokena
           final SharedPreferences preferences = await SharedPreferences.getInstance();
           await preferences.setString('jwtToken', jwtToken);
           // TODO pobranie info o użytkowniku
@@ -129,7 +128,6 @@ class _LoginScreenState extends State<LoginScreen> {
           widget.onResult.call(true);
         }
         else {
-          // TODO wyświetlenie błędu
           print('Wrong data');
           loadingProvider.setLoading(false);
           if (context.mounted) {
@@ -148,8 +146,6 @@ class _LoginScreenState extends State<LoginScreen> {
       else {
         print('Error');
         loadingProvider.setLoading(false);
-
-        // TODO komunikat że brak połączenia z serwerem
         if (context.mounted) {
           showDialog(
             context: context,

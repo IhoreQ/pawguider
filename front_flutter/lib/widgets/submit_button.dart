@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/loading_provider.dart';
+import 'package:front_flutter/widgets/common_loading_indicator.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -28,11 +29,7 @@ class SubmitButton extends StatelessWidget {
         child: Consumer<LoadingProvider>(builder: (context, loadingProvider, _) {
           return loadingProvider.isLoading ? const Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0),
-              child: LoadingIndicator(
-                indicatorType: Indicator.circleStrokeSpin,
-                colors: [Colors.white],
-                strokeWidth: 2,
-              )
+              child: CommonLoadingIndicator(color: Colors.white,),
           )
               : Text(
             label,
