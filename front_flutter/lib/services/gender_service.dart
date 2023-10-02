@@ -11,7 +11,7 @@ class GenderService {
       List<dynamic> data = response.data;
       List<String> genderNames = data.map((item) => item['name'].toString()).toList();
       return genderNames;
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     }
   }

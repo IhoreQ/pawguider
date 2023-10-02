@@ -1,24 +1,20 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/routes/router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:front_flutter/services/auth_service.dart';
 
 class AuthGuard extends AutoRouteGuard {
+
   @override
   Future<void> onNavigation(NavigationResolver resolver, StackRouter router) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? jwtToken = preferences.getString('jwtToken');
+    final authService = AuthService();
 
-    if (jwtToken != null) {
+    if (await authService.isAuthenticated()) {
       resolver.next(true);
       router.removeLast();
     }
     else {
-      router.push(LoginRoute(onResult: (result) {
-        if (result == true) {
-          resolver.next(true);
-          router.removeLast();
-        }
-      }));
+      router.push(const LoginRoute());
     }
   }
 }

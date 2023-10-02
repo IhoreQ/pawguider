@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:front_flutter/providers/register_details_provider.dart';
 import 'package:front_flutter/routes/router.dart';
+import 'package:front_flutter/services/auth_service.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/form_field/password_form_field.dart';
 import 'package:front_flutter/widgets/submit_button.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/loading_provider.dart';
 import '../../styles.dart';
 import '../../utilities/validator.dart';
+import '../../widgets/dialogs/error_dialog.dart';
 
 @RoutePage()
 class RegisterScreen extends StatefulWidget {
@@ -28,6 +31,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _retypedPasswordController = TextEditingController();
+
+  final _authService = AuthService();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -129,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         TextButton(
                             onPressed: () {
-                              context.router.navigate(LoginRoute(onResult: (result) {}));
+                              context.router.navigate(const LoginRoute());
                             },
                             style: AppButtonStyle.orangeSplashColor,
                             child: Text(
@@ -149,11 +154,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void register() {
+  void register() async {
     if (_formKey.currentState!.validate()) {
-      var registerProvider = context.read<RegisterDetailsProvider>();
-      registerProvider.addBasicInfo(_firstNameController.text, _lastNameController.text, _emailController.text, _passwordController.text);
-      context.router.navigate(const RegisterDetailsRoute());
+      final loadingProvider = context.read<LoadingProvider>();
+      loadingProvider.setLoading(true);
+
+      // TODO sprawdzenie czy jest taki użytkownik
+      bool userExists = await _authService.userExists(_emailController.text);
+
+      if (context.mounted) {
+        if (userExists) {
+          loadingProvider.setLoading(false);
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return const ErrorDialog(
+                title: 'Register error',
+                content: 'User with this email already exists.',
+              );
+            },
+          );
+        } else {
+            var registerProvider = context.read<RegisterDetailsProvider>();
+            registerProvider.addBasicInfo(_firstNameController.text, _lastNameController.text, _emailController.text, _passwordController.text);
+            loadingProvider.setLoading(false);
+            context.router.navigate(const RegisterDetailsRoute());
+        }
+      }
+
     }
   }
 }

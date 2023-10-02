@@ -1,8 +1,11 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/user_provider.dart';
+import 'package:front_flutter/routes/router.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../styles.dart';
 
@@ -22,9 +25,12 @@ class UserProfileScreen extends StatelessWidget {
                 return Text(userProvider.user?.firstName ?? '');
               },
             ),
-            ElevatedButton(onPressed: ()  {
-              var user = context.read<UserProvider>();
-              user.updateUser();
+            ElevatedButton(onPressed: () async {
+              SharedPreferences preferences = await SharedPreferences.getInstance();
+              preferences.remove('jwtToken');
+              if (context.mounted) {
+                context.router.pushAndPopUntil(const LoginRoute(), predicate:  (route) => false);
+              }
             }, child: Text('klik')),
           ],
         ),

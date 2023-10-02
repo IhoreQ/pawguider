@@ -5,8 +5,9 @@ import '../../styles.dart';
 class ErrorDialog extends StatelessWidget {
   final String title;
   final String content;
+  final Function()? onPressed;
 
-  const ErrorDialog({super.key, required this.title, required this.content});
+  const ErrorDialog({super.key, required this.title, required this.content, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +20,10 @@ class ErrorDialog extends StatelessWidget {
       actions: [
         TextButton(
           style: AppButtonStyle.lightSplashColor,
-          child: const Text('OK', style: TextStyle(color: Colors.black),),
-          onPressed: () {
+          onPressed: onPressed ?? () {
             Navigator.of(context).pop();
           },
+          child: const Text('OK', style: TextStyle(color: Colors.black),),
         ),
       ],
     );;

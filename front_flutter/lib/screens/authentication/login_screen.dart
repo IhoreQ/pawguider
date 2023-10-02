@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/loading_provider.dart';
+import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/services/auth_service.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/utilities/validator.dart';
@@ -15,8 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class LoginScreen extends StatefulWidget {
-  final Function(bool?) onResult;
-  const LoginScreen({super.key, required this.onResult});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -30,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  bool _error = false;
 
   @override
   Widget build(BuildContext context) {
@@ -122,10 +121,10 @@ class _LoginScreenState extends State<LoginScreen> {
         if (jwtToken.isNotEmpty) {
           final SharedPreferences preferences = await SharedPreferences.getInstance();
           await preferences.setString('jwtToken', jwtToken);
-          // TODO pobranie info o użytkowniku
-
           loadingProvider.setLoading(false);
-          widget.onResult.call(true);
+          if (context.mounted) {
+            context.router.push(const HomeRoute());
+          }
         }
         else {
           print('Wrong data');
@@ -144,7 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
       else {
-        print('Error');
         loadingProvider.setLoading(false);
         if (context.mounted) {
           showDialog(

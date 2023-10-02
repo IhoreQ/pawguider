@@ -11,7 +11,7 @@ class CityService {
       List<dynamic> data = response.data;
       List<String> cities = data.map((item) => item['name'].toString()).toList();
       return cities;
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     }
   }

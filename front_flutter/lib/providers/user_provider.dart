@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:front_flutter/models/user.dart';
+import 'package:front_flutter/services/user_service.dart';
+import 'package:front_flutter/utilities/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
   User? _user;
@@ -7,12 +10,9 @@ class UserProvider extends ChangeNotifier {
   User? get user => _user;
 
 
-  void fetchUser() {
-    _user = User(1, 'Tytus', 'Bomba', 'https://i.imgur.com/hLqHXi7.jpg');
-  }
-
-  void updateUser() {
-    _user = User(1, 'Igor', 'Bomba', 'https://i.imgur.com/hLqHXi7.jpg');
+  Future<void> fetchCurrentUser() async {
+    dynamic res = await UserService().getCurrentUser();
+    _user = User(res['firstName'], res['lastName'], Constants.imageServerUrl + res['photoName']);
     notifyListeners();
   }
 
