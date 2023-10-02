@@ -4,7 +4,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
+import pl.pawguider.app.controller.dto.response.CurrentUserResponse;
 import pl.pawguider.app.model.User;
+import pl.pawguider.app.model.UserDetails;
 import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.UserService;
 
@@ -46,10 +48,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<String> getCurrentUser(@RequestHeader("Authorization") String header) {
+    public ResponseEntity<CurrentUserResponse> getCurrentUser(@RequestHeader("Authorization") String header) {
         String email = jwtService.extractEmailFromHeader(header);
         User user = userService.getUserByEmail(email);
+        CurrentUserResponse response = CurrentUserResponse.getResponse(user.getDetails());
 
-        return ResponseEntity.ok(user.getPassword());
+        return ResponseEntity.ok(response);
     }
 }

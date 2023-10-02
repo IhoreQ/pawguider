@@ -99,4 +99,8 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public UserDetails getDetails() {
+        return details;
+    }
 }

@@ -7,12 +7,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.LoginRequest;
 import pl.pawguider.app.controller.dto.request.UserAddRequest;
+import pl.pawguider.app.controller.dto.request.UserExistsRequest;
 import pl.pawguider.app.controller.dto.response.JwtTokenResponse;
 import pl.pawguider.app.service.AuthService;
 import pl.pawguider.app.service.JwtService;
@@ -51,12 +49,21 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserAddRequest request) {
 
-        if (authService.userExists(request)) {
-            return new ResponseEntity<>(HttpStatus.OK);
+        if (authService.userExists(request.email())) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
         authService.addUser(request);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/user-exists")
+    public ResponseEntity<?> userExists(@RequestBody UserExistsRequest request) {
+        if (authService.userExists(request.email())) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

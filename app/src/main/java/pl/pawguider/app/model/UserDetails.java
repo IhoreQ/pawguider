@@ -44,11 +44,12 @@ public class UserDetails {
         this.gender = new Gender(1L);
     }
 
-    public UserDetails(String firstName, String lastName, String phone, City city, Gender gender) {
+    public UserDetails(String firstName, String lastName, String phone, City city, Gender gender, String photoName) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
         this.city = city;
         this.gender = gender;
+        this.photoName = photoName;
     }
 }
