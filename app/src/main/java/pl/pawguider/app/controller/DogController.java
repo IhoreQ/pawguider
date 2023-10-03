@@ -52,10 +52,13 @@ public class DogController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDog(@PathVariable Long id) {
+    public ResponseEntity<?> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+        String email = jwtService.extractEmailFromHeader(header);
+        User user = userService.getUserByEmail(email);
+
         Dog dog = dogService.getDogById(id);
         // TODO ErrorResponse z treścią błędu
-        DogInfoResponse response = DogInfoResponse.getResponse(dog);
+        DogInfoResponse response = DogInfoResponse.getResponse(user, dog);
         return ResponseEntity.ok(response);
     }
 

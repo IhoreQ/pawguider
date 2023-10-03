@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.WalkStartRequest;
+import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
 import pl.pawguider.app.controller.dto.response.UserActiveWalkResponse;
 import pl.pawguider.app.model.ActiveWalk;
@@ -63,10 +64,10 @@ public class WalkController {
     }
 
     @GetMapping("/{placeId}")
-    public List<DogInfoResponse> getAllDogsFromPlace(@PathVariable Long placeId) {
+    public List<DogInfoBoxResponse> getAllDogsFromPlace(@PathVariable Long placeId) {
         List<Dog> dogs = walkService.getDogsFromPlace(placeId);
         return dogs.stream()
-                .map(DogInfoResponse::getResponse)
+                .map(DogInfoBoxResponse::getResponse)
                 .toList();
     }
 

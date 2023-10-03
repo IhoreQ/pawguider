@@ -29,6 +29,9 @@ public class Place {
     @JoinColumn(name = "id_city", referencedColumnName = "id_city", nullable = false)
     private City city;
 
+    @OneToMany(mappedBy = "place")
+    private Collection<PlaceLike> likes;
+
     public Place() {
     }
 

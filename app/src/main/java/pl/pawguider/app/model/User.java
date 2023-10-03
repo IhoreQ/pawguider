@@ -1,5 +1,6 @@
 package pl.pawguider.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -37,6 +38,14 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_user_details", referencedColumnName = "id_user_details", nullable = false)
     private UserDetails details;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Collection<DogLike> dogsLikes;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Collection<PlaceLike> placesLikes;
 
     public User() {
     }

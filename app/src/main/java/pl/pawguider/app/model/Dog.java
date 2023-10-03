@@ -2,9 +2,13 @@ package pl.pawguider.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "dogs", schema = "public", catalog = "dogout")
 public class Dog {
@@ -40,28 +44,18 @@ public class Dog {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "dog")
     private Collection<DogsBehaviors> dogsBehaviors;
 
-    public Dog() {
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy = "dog")
+    private Collection<DogLike> dogsLikes;
 
-    public Dog(String name, int age, Gender gender, String description, DogBreed breed, String photo, User owner) {
+    public Dog(String name, int age, Gender gender, String description, DogBreed breed, String photo, User user) {
         this.name = name;
-        this.age = age;
         this.gender = gender;
-        this.description = description;
-        this.breed = breed;
-        this.photo = photo;
-        this.owner = owner;
-    }
-
-    public Dog(Long idDog, String name, int age, Gender gender, String description, String photo, DogBreed breed, User owner) {
-        this.idDog = idDog;
-        this.name = name;
         this.age = age;
-        this.gender = gender;
         this.description = description;
         this.photo = photo;
         this.breed = breed;
-        this.owner = owner;
+        this.owner = user;
     }
 
     public String getName() {
@@ -98,5 +92,9 @@ public class Dog {
 
     public Collection<DogsBehaviors> getDogsBehaviors() {
         return dogsBehaviors;
+    }
+
+    public Collection<DogLike> getDogsLikes() {
+        return dogsLikes;
     }
 }
