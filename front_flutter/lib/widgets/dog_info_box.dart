@@ -12,8 +12,8 @@ class DogInfoBox extends StatelessWidget {
 
   final Dog dog;
 
-  Icon getGenderIcon(bool gender) {
-    return Icon(gender ? Icons.male : Icons.female,
+  Icon getGenderIcon(String gender) {
+    return Icon(gender == 'Male' ? Icons.male : Icons.female,
         size: 20.0, color: AppColor.primaryOrange);
   }
 

@@ -70,11 +70,9 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     DogsRoute.name: (routeData) {
-      final args =
-          routeData.argsAs<DogsRouteArgs>(orElse: () => const DogsRouteArgs());
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: DogsScreen(key: args.key),
+        child: const DogsScreen(),
       );
     },
     DogDetailsRoute.name: (routeData) {
@@ -91,8 +89,7 @@ abstract class _$AppRouter extends RootStackRouter {
     DogProfileRoute.name: (routeData) {
       final pathParams = routeData.inheritedPathParams;
       final args = routeData.argsAs<DogProfileRouteArgs>(
-          orElse: () =>
-              DogProfileRouteArgs(dogId: pathParams.getString('dogId')));
+          orElse: () => DogProfileRouteArgs(dogId: pathParams.getInt('dogId')));
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: DogProfileScreen(
@@ -271,30 +268,16 @@ class BottomBarRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [DogsScreen]
-class DogsRoute extends PageRouteInfo<DogsRouteArgs> {
-  DogsRoute({
-    Key? key,
-    List<PageRouteInfo>? children,
-  }) : super(
+class DogsRoute extends PageRouteInfo<void> {
+  const DogsRoute({List<PageRouteInfo>? children})
+      : super(
           DogsRoute.name,
-          args: DogsRouteArgs(key: key),
           initialChildren: children,
         );
 
   static const String name = 'DogsRoute';
 
-  static const PageInfo<DogsRouteArgs> page = PageInfo<DogsRouteArgs>(name);
-}
-
-class DogsRouteArgs {
-  const DogsRouteArgs({this.key});
-
-  final Key? key;
-
-  @override
-  String toString() {
-    return 'DogsRouteArgs{key: $key}';
-  }
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
@@ -340,7 +323,7 @@ class DogDetailsRouteArgs {
 class DogProfileRoute extends PageRouteInfo<DogProfileRouteArgs> {
   DogProfileRoute({
     Key? key,
-    required String dogId,
+    required int dogId,
     List<PageRouteInfo>? children,
   }) : super(
           DogProfileRoute.name,
@@ -366,7 +349,7 @@ class DogProfileRouteArgs {
 
   final Key? key;
 
-  final String dogId;
+  final int dogId;
 
   @override
   String toString() {

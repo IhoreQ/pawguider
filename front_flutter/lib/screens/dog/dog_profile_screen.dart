@@ -17,7 +17,7 @@ class DogProfileScreen extends StatefulWidget {
       {Key? key, @PathParam() required this.dogId})
       : super(key: key);
 
-  final String dogId;
+  final int dogId;
 
   @override
   State<DogProfileScreen> createState() => _DogProfileScreenState();
@@ -30,8 +30,8 @@ class _DogProfileScreenState extends State<DogProfileScreen> {
   @override
   void initState() {
     final List<Behavior> exampleBehaviors = [Behavior(1, 'Friendly'), Behavior(6, 'Calm'), Behavior(12, 'Curious'), Behavior(10, 'Independent')];
-    Dog exampleDog = Dog('12', 'Ciapek', 'Jack Russel Terrier', true, 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10);
-    Dog exampleDog2 = Dog('13', 'Binia', 'Mongrel', false, 2, 'https://www.pedigree.pl/cdn-cgi/image/width=520,format=auto,q=90/sites/g/files/fnmzdf4096/files/2023-01/jack-russell-terrier_1640009953951.png', 'Small', '', 10, exampleBehaviors, 11);
+    Dog exampleDog = Dog(48, 'Ciapek', 'Jack Russel Terrier', 'Male', 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10);
+    Dog exampleDog2 = Dog(13, 'Binia', 'Mongrel', 'Female', 2, 'https://www.pedigree.pl/cdn-cgi/image/width=520,format=auto,q=90/sites/g/files/fnmzdf4096/files/2023-01/jack-russell-terrier_1640009953951.png', 'Small', '', 10, exampleBehaviors, 11);
     List<Dog> dogs = [exampleDog, exampleDog2];
 
     dog = dogs.firstWhere((element) => element.id == widget.dogId);
@@ -272,7 +272,7 @@ class DogContentPage extends StatelessWidget {
               children: [
                 TwoElementsColumn(
                     topText: 'Gender',
-                    bottomText: dog.gender ? 'Male' : 'Female'),
+                    bottomText: dog.gender),
                 const CustomVerticalDivider(height: 20.0),
                 TwoElementsColumn(topText: 'Age', bottomText: '${dog.age} yo.'),
                 const CustomVerticalDivider(height: 20.0),
@@ -286,7 +286,7 @@ class DogContentPage extends StatelessWidget {
             Wrap(
               spacing: 10.0,
               runSpacing: 10.0,
-              children: dog.behaviors
+              children: dog.behaviors!
                   .map((behavior) => BehaviorBox(label: behavior.name))
                   .toList(),
             ),
@@ -294,7 +294,7 @@ class DogContentPage extends StatelessWidget {
             Text('About dog',
                 style: AppTextStyle.heading2.copyWith(fontSize: 20.0)),
             const Gap(10.0),
-            Text(dog.description,
+            Text(dog.description!,
                 style: AppTextStyle.mediumLight.copyWith(fontSize: 14.0)),
             const Gap(20.0),
           ],

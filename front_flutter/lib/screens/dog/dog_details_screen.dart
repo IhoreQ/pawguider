@@ -11,8 +11,6 @@ import 'package:front_flutter/widgets/selectable_behavior_box.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:front_flutter/utilities/extensions.dart';
 
 import '../../models/behavior.dart';
 import '../../models/dog/dog.dart';
@@ -57,13 +55,10 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     if (widget.dog != null) {
       _nameController.text = widget.dog!.name;
       _ageController.text = '${widget.dog!.age}';
-      _descriptionController.text = widget.dog!.description;
-      _selectedGender = _genders.firstWhere((element) {
-        String dogGender = widget.dog!.gender ? 'Male' : 'Female';
-        return element == dogGender;
-      });
+      _descriptionController.text = widget.dog!.description!;
+      _selectedGender = widget.dog!.gender;
       _selectedBreed = _breeds.firstWhere((element) => element == widget.dog!.breed);
-      _selectedBehaviors = Dog.clone(widget.dog!).behaviors;
+      _selectedBehaviors = Dog.clone(widget.dog!).behaviors!;
     }
   }
 

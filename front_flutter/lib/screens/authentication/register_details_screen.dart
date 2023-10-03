@@ -44,11 +44,6 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
 
   bool buttonPressed = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   final _formKey = GlobalKey<FormState>();
 
   @override

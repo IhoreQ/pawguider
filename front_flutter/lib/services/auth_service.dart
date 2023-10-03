@@ -2,8 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:front_flutter/dio/dio_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../providers/register_details_provider.dart';
-
 class AuthService {
   final Dio _dio = DioConfig.createDio();
 
@@ -61,4 +59,6 @@ class AuthService {
 
     return jwtToken;
   }
+
+  // TODO refresh token
 }

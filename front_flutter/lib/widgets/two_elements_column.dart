@@ -5,7 +5,7 @@ class TwoElementsColumn extends StatelessWidget {
   const TwoElementsColumn({Key? key, required this.topText, required this.bottomText}) : super(key: key);
 
   final String topText;
-  final String bottomText;
+  final String? bottomText;
 
 
   @override
@@ -16,7 +16,7 @@ class TwoElementsColumn extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(topText, style: AppTextStyle.heading2),
-          Text(bottomText, style: AppTextStyle.mediumLight)
+          Text(bottomText!, style: AppTextStyle.mediumLight)
         ],
       ),
     );
