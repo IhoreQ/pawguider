@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public record DogAddRequest(String name,
                             int age,
                             Long breedId,
-                            boolean gender,
+                            String gender,
                             String description) {
     @JsonCreator
     public DogAddRequest {

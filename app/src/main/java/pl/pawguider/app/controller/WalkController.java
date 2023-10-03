@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.WalkStartRequest;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
 import pl.pawguider.app.controller.dto.response.UserActiveWalkResponse;
-import pl.pawguider.app.controller.dto.response.WalkProblemResponse;
 import pl.pawguider.app.model.ActiveWalk;
 import pl.pawguider.app.model.Dog;
 import pl.pawguider.app.model.Place;
@@ -34,18 +33,10 @@ public class WalkController {
     }
 
     @PostMapping
-    public ResponseEntity<?> goForAWalk(@RequestHeader("Authorization") String header, @RequestBody WalkStartRequest request) throws Exception {
+    public ResponseEntity<?> goForAWalk(@RequestHeader("Authorization") String header, @RequestBody WalkStartRequest request) {
 
         String email = jwtService.extractEmailFromHeader(header);
         User user = userService.getUserByEmail(email);
-
-        if (!user.hasDog()) {
-            return ResponseEntity.ok(new WalkProblemResponse("DOG"));
-        }
-
-        if (!user.getActiveWalks().isEmpty()) {
-            return ResponseEntity.ok(new WalkProblemResponse("WALK"));
-        }
 
         ActiveWalk activeWalk = new ActiveWalk(request.timeOfAWalk(), LocalTime.now(), new Place(request.placeId()), user);
 

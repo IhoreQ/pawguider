@@ -1,6 +1,9 @@
 package pl.pawguider.app.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
+import java.util.Collection;
 
 @Entity
 @Table(name = "dogs", schema = "public", catalog = "dogout")
@@ -17,9 +20,6 @@ public class Dog {
     private int age;
 
     @Column
-    private boolean gender;
-
-    @Column
     private String description;
 
     @Column
@@ -32,10 +32,18 @@ public class Dog {
     @JoinColumn(name = "id_user", referencedColumnName = "id_user", nullable = false)
     private User owner;
 
+    @ManyToOne
+    @JoinColumn(name = "id_gender", referencedColumnName = "id_gender", nullable = false)
+    private Gender gender;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "dog")
+    private Collection<DogsBehaviors> dogsBehaviors;
+
     public Dog() {
     }
 
-    public Dog(String name, int age, boolean gender, String description, DogBreed breed, String photo, User owner) {
+    public Dog(String name, int age, Gender gender, String description, DogBreed breed, String photo, User owner) {
         this.name = name;
         this.age = age;
         this.gender = gender;
@@ -45,7 +53,7 @@ public class Dog {
         this.owner = owner;
     }
 
-    public Dog(Long idDog, String name, int age, boolean gender, String description, String photo, DogBreed breed, User owner) {
+    public Dog(Long idDog, String name, int age, Gender gender, String description, String photo, DogBreed breed, User owner) {
         this.idDog = idDog;
         this.name = name;
         this.age = age;
@@ -64,7 +72,7 @@ public class Dog {
         return age;
     }
 
-    public boolean getGender() {
+    public Gender getGender() {
         return gender;
     }
 
@@ -82,5 +90,13 @@ public class Dog {
 
     public User getOwner() {
         return owner;
+    }
+
+    public Long getIdDog() {
+        return idDog;
+    }
+
+    public Collection<DogsBehaviors> getDogsBehaviors() {
+        return dogsBehaviors;
     }
 }

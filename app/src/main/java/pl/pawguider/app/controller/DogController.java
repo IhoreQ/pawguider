@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.DogAddRequest;
 import pl.pawguider.app.controller.dto.response.DogBreedResponse;
+import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
 import pl.pawguider.app.model.ActiveWalk;
 import pl.pawguider.app.model.Dog;
@@ -15,6 +16,7 @@ import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.UserService;
 import pl.pawguider.app.service.WalkService;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -40,8 +42,6 @@ public class DogController {
         String email = jwtService.extractEmailFromHeader(header);
 
         User user = userService.getUserByEmail(email);
-        if (user.hasDog())
-            throw new Exception("User already has a dog!");
 
         boolean isAdded = dogService.addDog(user, dogAddRequest, photo);
 
@@ -51,19 +51,22 @@ public class DogController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<?> getDogInfo(@RequestHeader("Authorization") String header) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDog(@PathVariable Long id) {
+        Dog dog = dogService.getDogById(id);
+        // TODO ErrorResponse z treścią błędu
+        DogInfoResponse response = DogInfoResponse.getResponse(dog);
+        return ResponseEntity.ok(response);
+    }
 
+    @GetMapping("/owned")
+    public List<DogInfoBoxResponse> getCurrentUserDogs(@RequestHeader("Authorization") String header) {
         String email = jwtService.extractEmailFromHeader(header);
 
         User user = userService.getUserByEmail(email);
-        if (!user.hasDog())
-            return ResponseEntity.ok(false);
+        List<Dog> dogs  = user.getDogs().stream().toList();
 
-        Dog dog = dogService.getDogInfo(user);
-        DogInfoResponse response = DogInfoResponse.getResponse(dog);
-
-        return ResponseEntity.ok(response);
+        return dogs.stream().map(DogInfoBoxResponse::getResponse).toList();
     }
 
     @DeleteMapping

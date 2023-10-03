@@ -25,12 +25,6 @@ public class UserService {
         return user.orElse(null);
     }
 
-    public void changeHasDogState(User user) {
-        boolean actualState = user.hasDog();
-        user.setHasDog(!actualState);
-        userRepository.save(user);
-    }
-
     public void saveUser(User user) {
         userRepository.save(user);
     }

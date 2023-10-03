@@ -24,6 +24,10 @@ public class Gender {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "gender")
     private Collection<UserDetails> usersDetails;
 
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "gender")
+    private Collection<Dog> dogs;
+
     public Gender() {
     }
 

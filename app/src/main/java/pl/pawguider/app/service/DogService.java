@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import pl.pawguider.app.controller.dto.request.DogAddRequest;
 import pl.pawguider.app.model.Dog;
 import pl.pawguider.app.model.DogBreed;
+import pl.pawguider.app.model.Gender;
 import pl.pawguider.app.model.User;
 import pl.pawguider.app.repository.DogBreedRepository;
 import pl.pawguider.app.repository.DogRepository;
@@ -26,6 +27,11 @@ public class DogService {
         this.dogBreedRepository = dogBreedRepository;
     }
 
+    public Dog getDogById(Long id) {
+        Optional<Dog> dog = dogRepository.findById(id);
+        return dog.orElse(null);
+    }
+
     public Dog getDogInfo(User user) {
         Optional<Dog> dog = dogRepository.findByOwner(user);
         return dog.orElse(null);
@@ -33,15 +39,11 @@ public class DogService {
 
     public boolean deleteDog(User user) {
 
-        if (!user.hasDog())
-            return false;
-
         Optional<Dog> foundDog = dogRepository.findByOwner(user);
 
         if (foundDog.isPresent()) {
             Dog dog = foundDog.get();
             imageService.deleteImage(dog.getPhoto());
-            userService.changeHasDogState(user);
             dogRepository.delete(dog);
 
             return true;
@@ -56,10 +58,9 @@ public class DogService {
 
         if (foundBreed.isPresent()) {
             DogBreed breed = foundBreed.get();
-            Dog dog = new Dog(dogAddRequest.name(), dogAddRequest.age(), dogAddRequest.gender(), dogAddRequest.description(), breed, photo, user);
+            Dog dog = new Dog(dogAddRequest.name(), dogAddRequest.age(), new Gender(dogAddRequest.gender()), dogAddRequest.description(), breed, photo, user);
 
             dogRepository.save(dog);
-            userService.changeHasDogState(user);
 
             return true;
         }

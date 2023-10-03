@@ -24,8 +24,6 @@ public class User {
     @Column(name = "created_at")
     private Date createdAt;
 
-    @Column(name = "has_dog")
-    private boolean hasDog;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Collection<ActiveWalk> activeWalks;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
@@ -49,18 +47,16 @@ public class User {
 
     public User(String email, UserDetails details) {
         this.email = email;
-        this.hasDog = false;
         this.createdAt = new Date(System.currentTimeMillis());
         this.role = new Role(1L);
         this.details = details;
     }
 
-    public User(Long idUser, String email, String password, Date createdAt, boolean hasDog, Collection<ActiveWalk> activeWalks, Collection<Dog> dogs, Collection<NewPlaceIdea> newPlacesIdeas, Role role, UserDetails details) {
+    public User(Long idUser, String email, String password, Date createdAt, Collection<ActiveWalk> activeWalks, Collection<Dog> dogs, Collection<NewPlaceIdea> newPlacesIdeas, Role role, UserDetails details) {
         this.idUser = idUser;
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
-        this.hasDog = hasDog;
         this.activeWalks = activeWalks;
         this.dogs = dogs;
         this.newPlacesIdeas = newPlacesIdeas;
@@ -74,14 +70,6 @@ public class User {
 
     public String getPassword() {
         return password;
-    }
-
-    public boolean hasDog() {
-        return hasDog;
-    }
-
-    public void setHasDog(boolean hasDog) {
-        this.hasDog = hasDog;
     }
 
     public Collection<ActiveWalk> getActiveWalks() {
@@ -102,5 +90,9 @@ public class User {
 
     public UserDetails getDetails() {
         return details;
+    }
+
+    public Long getIdUser() {
+        return idUser;
     }
 }
