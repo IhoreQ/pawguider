@@ -12,15 +12,15 @@ class Dog {
   int? _likes;
   List<Behavior>? _behaviors;
   int? _ownerId;
+  bool? _likedByUser;
 
   Dog.clone(Dog dog) : this(dog.id, dog.name, dog.breed, dog.gender, dog.age,
-      dog.photoUrl, dog.size, dog.description, dog.likes, dog.behaviors!.map((e) => Behavior(e.id, e.name)).toList(), dog.ownerId);
+      dog.photoUrl, dog.size, dog.description, dog.likes, dog.behaviors!.map((e) => Behavior(e.id, e.name)).toList(), dog.ownerId, dog.likedByUser);
 
   Dog.basic(this._id, this._name, this._breed, this._gender, this._age, this._photoUrl);
 
   Dog(this._id, this._name, this._breed, this._gender, this._age,
-      this._photoUrl, this._size, this._description, this._likes, this._behaviors,
-      this._ownerId);
+      this._photoUrl, this._size, this._description, this._likes, this._behaviors, this._ownerId, this._likedByUser);
 
   int get id => _id;
 
@@ -43,6 +43,9 @@ class Dog {
   List<Behavior>? get behaviors => _behaviors;
 
   int? get ownerId => _ownerId;
+
+  bool? get likedByUser => _likedByUser;
+
 
   void addLike() {
     _likes = _likes! + 1;

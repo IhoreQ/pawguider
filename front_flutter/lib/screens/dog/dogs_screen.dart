@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:front_flutter/models/behavior.dart';
 import 'package:front_flutter/models/dog/dog.dart';
 import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/services/dog_service.dart';

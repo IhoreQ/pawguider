@@ -9,7 +9,8 @@ import pl.pawguider.app.model.User;
 import java.util.List;
 import java.util.Objects;
 
-public record DogInfoResponse(String name,
+public record DogInfoResponse(Long idDog,
+                              String name,
                               int age,
                               String breed,
                               String gender,
@@ -30,6 +31,6 @@ public record DogInfoResponse(String name,
         String size = dog.getBreed().getSize().getName();
         List<DogBehavior> behaviors = dog.getDogsBehaviors().stream().map(DogsBehaviors::getBehavior).toList();
         boolean currentUserLiked = dog.getDogsLikes().stream().anyMatch(dogLike -> dogLike.getUser().getIdUser().equals(user.getIdUser()));
-        return new DogInfoResponse(dog.getName(), dog.getAge(), breed, gender, size, dog.getDescription(), dog.getPhoto(), behaviors, dog.getDogsLikes().size(), currentUserLiked, dog.getOwner().getIdUser());
+        return new DogInfoResponse(dog.getIdDog(), dog.getName(), dog.getAge(), breed, gender, size, dog.getDescription(), dog.getPhoto(), behaviors, dog.getDogsLikes().size(), currentUserLiked, dog.getOwner().getIdUser());
     }
 }

@@ -1,69 +1,68 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/routes/router.dart';
+import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/widgets/behavior_box.dart';
 import 'package:front_flutter/widgets/custom_vertical_divider.dart';
 import 'package:front_flutter/widgets/two_elements_column.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
-import '../../models/behavior.dart';
 import '../../models/dog/dog.dart';
+import '../../widgets/common_loading_indicator.dart';
 
 @RoutePage()
-class DogProfileScreen extends StatefulWidget {
-  const DogProfileScreen(
-      {Key? key, @PathParam() required this.dogId})
+class DogProfileScreen extends StatelessWidget {
+  const DogProfileScreen({Key? key, @PathParam() required this.dogId})
       : super(key: key);
 
   final int dogId;
 
   @override
-  State<DogProfileScreen> createState() => _DogProfileScreenState();
-}
-
-class _DogProfileScreenState extends State<DogProfileScreen> {
-
-  late final Dog dog;
-
-  @override
-  void initState() {
-    final List<Behavior> exampleBehaviors = [Behavior(1, 'Friendly'), Behavior(6, 'Calm'), Behavior(12, 'Curious'), Behavior(10, 'Independent')];
-    Dog exampleDog = Dog(48, 'Ciapek', 'Jack Russel Terrier', 'Male', 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10);
-    Dog exampleDog2 = Dog(13, 'Binia', 'Mongrel', 'Female', 2, 'https://www.pedigree.pl/cdn-cgi/image/width=520,format=auto,q=90/sites/g/files/fnmzdf4096/files/2023-01/jack-russell-terrier_1640009953951.png', 'Small', '', 10, exampleBehaviors, 11);
-    List<Dog> dogs = [exampleDog, exampleDog2];
-
-    dog = dogs.firstWhere((element) => element.id == widget.dogId);
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final DogService dogService = DogService();
+
     return Scaffold(
-      body: Stack(fit: StackFit.expand, children: [
-        Container(
-          height: 1.0,
-          color: AppColor.primaryOrange,
-        ),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Stack(
-                  children: [
-                    TopBar(dog: dog),
-                    DogContentPage(dog: dog),
-                    DogAvatar(dog: dog),
-                  ],
-                )
-              ],
-            ),
-          ),
+        body: FutureBuilder<Dog>(
+          future: dogService.getDog(dogId),
+          builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final Dog dog = snapshot.data!;
+            return Stack(fit: StackFit.expand, children: [
+              Container(
+                height: 1.0,
+                color: AppColor.primaryOrange,
+              ),
+              Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          TopBar(dog: dog),
+                          DogContentPage(dog: dog),
+                          DogAvatar(dog: dog),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ]);
+          }
+          return const Center(
+              child: SizedBox(
+                  height: 48.0,
+                  width: 48.0,
+                  child: CommonLoadingIndicator(color: AppColor.primaryOrange)
+              )
+          );
+        },
         )
-      ]),
     );
   }
 }
@@ -78,146 +77,150 @@ class TopBar extends StatefulWidget {
 }
 
 class _TopBarState extends State<TopBar> {
-  final int userId = 10;
   late bool _liked;
 
   @override
   void initState() {
     super.initState();
-    _liked = false;
+    _liked = widget.dog.likedByUser!;
   }
 
   @override
   Widget build(BuildContext context) {
     const double iconSize = 30.0;
 
-    return widget.dog.ownerId == userId
-        ? Column(
-            children: [
-              const Gap(10.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: iconSize,
-                      height: iconSize,
-                      child: IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          onPressed: () => context.router.pop(),
-                          icon: const Icon(
-                            FluentSystemIcons.ic_fluent_arrow_left_regular,
-                            size: iconSize,
-                            color: Colors.white,
-                          )),
-                    ),
-                    Row(
-                      children: [
-                        const SizedBox(
-                          width: iconSize,
-                          height: iconSize,
-                          child: Icon(
-                                FluentSystemIcons.ic_fluent_heart_filled,
-                                size: iconSize,
-                                color: Colors.white,
-                              ),
-                        ),
-                        const Gap(10.0),
-                        SizedBox(
-                          width: iconSize,
-                          height: iconSize,
-                          child: IconButton(
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () => context.router.push(DogDetailsRoute(dog: widget.dog)),
-                              icon: const Icon(
-                                FluentSystemIcons.ic_fluent_edit_filled,
-                                size: iconSize,
-                                color: Colors.white,
-                              )),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 20.0 + iconSize + 10.0),
-                child: Align(
-                    alignment: Alignment.topRight,
-                    child: Container(
+    return Consumer<UserProvider>(builder: (context, userProvider, _) {
+      return widget.dog.ownerId == userProvider.user?.id
+          ? Column(
+              children: [
+                const Gap(10.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
                         width: iconSize,
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${widget.dog.likes}',
-                          style: AppTextStyle.mediumWhite,
-                        ))),
-              ),
-            ],
-          )
-        : Column(
-            children: [
-              const Gap(10.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: iconSize,
-                      height: iconSize,
-                      child: IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          onPressed: () => context.router.pop(),
-                          icon: const Icon(
-                            FluentSystemIcons.ic_fluent_arrow_left_regular,
-                            size: iconSize,
-                            color: Colors.white,
-                          )),
-                    ),
-                    SizedBox(
-                      width: iconSize,
-                      height: iconSize,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
+                        height: iconSize,
                         child: IconButton(
-                            key: ValueKey<bool>(_liked),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
-                            onPressed: () => _liked ? subtractLike() : addLike(),
-                            icon: _liked ? const Icon(
+                            onPressed: () => context.router.pop(),
+                            icon: const Icon(
+                              FluentSystemIcons.ic_fluent_arrow_left_regular,
+                              size: iconSize,
+                              color: Colors.white,
+                            )),
+                      ),
+                      Row(
+                        children: [
+                          const SizedBox(
+                            width: iconSize,
+                            height: iconSize,
+                            child: Icon(
                               FluentSystemIcons.ic_fluent_heart_filled,
                               size: iconSize,
                               color: Colors.white,
-                            )
-                            : const Icon(
-                              FluentSystemIcons.ic_fluent_heart_regular,
+                            ),
+                          ),
+                          const Gap(10.0),
+                          SizedBox(
+                            width: iconSize,
+                            height: iconSize,
+                            child: IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () => context.router
+                                    .push(DogDetailsRoute(dog: widget.dog)),
+                                icon: const Icon(
+                                  FluentSystemIcons.ic_fluent_edit_filled,
+                                  size: iconSize,
+                                  color: Colors.white,
+                                )),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0 + iconSize + 10.0),
+                  child: Align(
+                      alignment: Alignment.topRight,
+                      child: Container(
+                          width: iconSize,
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${widget.dog.likes}',
+                            style: AppTextStyle.mediumWhite,
+                          ))),
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                const Gap(10.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: iconSize,
+                        height: iconSize,
+                        child: IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () => context.router.pop(),
+                            icon: const Icon(
+                              FluentSystemIcons.ic_fluent_arrow_left_regular,
                               size: iconSize,
                               color: Colors.white,
-                            )
-                        ),
-                      )
-                    )
-                  ],
+                            )),
+                      ),
+                      SizedBox(
+                          width: iconSize,
+                          height: iconSize,
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: IconButton(
+                                key: ValueKey<bool>(_liked),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () =>
+                                    _liked ? subtractLike() : addLike(),
+                                icon: _liked
+                                    ? const Icon(
+                                        FluentSystemIcons
+                                            .ic_fluent_heart_filled,
+                                        size: iconSize,
+                                        color: Colors.white,
+                                      )
+                                    : const Icon(
+                                        FluentSystemIcons
+                                            .ic_fluent_heart_regular,
+                                        size: iconSize,
+                                        color: Colors.white,
+                                      )),
+                          ))
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 20.0),
-                child: Align(
-                    alignment: Alignment.topRight,
-                    child: Container(
-                        width: iconSize,
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${widget.dog.likes}',
-                          style: AppTextStyle.mediumWhite,
-                        ))),
-              ),
-            ],
-          );
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: Align(
+                      alignment: Alignment.topRight,
+                      child: Container(
+                          width: iconSize,
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${widget.dog.likes}',
+                            style: AppTextStyle.mediumWhite,
+                          ))),
+                ),
+              ],
+            );
+    });
   }
 
   void addLike() {
@@ -270,9 +273,7 @@ class DogContentPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TwoElementsColumn(
-                    topText: 'Gender',
-                    bottomText: dog.gender),
+                TwoElementsColumn(topText: 'Gender', bottomText: dog.gender),
                 const CustomVerticalDivider(height: 20.0),
                 TwoElementsColumn(topText: 'Age', bottomText: '${dog.age} yo.'),
                 const CustomVerticalDivider(height: 20.0),

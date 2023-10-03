@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/utilities/image_getter.dart';
 import 'package:front_flutter/utilities/validator.dart';
@@ -15,6 +16,7 @@ import 'dart:io';
 import '../../models/behavior.dart';
 import '../../models/dog/dog.dart';
 import '../../repositories/behavior_repository.dart';
+import '../../widgets/common_loading_indicator.dart';
 
 @RoutePage()
 class DogDetailsScreen extends StatefulWidget {
@@ -35,11 +37,11 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   final _ageController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  final List<String> _breeds = <String>['Mongrel', 'Jack Russel Terrier', 'Yorkshire Terrier'];
+  late List<String> _breeds;
   final List<String> _genders = <String>['Male', 'Female'];
   final List<Behavior> _behaviors = BehaviorRepository.getAllBehaviors();
 
-  late String _selectedBreed = _breeds.first;
+  late String _selectedBreed;
   late String _selectedGender = _genders.first;
   List<Behavior> _selectedBehaviors = [];
 
@@ -47,6 +49,8 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   bool _minBehaviorCountSelected = true;
 
   final _formKey = GlobalKey<FormState>();
+
+  final DogService dogService = DogService();
 
   @override
   void initState() {
@@ -57,7 +61,6 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
       _ageController.text = '${widget.dog!.age}';
       _descriptionController.text = widget.dog!.description!;
       _selectedGender = widget.dog!.gender;
-      _selectedBreed = _breeds.firstWhere((element) => element == widget.dog!.breed);
       _selectedBehaviors = Dog.clone(widget.dog!).behaviors!;
     }
   }
@@ -200,28 +203,45 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                     return Validator.isDogNameValid(value) ? null : 'Enter correct name';
                   },
                 ),
-                DropdownButtonFormField(
-                    value: _selectedBreed,
-                    items: _breeds.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
+                FutureBuilder<List<String>>(
+                  future: dogService.getBreeds(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      _breeds = snapshot.data!;
+                      _selectedBreed = widget.dog != null
+                        ? _breeds.firstWhere((element) => element == widget.dog!.breed)
+                        : _breeds.first;
+
+                      return DropdownButtonFormField(
+                          value: _selectedBreed,
+                          items: _breeds.map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          icon: const Icon(Icons.keyboard_arrow_right_outlined, color: AppColor.lightText,),
+                          style: AppTextStyle.mediumDark,
+                          decoration: InputDecoration(
+                            focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: AppColor.primaryOrange)
+                            ),
+                            labelText: 'Breed',
+                            labelStyle: AppTextStyle.regularLight.copyWith(fontSize: 14.0),
+                          ),
+                          onChanged: (String? value) {
+                            setState(() {
+                              _selectedBreed = value!;
+                            });
+                          }
                       );
-                    }).toList(),
-                    icon: const Icon(Icons.keyboard_arrow_right_outlined, color: AppColor.lightText,),
-                    style: AppTextStyle.mediumDark,
-                    decoration: InputDecoration(
-                      focusedBorder: const UnderlineInputBorder(
-                          borderSide: BorderSide(color: AppColor.primaryOrange)
-                      ),
-                      labelText: 'Breed',
-                      labelStyle: AppTextStyle.regularLight.copyWith(fontSize: 14.0),
-                    ),
-                    onChanged: (String? value) {
-                      setState(() {
-                        _selectedBreed = value!;
-                      });
                     }
+                    return const Center(child: SizedBox(
+                        height: 48.0,
+                        width: 48.0,
+                        child: CommonLoadingIndicator(color: AppColor.primaryOrange)
+                    ));
+                  }
                 ),
                 CustomFormField(
                   labelText: 'Age',
