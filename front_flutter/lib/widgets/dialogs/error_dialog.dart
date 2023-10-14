@@ -26,6 +26,6 @@ class ErrorDialog extends StatelessWidget {
           child: const Text('OK', style: TextStyle(color: Colors.black),),
         ),
       ],
-    );;
+    );
   }
 }

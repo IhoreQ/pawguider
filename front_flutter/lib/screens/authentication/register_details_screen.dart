@@ -9,19 +9,13 @@ import 'package:front_flutter/services/gender_service.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/utilities/information_dialog.dart';
 import 'package:front_flutter/widgets/common_loading_indicator.dart';
-import 'package:front_flutter/widgets/dialogs/error_dialog.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/icon_dropdown_button.dart';
 import 'package:gap/gap.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../../providers/loading_provider.dart';
 import '../../providers/register_details_provider.dart';
-import '../../routes/router.dart';
-import '../../utilities/image_getter.dart';
 import '../../widgets/submit_button.dart';
 
 @RoutePage()

@@ -1,4 +1,4 @@
-import '../models/behavior.dart';
+import '../models/dog/behavior.dart';
 
 abstract class BehaviorRepository {
   // TODO dodać funkcję pobierającą zachowania z bazy

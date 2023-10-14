@@ -15,4 +15,16 @@ class GenderService {
       rethrow;
     }
   }
+
+  Future<List<String>> getBasicGenders() async {
+    try {
+      Response response = await _dio.get('/gender/basic');
+      List<dynamic> data = response.data;
+      List<String> genderNames = data.map((item) => item['name'].toString()).toList();
+      return genderNames;
+    } on DioException {
+      rethrow;
+    }
+  }
+
 }

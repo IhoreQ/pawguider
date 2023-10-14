@@ -1,4 +1,4 @@
-import '../behavior.dart';
+import 'behavior.dart';
 
 class Dog {
   final int _id;

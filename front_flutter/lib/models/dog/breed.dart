@@ -7,4 +7,9 @@ class Breed {
   String get name => _name;
 
   int get id => _id;
+
+  @override
+  String toString() {
+    return 'Breed{_id: $_id, _name: $_name}';
+  }
 }

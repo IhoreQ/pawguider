@@ -1,4 +1,3 @@
-import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:front_flutter/styles.dart';

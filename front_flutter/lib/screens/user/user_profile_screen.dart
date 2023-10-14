@@ -1,6 +1,4 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/routes/router.dart';

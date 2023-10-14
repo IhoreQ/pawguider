@@ -9,7 +9,7 @@ import 'package:front_flutter/widgets/walk_partner_box.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/behavior.dart';
+import '../../models/dog/behavior.dart';
 import '../../models/dog/dog.dart';
 import '../../models/walk.dart';
 import '../../providers/user_provider.dart';

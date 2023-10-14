@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:front_flutter/services/auth_service.dart';
 
 import '../dio/dio_config.dart';
 

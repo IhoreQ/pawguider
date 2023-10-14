@@ -131,7 +131,7 @@ class _TopBarState extends State<TopBar> {
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
                                 onPressed: () => context.router
-                                    .push(DogDetailsRoute(dog: widget.dog)),
+                                    .push(DogDetailsRoute(dog: widget.dog, onComplete: () {})),
                                 icon: const Icon(
                                   FluentSystemIcons.ic_fluent_edit_filled,
                                   size: iconSize,

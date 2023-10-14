@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/loading_provider.dart';
 import 'package:front_flutter/widgets/common_loading_indicator.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../styles.dart';

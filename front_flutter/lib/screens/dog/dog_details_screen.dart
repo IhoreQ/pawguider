@@ -3,7 +3,10 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:front_flutter/services/dog_service.dart';
+import 'package:front_flutter/services/dto/dog/dog_addition_request.dart';
+import 'package:front_flutter/services/image_service.dart';
 import 'package:front_flutter/styles.dart';
+import 'package:front_flutter/utilities/extensions.dart';
 import 'package:front_flutter/utilities/image_getter.dart';
 import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/custom_dropdown_button.dart';
@@ -13,15 +16,15 @@ import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-import '../../models/behavior.dart';
+import '../../models/dog/behavior.dart';
+import '../../models/dog/breed.dart';
 import '../../models/dog/dog.dart';
-import '../../repositories/behavior_repository.dart';
 import '../../widgets/common_loading_indicator.dart';
 
 @RoutePage()
 class DogDetailsScreen extends StatefulWidget {
-  const DogDetailsScreen({super.key, this.dog});
-
+  const DogDetailsScreen({super.key, this.dog, required this.onComplete});
+  final VoidCallback onComplete;
   final Dog? dog;
 
   @override
@@ -37,20 +40,22 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   final _ageController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  late List<String> _breeds;
+  late List<Breed> _breeds;
+  late List<Behavior> _behaviors;
   final List<String> _genders = <String>['Male', 'Female'];
-  final List<Behavior> _behaviors = BehaviorRepository.getAllBehaviors();
 
-  late String _selectedBreed;
+  Breed? _selectedBreed;
   late String _selectedGender = _genders.first;
   List<Behavior> _selectedBehaviors = [];
 
   final int _behaviorsMinCount = 3;
   bool _minBehaviorCountSelected = true;
+  bool _imageAdded = true;
 
   final _formKey = GlobalKey<FormState>();
 
   final DogService dogService = DogService();
+  final ImageService imageService = ImageService();
 
   @override
   void initState() {
@@ -138,7 +143,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                       const Gap(10.0),
                       GestureDetector(
                           onTap: () => ImageGetter.selectPhoto(context, _getImage),
-                          child: Text('Add dog picture', style: AppTextStyle.semiBoldLight)
+                          child: Text('Add dog photo', style: _imageAdded ? AppTextStyle.semiBoldLight : AppTextStyle.errorText.copyWith(fontSize: 16.0))
                       )
                     ],
                   ) :
@@ -203,21 +208,21 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                     return Validator.isDogNameValid(value) ? null : 'Enter correct name';
                   },
                 ),
-                FutureBuilder<List<String>>(
+                FutureBuilder<List<Breed>>(
                   future: dogService.getBreeds(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       _breeds = snapshot.data!;
-                      _selectedBreed = widget.dog != null
-                        ? _breeds.firstWhere((element) => element == widget.dog!.breed)
-                        : _breeds.first;
+                      _selectedBreed ??= widget.dog != null
+                            ? _breeds.firstWhere((element) => element.name == widget.dog!.breed)
+                            : _breeds.first;
 
                       return DropdownButtonFormField(
-                          value: _selectedBreed,
-                          items: _breeds.map<DropdownMenuItem<String>>((String value) {
+                          value: _selectedBreed?.name,
+                          items: _breeds.map<DropdownMenuItem<String>>((Breed value) {
                             return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
+                              value: value.name,
+                              child: Text(value.name),
                             );
                           }).toList(),
                           icon: const Icon(Icons.keyboard_arrow_right_outlined, color: AppColor.lightText,),
@@ -231,7 +236,8 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                           ),
                           onChanged: (String? value) {
                             setState(() {
-                              _selectedBreed = value!;
+                              _selectedBreed = _breeds.firstWhere((breed) => breed.name == value);
+                              print(_selectedBreed);
                             });
                           }
                       );
@@ -278,23 +284,42 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                     )
                 ) : const SizedBox(),
                 const Gap(10.0),
-                Wrap(
-                  spacing: 5.0,
-                  runSpacing: 10.0 ,
-                  children: _behaviors.map((behavior) {
-                    final isBehaviorSelected = _selectedBehaviors.any((selectedBehavior) => selectedBehavior.id == behavior.id);
-                    return SelectableBehaviorBox(
-                      label: behavior.name,
-                      initValue: isBehaviorSelected,
-                      onSelected: (isSelected) {
-                        if (isSelected) {
-                          _selectedBehaviors.add(behavior);
-                        } else {
-                          _selectedBehaviors.removeWhere((selectedBehavior) => selectedBehavior.id == behavior.id);
-                        }
-                      },
-                    );
-                  }).toList(),
+                FutureBuilder<List<Behavior>>(
+                  future: dogService.getBehaviors(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      _behaviors = snapshot.data!;
+
+                      return Wrap(
+                        spacing: 5.0,
+                        runSpacing: 10.0,
+                        children: _behaviors.map((behavior) {
+                          final isBehaviorSelected = _selectedBehaviors.any((
+                              selectedBehavior) =>
+                          selectedBehavior.id == behavior.id);
+                          return SelectableBehaviorBox(
+                            label: behavior.name,
+                            initValue: isBehaviorSelected,
+                            onSelected: (isSelected) {
+                              if (isSelected) {
+                                _selectedBehaviors.add(behavior);
+                              } else {
+                                _selectedBehaviors.removeWhere((
+                                    selectedBehavior) =>
+                                selectedBehavior.id == behavior.id);
+                              }
+                            },
+                          );
+                        }).toList(),
+                      );
+                    }
+                    return const Center(child: SizedBox(
+                        height: 48.0,
+                        width: 48.0,
+                        child: CommonLoadingIndicator(color: AppColor
+                            .primaryOrange)
+                    ));
+                  }
                 ),
                 const Gap(20.0),
                 Align(
@@ -310,7 +335,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                   maxLines: null,
                   minLines: 6,
                   cursorColor: AppColor.primaryOrange,
-                  style: AppTextStyle.mediumLight.copyWith(fontSize: 14.0),
+                  style: AppTextStyle.mediumDark.copyWith(fontSize: 14.0),
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.all(5.0),
                     hintText: 'Write something about your dog...',
@@ -393,15 +418,28 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     );
   }
 
-  void addDog() {
-    // TODO działanie
-    print('add');
+  Future<void> addDog() async {
     validateBehaviorsCount();
+    validateImage();
+    if (_formKey.currentState!.validate() && _minBehaviorCountSelected && _imageAdded) {
+      String fileName = await imageService.uploadImage(image!);
+      if (fileName.isNotEmpty) {
+        List<int> behaviorsIds = _selectedBehaviors.map((item) => item.id).toList();
+        final request = DogAdditionRequest(fileName, _nameController.text.capitalize(), _selectedBreed!.id, _ageController.text, _selectedGender, behaviorsIds, _descriptionController.text);
 
-    if (_formKey.currentState!.validate() && _minBehaviorCountSelected) {
-      // TODO wysyłka na API
-      // TODO capitalize() na name
-      // context.router.pop();
+        bool isAdded = await dogService.addDog(request);
+
+        if (isAdded) {
+          print("dodane");
+        } else {
+          print("blad");
+        }
+      }
+
+      if (context.mounted) {
+        context.router.pop();
+        widget.onComplete();
+      }
     }
   }
 
@@ -410,7 +448,8 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     print('update');
 
     validateBehaviorsCount();
-    if (_formKey.currentState!.validate() && _minBehaviorCountSelected) {
+    validateImage();
+    if (_formKey.currentState!.validate() && _minBehaviorCountSelected && _imageAdded) {
       // TODO wysyłka na API
       // TODO capitalize() na name
 
@@ -421,6 +460,12 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   void validateBehaviorsCount() {
     setState(() {
       _minBehaviorCountSelected = _selectedBehaviors.length >= _behaviorsMinCount;
+    });
+  }
+
+  void validateImage() {
+    setState(() {
+      _imageAdded = image != null;
     });
   }
 }

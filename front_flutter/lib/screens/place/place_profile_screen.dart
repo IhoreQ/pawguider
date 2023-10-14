@@ -1,18 +1,12 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:front_flutter/main.dart';
 import 'package:front_flutter/models/dog/dog.dart';
-import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/widgets/dog_info_box.dart';
 import 'package:gap/gap.dart';
-import 'package:flutter_statusbarcolor_ns/flutter_statusbarcolor_ns.dart';
 
-
-import '../../models/behavior.dart';
+import '../../models/dog/behavior.dart';
 import '../../models/place.dart';
 import '../../styles.dart';
 

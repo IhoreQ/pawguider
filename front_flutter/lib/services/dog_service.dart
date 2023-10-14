@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:front_flutter/models/behavior.dart';
+import 'package:front_flutter/models/dog/behavior.dart';
 import 'package:front_flutter/models/dog/dog.dart';
+import 'package:front_flutter/services/dto/dog/dog_addition_request.dart';
 
 import '../dio/dio_config.dart';
+import '../models/dog/breed.dart';
 import '../utilities/constants.dart';
 
 class DogService {
@@ -59,14 +61,34 @@ class DogService {
     }
   }
 
-  Future<List<String>> getBreeds() async {
+  Future<List<Breed>> getBreeds() async {
     try {
       Response response = await _dio.get('/dog/breeds');
       List<dynamic> data = response.data;
-      List<String> breeds = data.map((item) => item['name'].toString()).toList();
+      List<Breed> breeds = data.map((item) => Breed(item['id'], item['name'])).toList();
       return breeds;
     } on DioException {
       rethrow;
+    }
+  }
+
+  Future<List<Behavior>> getBehaviors() async {
+    try {
+      Response response = await _dio.get('/dog/behaviors');
+      List<dynamic> data = response.data;
+      List<Behavior> behaviors = data.map((item) => Behavior(item['idBehavior'], item['name'])).toList();
+      return behaviors;
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<bool> addDog(DogAdditionRequest request) async {
+    try {
+      Response response = await _dio.post('/dog', data: request.toJson());
+      return true;
+    } on DioException {
+      return false;
     }
   }
 }

@@ -76,13 +76,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     DogDetailsRoute.name: (routeData) {
-      final args = routeData.argsAs<DogDetailsRouteArgs>(
-          orElse: () => const DogDetailsRouteArgs());
+      final args = routeData.argsAs<DogDetailsRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: DogDetailsScreen(
           key: args.key,
           dog: args.dog,
+          onComplete: args.onComplete,
         ),
       );
     },
@@ -286,12 +286,14 @@ class DogDetailsRoute extends PageRouteInfo<DogDetailsRouteArgs> {
   DogDetailsRoute({
     Key? key,
     Dog? dog,
+    required void Function() onComplete,
     List<PageRouteInfo>? children,
   }) : super(
           DogDetailsRoute.name,
           args: DogDetailsRouteArgs(
             key: key,
             dog: dog,
+            onComplete: onComplete,
           ),
           initialChildren: children,
         );
@@ -306,15 +308,18 @@ class DogDetailsRouteArgs {
   const DogDetailsRouteArgs({
     this.key,
     this.dog,
+    required this.onComplete,
   });
 
   final Key? key;
 
   final Dog? dog;
 
+  final void Function() onComplete;
+
   @override
   String toString() {
-    return 'DogDetailsRouteArgs{key: $key, dog: $dog}';
+    return 'DogDetailsRouteArgs{key: $key, dog: $dog, onComplete: $onComplete}';
   }
 }
 

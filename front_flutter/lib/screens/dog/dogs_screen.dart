@@ -19,9 +19,11 @@ class DogsScreen extends StatefulWidget {
 }
 
 class _DogsScreenState extends State<DogsScreen> {
-  late final Dog exampleDog = Dog.basic(12, 'Ciapek', 'Jack Russel Terrier', 'Male', 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG');
-  late final Dog exampleDog2 = Dog.basic(13, 'Binia', 'Mongrel', 'Female', 2, 'https://www.pedigree.pl/cdn-cgi/image/width=520,format=auto,q=90/sites/g/files/fnmzdf4096/files/2023-01/jack-russell-terrier_1640009953951.png');
   final dogService = DogService();
+
+  Future<void> refresh() async {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,17 @@ class _DogsScreenState extends State<DogsScreen> {
         if (snapshot.hasData) {
           List<Dog> dogs = snapshot.data!;
           return dogs.isNotEmpty ?
-            DogsListPage(userDogs: dogs) :
+            RefreshIndicator(
+              color: AppColor.primaryOrange,
+              backgroundColor: Colors.white,
+              onRefresh: () async {
+                await Future.delayed(const Duration(milliseconds: 1000));
+                dogs = await dogService.getCurrentUserDogs();
+                setState(() {
+                });
+              },
+                child: DogsListPage(userDogs: dogs, refresh: () => refresh())
+            ) :
             const EmptyDogsListPage();
         }
 
@@ -64,7 +76,7 @@ class EmptyDogsListPage extends StatelessWidget {
         const Gap(10.0),
         Text('Add your first dog', style: AppTextStyle.semiBoldOrange.copyWith(fontSize: 18)),
         const Gap(10.0),
-        RoutingCircleAddButton(route: DogDetailsRoute()),
+        RoutingCircleAddButton(route: DogDetailsRoute(onComplete: () {})),
       ],
     );
   }
@@ -72,11 +84,13 @@ class EmptyDogsListPage extends StatelessWidget {
 
 class DogsListPage extends StatefulWidget {
   final List<Dog> userDogs;
+  final Function() refresh;
 
 
   const DogsListPage({
     Key? key,
-    required this.userDogs
+    required this.userDogs,
+    required this.refresh
   }) : super(key: key);
 
   @override
@@ -84,6 +98,7 @@ class DogsListPage extends StatefulWidget {
 }
 
 class _DogsListPageState extends State<DogsListPage> {
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -170,7 +185,7 @@ class _DogsListPageState extends State<DogsListPage> {
               },
             ),
             Center(
-                child: RoutingCircleAddButton(route: DogDetailsRoute())
+                child: RoutingCircleAddButton(route: DogDetailsRoute(onComplete: () => widget.refresh()))
             ),
             const Gap(20.0),
           ],

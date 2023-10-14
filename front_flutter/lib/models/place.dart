@@ -1,4 +1,3 @@
-import 'dog/dog.dart';
 
 class Place {
   final int _id;

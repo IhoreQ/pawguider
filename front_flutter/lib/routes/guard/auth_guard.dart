@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/services/auth_service.dart';
 
