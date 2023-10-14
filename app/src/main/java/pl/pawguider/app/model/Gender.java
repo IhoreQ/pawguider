@@ -10,7 +10,6 @@ import java.util.Collection;
 @Entity
 @Table(name = "genders", schema = "public", catalog = "dogout")
 public class Gender {
-    @JsonIgnore
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -37,6 +36,11 @@ public class Gender {
 
     public Gender(Long id) {
         this.idGender = id;
+    }
+
+    public Gender(Long idGender, String name) {
+        this.idGender = idGender;
+        this.name = name;
     }
 
     public Gender(Long idGender, String name, Collection<UserDetails> usersDetails) {

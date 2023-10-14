@@ -23,4 +23,9 @@ public class GenderController {
         return genderService.getAllGenders();
     }
 
+    @GetMapping("/basic")
+    public List<Gender> getBasicGenders() {
+        return genderService.getBasicGenders();
+    }
+
 }

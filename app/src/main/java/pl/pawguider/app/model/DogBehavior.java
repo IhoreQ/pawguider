@@ -12,7 +12,7 @@ public class DogBehavior {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_behavior")
-    private int idBehavior;
+    private Long idBehavior;
 
     @Column(name = "name")
     private String name;
@@ -24,13 +24,17 @@ public class DogBehavior {
     public DogBehavior() {
     }
 
-    public DogBehavior(int idBehavior, String name, Collection<DogsBehaviors> dogsBehaviors) {
+    public DogBehavior(Long idBehavior) {
+        this.idBehavior = idBehavior;
+    }
+
+    public DogBehavior(Long idBehavior, String name, Collection<DogsBehaviors> dogsBehaviors) {
         this.idBehavior = idBehavior;
         this.name = name;
         this.dogsBehaviors = dogsBehaviors;
     }
 
-    public int getIdBehavior() {
+    public Long getIdBehavior() {
         return idBehavior;
     }
 
@@ -40,5 +44,14 @@ public class DogBehavior {
 
     public Collection<DogsBehaviors> getDogsBehaviors() {
         return dogsBehaviors;
+    }
+
+    @Override
+    public String toString() {
+        return "DogBehavior{" +
+                "idBehavior=" + idBehavior +
+                ", name='" + name + '\'' +
+                ", dogsBehaviors=" + dogsBehaviors +
+                '}';
     }
 }

@@ -1,13 +1,10 @@
 package pl.pawguider.app.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import pl.pawguider.app.controller.dto.request.DogAddRequest;
-import pl.pawguider.app.model.Dog;
-import pl.pawguider.app.model.DogBreed;
-import pl.pawguider.app.model.Gender;
-import pl.pawguider.app.model.User;
-import pl.pawguider.app.repository.DogBreedRepository;
-import pl.pawguider.app.repository.DogRepository;
+import pl.pawguider.app.model.*;
+import pl.pawguider.app.repository.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,12 +16,18 @@ public class DogService {
     private final ImageService imageService;
     private final DogRepository dogRepository;
     private final DogBreedRepository dogBreedRepository;
+    private final DogBehaviorRepository dogBehaviorRepository;
+    private final DogsBehaviorsRepository dogsBehaviorsRepository;
+    private final GenderRepository genderRepository;
 
-    public DogService(UserService userService, ImageService imageService, DogRepository dogRepository, DogBreedRepository dogBreedRepository) {
+    public DogService(UserService userService, ImageService imageService, DogRepository dogRepository, DogBreedRepository dogBreedRepository, DogBehaviorRepository dogBehaviorRepository, DogsBehaviorsRepository dogsBehaviorsRepository, GenderRepository genderRepository) {
         this.userService = userService;
         this.imageService = imageService;
         this.dogRepository = dogRepository;
         this.dogBreedRepository = dogBreedRepository;
+        this.dogBehaviorRepository = dogBehaviorRepository;
+        this.dogsBehaviorsRepository = dogsBehaviorsRepository;
+        this.genderRepository = genderRepository;
     }
 
     public Dog getDogById(Long id) {
@@ -52,15 +55,24 @@ public class DogService {
         return false;
     }
 
-    public boolean addDog(User user, DogAddRequest dogAddRequest, String photo) {
+    @Transactional
+    public boolean addDog(User user, DogAddRequest dogAddRequest) {
 
         Optional<DogBreed> foundBreed = dogBreedRepository.findById(dogAddRequest.breedId());
+        Optional<Gender> foundGender = genderRepository.findByName(dogAddRequest.gender());
 
-        if (foundBreed.isPresent()) {
+        if (foundBreed.isPresent() && foundGender.isPresent()) {
             DogBreed breed = foundBreed.get();
-            Dog dog = new Dog(dogAddRequest.name(), dogAddRequest.age(), new Gender(dogAddRequest.gender()), dogAddRequest.description(), breed, photo, user);
+            Gender gender = foundGender.get();
+            Dog dog = new Dog(dogAddRequest.name(), dogAddRequest.age(), gender, dogAddRequest.description(), breed, dogAddRequest.photoName(), user);
 
-            dogRepository.save(dog);
+            Dog addedDog = dogRepository.save(dog);
+
+            List<DogsBehaviors> behaviors = dogAddRequest.behaviorsIds()
+                    .stream().map((item) -> new DogsBehaviors(new DogBehavior(item), addedDog))
+                    .toList();
+
+            dogsBehaviorsRepository.saveAll(behaviors);
 
             return true;
         }
@@ -70,6 +82,10 @@ public class DogService {
 
     public List<DogBreed> getAllBreeds() {
         return dogBreedRepository.findAllNamesWithIds();
+    }
+
+    public List<DogBehavior> getAllBehaviors() {
+        return dogBehaviorRepository.findAll();
     }
 
 }

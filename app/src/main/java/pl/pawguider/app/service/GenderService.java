@@ -18,4 +18,8 @@ public class GenderService {
     public List<Gender> getAllGenders() {
         return genderRepository.findAll();
     }
+
+    public List<Gender> getBasicGenders() {
+        return genderRepository.findBasicGenders();
+    }
 }

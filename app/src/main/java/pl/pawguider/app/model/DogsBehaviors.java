@@ -23,6 +23,11 @@ public class DogsBehaviors {
 
     }
 
+    public DogsBehaviors(DogBehavior behavior, Dog dog) {
+        this.behavior = behavior;
+        this.dog = dog;
+    }
+
     public DogsBehaviors(Long idDogsBehaviors, DogBehavior behavior, Dog dog) {
         this.idDogsBehaviors = idDogsBehaviors;
         this.behavior = behavior;
@@ -39,5 +44,14 @@ public class DogsBehaviors {
 
     public Dog getDog() {
         return dog;
+    }
+
+    @Override
+    public String toString() {
+        return "DogsBehaviors{" +
+                "behavior=" + behavior +
+                ", dog=" + dog +
+                ", idDogsBehaviors=" + idDogsBehaviors +
+                '}';
     }
 }

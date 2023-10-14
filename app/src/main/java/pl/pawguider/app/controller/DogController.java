@@ -7,10 +7,7 @@ import pl.pawguider.app.controller.dto.request.DogAddRequest;
 import pl.pawguider.app.controller.dto.response.DogBreedResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
-import pl.pawguider.app.model.ActiveWalk;
-import pl.pawguider.app.model.Dog;
-import pl.pawguider.app.model.DogBreed;
-import pl.pawguider.app.model.User;
+import pl.pawguider.app.model.*;
 import pl.pawguider.app.service.DogService;
 import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.UserService;
@@ -37,13 +34,13 @@ public class DogController {
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> addDog(@RequestHeader("Authorization") String header, @RequestParam String photo, @RequestBody DogAddRequest dogAddRequest) throws Exception {
+    public ResponseEntity<HttpStatus> addDog(@RequestHeader("Authorization") String header, @RequestBody DogAddRequest dogAddRequest) throws Exception {
 
         String email = jwtService.extractEmailFromHeader(header);
 
         User user = userService.getUserByEmail(email);
 
-        boolean isAdded = dogService.addDog(user, dogAddRequest, photo);
+        boolean isAdded = dogService.addDog(user, dogAddRequest);
 
         if (!isAdded)
             throw new Exception("An error occurred while adding a dog!");
@@ -97,4 +94,8 @@ public class DogController {
                 .toList();
     }
 
+    @GetMapping("/behaviors")
+    public List<DogBehavior> getAllBehaviors() {
+        return dogService.getAllBehaviors();
+    }
 }
