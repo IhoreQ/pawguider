@@ -1,12 +1,14 @@
 package pl.pawguider.app.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.pawguider.app.controller.dto.response.PlaceInfoBoxResponse;
+import pl.pawguider.app.controller.dto.response.PlaceInfoResponse;
 import pl.pawguider.app.model.Place;
+import pl.pawguider.app.model.User;
+import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.PlaceService;
+import pl.pawguider.app.service.UserService;
 
 import java.util.List;
 
@@ -15,9 +17,13 @@ import java.util.List;
 public class PlaceController {
 
     private final PlaceService placeService;
+    private final JwtService jwtService;
+    private final UserService userService;
 
-    public PlaceController(PlaceService placeService) {
+    public PlaceController(PlaceService placeService, JwtService jwtService, UserService userService) {
         this.placeService = placeService;
+        this.jwtService = jwtService;
+        this.userService = userService;
     }
 
     @GetMapping("/all")
@@ -26,13 +32,17 @@ public class PlaceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPlaceName(@PathVariable Long id) {
+    public ResponseEntity<?> getPlaceById(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+        String email = jwtService.extractEmailFromHeader(header);
+        User user = userService.getUserByEmail(email);
         Place place = placeService.getPlaceById(id);
 
-        if (place == null) {
-            return ResponseEntity.ok(false);
-        }
+        return ResponseEntity.ok(PlaceInfoResponse.getResponse(user, place));
+    }
 
-        return ResponseEntity.ok(place.getName());
+    @GetMapping("/city-{cityId}")
+    public List<PlaceInfoBoxResponse> getPlacesByCityId(@PathVariable Long cityId) {
+        List<Place> places = placeService.getPlacesByCityId(cityId);
+        return places.stream().map(PlaceInfoBoxResponse::getResponse).toList();
     }
 }

@@ -16,6 +16,9 @@ public class Place {
     private String name;
 
     @Column
+    private String description;
+
+    @Column
     private String photo;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "place")
@@ -64,6 +67,22 @@ public class Place {
 
     public String getPhoto() {
         return photo;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public Collection<PlaceLike> getLikes() {
+        return likes;
+    }
+
+    public City getCity() {
+        return city;
     }
 
     public Collection<ActiveWalk> getActiveWalks() {

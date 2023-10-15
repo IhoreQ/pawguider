@@ -8,7 +8,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "cities", schema = "public", catalog = "dogout")
 public class City {
-    @JsonIgnore
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_city")

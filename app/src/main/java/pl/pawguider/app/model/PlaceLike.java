@@ -14,7 +14,7 @@ public class PlaceLike {
     private int idLike;
 
     @Column(name = "rating")
-    private int rating;
+    private double rating;
 
     @ManyToOne
     @JoinColumn(name = "id_user", referencedColumnName = "id_user", nullable = false)
@@ -28,7 +28,7 @@ public class PlaceLike {
         return idLike;
     }
 
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
 

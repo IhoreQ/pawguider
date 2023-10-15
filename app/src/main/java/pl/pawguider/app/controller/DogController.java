@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.DogAddRequest;
+import pl.pawguider.app.controller.dto.request.DogDeletionRequest;
 import pl.pawguider.app.controller.dto.response.DogBreedResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
@@ -70,19 +71,12 @@ public class DogController {
     }
 
     @DeleteMapping
-    public Boolean deleteDog(@RequestHeader("Authorization") String header) {
+    public Boolean deleteDog(@RequestHeader("Authorization") String header, @RequestBody DogDeletionRequest request) {
 
         String email = jwtService.extractEmailFromHeader(header);
-
         User user = userService.getUserByEmail(email);
-        ActiveWalk activeWalk = walkService.getActiveWalkByUser(user);
-        boolean isDeleted = false;
 
-        if (activeWalk == null) {
-            isDeleted = dogService.deleteDog(user);
-        }
-
-        return isDeleted;
+        return dogService.deleteDog(user, request.dogId());
     }
 
     @GetMapping("/breeds")

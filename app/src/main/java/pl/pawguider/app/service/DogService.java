@@ -7,6 +7,7 @@ import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -40,19 +41,24 @@ public class DogService {
         return dog.orElse(null);
     }
 
-    public boolean deleteDog(User user) {
+    public boolean deleteDog(User user, Long dogId) {
 
-        Optional<Dog> foundDog = dogRepository.findByOwner(user);
+        Optional<Dog> foundDog = dogRepository.findById(dogId);
 
         if (foundDog.isPresent()) {
             Dog dog = foundDog.get();
-            imageService.deleteImage(dog.getPhoto());
-            dogRepository.delete(dog);
-
-            return true;
+            if (isUserDogOwner(user, dog)) {
+                imageService.deleteImage(dog.getPhoto());
+                dogRepository.delete(dog);
+                return true;
+            }
         }
 
         return false;
+    }
+
+    private boolean isUserDogOwner(User user, Dog dog) {
+        return Objects.equals(dog.getOwner().getIdUser(), user.getIdUser());
     }
 
     @Transactional

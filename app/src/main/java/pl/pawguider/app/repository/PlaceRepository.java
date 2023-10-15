@@ -3,6 +3,7 @@ package pl.pawguider.app.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import pl.pawguider.app.model.City;
 import pl.pawguider.app.model.Place;
 
 import java.util.List;
@@ -13,4 +14,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     @Query("select new Place(p.idPlace, p.name, p.photo) from Place p")
     List<Place> findAllPlaces();
 
+    List<Place> findByCity(City city);
 }

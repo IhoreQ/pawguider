@@ -43,4 +43,24 @@ public class Address {
         this.city = city;
         this.places = places;
     }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public String getHomeNumber() {
+        return homeNumber;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public City getCity() {
+        return city;
+    }
 }
