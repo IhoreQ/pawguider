@@ -20,7 +20,7 @@ class UserProfileScreen extends StatelessWidget {
           children: [
             Consumer<UserProvider>(
               builder: (context, userProvider, _) {
-                return Text(userProvider.user?.firstName ?? '');
+                return Text(userProvider.user?.cityName ?? '');
               },
             ),
             ElevatedButton(onPressed: () async {

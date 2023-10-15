@@ -12,6 +12,7 @@ import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/custom_dropdown_button.dart';
 import 'package:front_flutter/widgets/form_field/custom_form_field.dart';
 import 'package:front_flutter/widgets/selectable_behavior_box.dart';
+import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -57,6 +58,9 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   final DogService dogService = DogService();
   final ImageService imageService = ImageService();
 
+  bool _isLoading = false;
+  bool _isDeletionLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -101,7 +105,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
               color: Colors.white,
             )),
         actions: [
-          IconButton(
+          !_isLoading ? IconButton(
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
               onPressed: () => widget.dog != null ? updateDog() : addDog(),
@@ -110,6 +114,11 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                 size: iconSize,
                 color: Colors.white,
               ))
+          : Container(
+              margin: const EdgeInsets.only(right: 10.0),
+              width: 25,
+              child: const CommonLoadingIndicator(color: Colors.white)
+          )
         ],
       ),
       body: Padding(
@@ -242,11 +251,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                           }
                       );
                     }
-                    return const Center(child: SizedBox(
-                        height: 48.0,
-                        width: 48.0,
-                        child: CommonLoadingIndicator(color: AppColor.primaryOrange)
-                    ));
+                    return const SizedLoadingIndicator(color: AppColor.primaryOrange);
                   }
                 ),
                 CustomFormField(
@@ -313,12 +318,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                         }).toList(),
                       );
                     }
-                    return const Center(child: SizedBox(
-                        height: 48.0,
-                        width: 48.0,
-                        child: CommonLoadingIndicator(color: AppColor
-                            .primaryOrange)
-                    ));
+                    return const SizedLoadingIndicator(color: AppColor.primaryOrange);
                   }
                 ),
                 const Gap(20.0),
@@ -388,11 +388,11 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
 
   showAlertDialog(BuildContext context) {
     Widget deleteButton = TextButton(
-      child: Text("Delete", style: AppTextStyle.mediumOrange,),
+      child: !_isDeletionLoading ?
+      Text("Delete", style: AppTextStyle.mediumOrange)
+      : const SizedBox(width: 25.0, child: CommonLoadingIndicator(color: AppColor.primaryOrange)),
       onPressed:  () {
-        // TODO usunięcie psa
-        Navigator.of(context, rootNavigator: true).pop();
-        context.router.popUntilRoot();
+        deleteDog();
       },
     );
     Widget cancelButton = TextButton(
@@ -418,10 +418,28 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     );
   }
 
+  Future<void> deleteDog() async {
+    _isDeletionLoading = true;
+    bool response = await dogService.deleteDog(widget.dog!.id);
+    if (response && context.mounted) {
+      // TODO usunięcie z walk partners
+      Navigator.of(context, rootNavigator: true).pop();
+      context.router.popUntilRoot();
+      widget.onComplete();
+    } else {
+      Navigator.of(context, rootNavigator: true).pop();
+      _isDeletionLoading = false;
+      print('error');
+    }
+  }
+
   Future<void> addDog() async {
     validateBehaviorsCount();
     validateImage();
     if (_formKey.currentState!.validate() && _minBehaviorCountSelected && _imageAdded) {
+      setState(() {
+        _isLoading = true;
+      });
       String fileName = await imageService.uploadImage(image!);
       if (fileName.isNotEmpty) {
         List<int> behaviorsIds = _selectedBehaviors.map((item) => item.id).toList();
@@ -437,6 +455,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
       }
 
       if (context.mounted) {
+        // TODO dodanie do walk partners
         context.router.pop();
         widget.onComplete();
       }

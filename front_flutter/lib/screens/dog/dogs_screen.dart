@@ -7,6 +7,7 @@ import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/widgets/common_loading_indicator.dart';
 import 'package:front_flutter/widgets/routing_circle_add_button.dart';
 import 'package:front_flutter/widgets/dog_info_box.dart';
+import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:front_flutter/styles.dart';
 
@@ -21,7 +22,7 @@ class DogsScreen extends StatefulWidget {
 class _DogsScreenState extends State<DogsScreen> {
   final dogService = DogService();
 
-  Future<void> refresh() async {
+  void refresh() {
     setState(() {});
   }
 
@@ -33,25 +34,11 @@ class _DogsScreenState extends State<DogsScreen> {
         if (snapshot.hasData) {
           List<Dog> dogs = snapshot.data!;
           return dogs.isNotEmpty ?
-            RefreshIndicator(
-              color: AppColor.primaryOrange,
-              backgroundColor: Colors.white,
-              onRefresh: () async {
-                await Future.delayed(const Duration(milliseconds: 1000));
-                dogs = await dogService.getCurrentUserDogs();
-                setState(() {
-                });
-              },
-                child: DogsListPage(userDogs: dogs, refresh: () => refresh())
-            ) :
+            DogsListPage(userDogs: dogs, refresh: () => refresh()) :
             const EmptyDogsListPage();
         }
 
-        return const Center(child: SizedBox(
-            height: 48.0,
-            width: 48.0,
-            child: CommonLoadingIndicator(color: AppColor.primaryOrange)
-        ));
+        return const SizedLoadingIndicator(color: AppColor.primaryOrange);
       },
     );
   }
@@ -178,7 +165,7 @@ class _DogsListPageState extends State<DogsListPage> {
               itemBuilder: (context, index) {
                 return Column(
                   children: [
-                    DogInfoBox(dog: widget.userDogs[index]),
+                    DogInfoBox(dog: widget.userDogs[index], onComplete: () => widget.refresh(),),
                     const Gap(15.0),
                   ],
                 );

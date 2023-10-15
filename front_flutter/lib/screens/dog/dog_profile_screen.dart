@@ -16,9 +16,10 @@ import '../../widgets/common_loading_indicator.dart';
 
 @RoutePage()
 class DogProfileScreen extends StatelessWidget {
-  const DogProfileScreen({Key? key, @PathParam() required this.dogId})
+  const DogProfileScreen({Key? key, @PathParam() required this.dogId, required this.onComplete})
       : super(key: key);
 
+  final VoidCallback onComplete;
   final int dogId;
 
   @override
@@ -43,7 +44,7 @@ class DogProfileScreen extends StatelessWidget {
                     children: [
                       Stack(
                         children: [
-                          TopBar(dog: dog),
+                          TopBar(dog: dog, onComplete: onComplete),
                           DogContentPage(dog: dog),
                           DogAvatar(dog: dog),
                         ],
@@ -69,8 +70,9 @@ class DogProfileScreen extends StatelessWidget {
 
 class TopBar extends StatefulWidget {
   final Dog dog;
+  final VoidCallback onComplete;
 
-  const TopBar({Key? key, required this.dog}) : super(key: key);
+  const TopBar({Key? key, required this.dog, required this.onComplete}) : super(key: key);
 
   @override
   State<TopBar> createState() => _TopBarState();
@@ -131,7 +133,7 @@ class _TopBarState extends State<TopBar> {
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
                                 onPressed: () => context.router
-                                    .push(DogDetailsRoute(dog: widget.dog, onComplete: () {})),
+                                    .push(DogDetailsRoute(dog: widget.dog, onComplete: () => widget.onComplete())),
                                 icon: const Icon(
                                   FluentSystemIcons.ic_fluent_edit_filled,
                                   size: iconSize,

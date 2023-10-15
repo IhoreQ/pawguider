@@ -1,24 +1,41 @@
 import 'package:auto_route/annotations.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/services/place_service.dart';
 import 'package:front_flutter/widgets/place_info_box.dart';
+import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/place.dart';
+import '../../providers/user_provider.dart';
 import '../../styles.dart';
+import '../../widgets/common_loading_indicator.dart';
 
 @RoutePage()
-class PlacesScreen extends StatelessWidget {
-  PlacesScreen({super.key});
+class PlacesScreen extends StatefulWidget {
+  const PlacesScreen({super.key});
 
-  final _city = 'Kraków';
-  final Place examplePlace = Place.basicInfo(1, 'Kleparski wybieg', 'Park Kleparski', 2, 5.0, 'https://lh6.googleusercontent.com/UdJXDyQXNwEtD91robiwnZPWjRcztSi1bZpWpmusPthVk32iD8nkGHtmaiWVI-VE4cCZrvUk9YQnBsdLgsRtMTmjH4GhtvWBkZ2nF-eZTVhei7_hYwvNb4oxsfqmypV0q70THeqGuThliKDEMpI7qhg');
+  @override
+  State<PlacesScreen> createState() => _PlacesScreenState();
+}
+
+class _PlacesScreenState extends State<PlacesScreen> {
+
+  final PlaceService placeService = PlaceService();
+  late final UserProvider userProvider;
+
+
+  @override
+  void initState() {
+    super.initState();
+    userProvider = context.read<UserProvider>();
+  }
 
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
-    List<Place> places = [examplePlace];
-    
+
     return Scaffold(
       body: ListView(
         children: [
@@ -42,7 +59,11 @@ class PlacesScreen extends StatelessWidget {
                       size: 20,
                       color: Colors.white,
                     ),
-                    Text(_city, style: AppTextStyle.mediumWhite),
+                    Consumer<UserProvider>(
+                      builder: (context, userProvider, _) {
+                        return Text(userProvider.user?.cityName ?? '', style: AppTextStyle.mediumWhite,);
+                      },
+                    ),
                   ],
                 ),
               ],
@@ -104,19 +125,29 @@ class PlacesScreen extends StatelessWidget {
             ],
           ),
           const Gap(20.0),
-          // TODO Pobranie listy miejsc z API oraz wyświetlenie
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: places.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  PlaceInfoBox(place: places[index]),
-                  const Gap(15.0),
-                ],
-              );
-            },
+          FutureBuilder<List<Place>>(
+            future: placeService.getPlacesByCityId(userProvider.user!.cityId),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Place> places = snapshot.data!;
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: places.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        PlaceInfoBox(place: places[index]),
+                        const Gap(15.0),
+                      ],
+                    );
+                  },
+                );
+              }
+
+              return const SizedLoadingIndicator(color: AppColor.primaryOrange);
+            }
           ),
         ],
       ),

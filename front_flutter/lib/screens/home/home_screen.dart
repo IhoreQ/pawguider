@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:front_flutter/models/place.dart';
 import 'package:front_flutter/widgets/common_loading_indicator.dart';
 import 'package:front_flutter/widgets/favorite_place_box.dart';
+import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:front_flutter/widgets/walk_info_box.dart';
 import 'package:front_flutter/widgets/walk_partner_box.dart';
 import 'package:gap/gap.dart';
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    _place = Place(1, 'Kleparski wybieg', 'Park kleparski', '30-002', 'Kraków', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est.', 2, 5.0, 'https://lh6.googleusercontent.com/UdJXDyQXNwEtD91robiwnZPWjRcztSi1bZpWpmusPthVk32iD8nkGHtmaiWVI-VE4cCZrvUk9YQnBsdLgsRtMTmjH4GhtvWBkZ2nF-eZTVhei7_hYwvNb4oxsfqmypV0q70THeqGuThliKDEMpI7qhg');
+    _place = Place(1, 'Kleparski wybieg', 'Park kleparski', '30-002', 'Kraków', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est.', 5.0, 'https://lh6.googleusercontent.com/UdJXDyQXNwEtD91robiwnZPWjRcztSi1bZpWpmusPthVk32iD8nkGHtmaiWVI-VE4cCZrvUk9YQnBsdLgsRtMTmjH4GhtvWBkZ2nF-eZTVhei7_hYwvNb4oxsfqmypV0q70THeqGuThliKDEMpI7qhg', false, 3.0);
     _walk = null;
     userProvider = context.read<UserProvider>();
     userProvider.fetchCurrentUser();
@@ -48,11 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Consumer<UserProvider>(builder: (context, userProvider, _) {
         return userProvider.user == null ?
-        const Center(child: SizedBox(
-          height: 48.0,
-          width: 48.0,
-          child: CommonLoadingIndicator(color: AppColor.primaryOrange)
-        ))
+        const SizedLoadingIndicator(color: AppColor.primaryOrange)
         : ListView(
           children: [
             Container(

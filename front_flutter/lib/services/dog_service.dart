@@ -91,4 +91,18 @@ class DogService {
       return false;
     }
   }
+
+  Future<bool> deleteDog(int dogId) async {
+    try {
+      Response response = await _dio.delete(
+        '/dog',
+        data: {
+        'dogId': dogId,
+        }
+      );
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
 }

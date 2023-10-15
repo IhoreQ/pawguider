@@ -1,0 +1,52 @@
+import 'package:dio/dio.dart';
+import 'package:front_flutter/utilities/constants.dart';
+
+import '../dio/dio_config.dart';
+import '../models/place.dart';
+
+class PlaceService {
+  final Dio _dio = DioConfig.createDio();
+
+  Future<List<Place>> getPlacesByCityId(int cityId) async {
+    try {
+      Response response = await _dio.get('/place/city-$cityId');
+      List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+      List<Place> places = rawData.map((placeData) => Place.basicInfo(
+          placeData['id'],
+          placeData['name'],
+          placeData['street'],
+          placeData['dogsCount'],
+          placeData['averageScore'],
+          Constants.imageServerUrl + placeData['photoName']
+      )).toList();
+
+      return places;
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<Place> getPlaceById(int placeId) async {
+    try {
+      Response response = await _dio.get('/place/$placeId');
+      Map<String, dynamic> placeData = response.data;
+
+      Place place = Place(
+          placeId,
+          placeData['name'],
+          placeData['street'],
+          placeData['zipCode'],
+          placeData['city'],
+          placeData['description'],
+          placeData['averageScore'],
+          Constants.imageServerUrl + placeData['photoName'],
+          placeData['currentUserLiked'],
+          placeData['currentUserScore']
+      );
+
+      return place;
+    } on DioException {
+      rethrow;
+    }
+  }
+}

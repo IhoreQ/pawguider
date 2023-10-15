@@ -6,15 +6,17 @@ class Place {
   String? _zipCode;
   String? _city;
   String? _description;
-  final int _dogsCount;
+  int? _dogsCount;
   double _averageScore;
   final String _photoUrl;
+  bool? _likedByUser;
+  double? _scoreByUser;
 
   Place.basicInfo(this._id, this._name, this._street, this._dogsCount,
       this._averageScore, this._photoUrl);
 
   Place(this._id, this._name, this._street, this._zipCode, this._city,
-      this._description, this._dogsCount, this._averageScore, this._photoUrl);
+      this._description, this._averageScore, this._photoUrl, this._likedByUser, this._scoreByUser);
 
   int get id => _id;
 
@@ -22,7 +24,7 @@ class Place {
 
   double get averageScore => _averageScore;
 
-  int get dogsCount => _dogsCount;
+  int? get dogsCount => _dogsCount;
 
   String? get description => _description;
 
@@ -34,7 +36,12 @@ class Place {
 
   String get name => _name;
 
+
+  bool? get likedByUser => _likedByUser;
+
   set averageScore(double value) {
     _averageScore = value;
   }
+
+  double? get scoreByUser => _scoreByUser;
 }
