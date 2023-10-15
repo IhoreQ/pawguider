@@ -67,6 +67,10 @@ class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
     dogs = [exampleDog, exampleDog2];
   }
 
+  void refresh() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
@@ -94,7 +98,7 @@ class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
                       Stack(
                         children: [
                           TopBar(place: place),
-                          MainContentBox(place: place, dogs: dogs),
+                          MainContentBox(place: place, dogs: dogs, refreshFunction: refresh,),
                         ],
                       )
                     ],
@@ -199,10 +203,11 @@ class _TopBarState extends State<TopBar> {
 }
 
 class MainContentBox extends StatefulWidget {
-  const MainContentBox({super.key, required this.place, required this.dogs});
+  const MainContentBox({super.key, required this.place, required this.dogs, required this.refreshFunction});
 
   final Place place;
   final List<Dog> dogs;
+  final Function() refreshFunction;
 
   @override
   State<MainContentBox> createState() => _MainContentBoxState();
@@ -210,6 +215,8 @@ class MainContentBox extends StatefulWidget {
 
 class _MainContentBoxState extends State<MainContentBox> {
   late double _placeRating;
+  final PlaceService placeService = PlaceService();
+
 
   @override
   void initState() {
@@ -382,9 +389,22 @@ class _MainContentBoxState extends State<MainContentBox> {
                           )),
                       const Gap(20.0),
                       FilledButton(
-                          onPressed: () {
-                            // TODO wysyłka opinii na API i pobranie nowej wartości i przypisanie do place'a
-                            context.router.pop();
+                          onPressed: () async {
+                            bool success;
+
+                            success = widget.place.ratedByUser! ?
+                                await placeService.updateRating(widget.place.id, _placeRating) :
+                                await placeService.addRating(widget.place.id, _placeRating);
+
+                            if (success) {
+                              print('update');
+                              widget.refreshFunction();
+                              if (context.mounted) {
+                                context.router.pop();
+                              }
+                            } else {
+                              print('error');
+                            }
                           },
                           style: OutlinedButton.styleFrom(
                             backgroundColor: AppColor.primaryOrange,

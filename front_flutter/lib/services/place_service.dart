@@ -41,12 +41,45 @@ class PlaceService {
           placeData['averageScore'],
           Constants.imageServerUrl + placeData['photoName'],
           placeData['currentUserLiked'],
+          placeData['currentUserRated'],
           placeData['currentUserScore']
       );
 
       return place;
     } on DioException {
       rethrow;
+    }
+  }
+
+  Future<bool> addRating(int placeId, double rating) async {
+    try {
+      Response response = await _dio.post(
+        '/place/rate',
+        data: {
+          "placeId": placeId,
+          "rating": rating
+        }
+      );
+
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
+
+  Future<bool> updateRating(int placeId, double rating) async {
+    try {
+      Response response = await _dio.patch(
+          '/place/rate',
+          data: {
+            "placeId": placeId,
+            "rating": rating
+          }
+      );
+
+      return true;
+    } on DioException {
+      return false;
     }
   }
 }

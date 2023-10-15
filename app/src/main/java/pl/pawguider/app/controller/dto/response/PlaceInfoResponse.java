@@ -12,6 +12,7 @@ public record PlaceInfoResponse(String name,
                                 double averageScore,
                                 double currentUserScore,
                                 boolean currentUserLiked,
+                                boolean currentUserRated,
                                 String photoName) {
 
     public static PlaceInfoResponse getResponse(User user, Place place) {
@@ -25,6 +26,7 @@ public record PlaceInfoResponse(String name,
                 .orElse(0.0);
         boolean currentUserLiked = place.getLikes().stream()
                 .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
-        return new PlaceInfoResponse(place.getName(), address.getStreet(), address.getPostalCode(), place.getCity().getName(), place.getDescription(), averageScore, currentUserScore, currentUserLiked, place.getPhoto());
+        boolean currentUserRated = currentUserScore != 0.0;
+        return new PlaceInfoResponse(place.getName(), address.getStreet(), address.getPostalCode(), place.getCity().getName(), place.getDescription(), averageScore, currentUserScore, currentUserLiked, currentUserRated, place.getPhoto());
     }
 }

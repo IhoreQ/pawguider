@@ -10,13 +10,14 @@ class Place {
   double _averageScore;
   final String _photoUrl;
   bool? _likedByUser;
+  bool? _ratedByUser;
   double? _scoreByUser;
 
   Place.basicInfo(this._id, this._name, this._street, this._dogsCount,
       this._averageScore, this._photoUrl);
 
   Place(this._id, this._name, this._street, this._zipCode, this._city,
-      this._description, this._averageScore, this._photoUrl, this._likedByUser, this._scoreByUser);
+      this._description, this._averageScore, this._photoUrl, this._likedByUser, this._ratedByUser, this._scoreByUser);
 
   int get id => _id;
 
@@ -44,4 +45,6 @@ class Place {
   }
 
   double? get scoreByUser => _scoreByUser;
+
+  bool? get ratedByUser => _ratedByUser;
 }

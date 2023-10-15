@@ -32,6 +32,8 @@ class _PlacesScreenState extends State<PlacesScreen> {
     userProvider = context.read<UserProvider>();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
