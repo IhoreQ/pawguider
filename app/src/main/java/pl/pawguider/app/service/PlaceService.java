@@ -1,9 +1,10 @@
 package pl.pawguider.app.service;
 
 import org.springframework.stereotype.Service;
-import pl.pawguider.app.model.City;
-import pl.pawguider.app.model.Place;
+import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.CityRepository;
+import pl.pawguider.app.repository.PlaceLikeRepository;
+import pl.pawguider.app.repository.PlaceRatingRepository;
 import pl.pawguider.app.repository.PlaceRepository;
 
 import java.util.ArrayList;
@@ -15,10 +16,14 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
     private final CityRepository cityRepository;
+    private final PlaceLikeRepository placeLikeRepository;
+    private final PlaceRatingRepository placeRatingRepository;
 
-    public PlaceService(PlaceRepository placeRepository, CityRepository cityRepository) {
+    public PlaceService(PlaceRepository placeRepository, CityRepository cityRepository, PlaceLikeRepository placeLikeRepository, PlaceRatingRepository placeRatingRepository) {
         this.placeRepository = placeRepository;
         this.cityRepository = cityRepository;
+        this.placeLikeRepository = placeLikeRepository;
+        this.placeRatingRepository = placeRatingRepository;
     }
 
     public List<Place> getAllPlaces() {
@@ -37,5 +42,26 @@ public class PlaceService {
             return placeRepository.findByCity(city);
         }
         return new ArrayList<>();
+    }
+
+    public void addLike(User user, Place place) {
+        PlaceLike like = new PlaceLike(user, place);
+        placeLikeRepository.save(like);
+    }
+
+    public void deleteLike(User user, Place place) {
+        PlaceLike like = placeLikeRepository.findByUserIdAndPlaceId(user.getIdUser(), place.getIdPlace());
+        placeLikeRepository.delete(like);
+    }
+
+    public void addRating(User user, Place place, double rating) {
+        PlaceRating placeRating = new PlaceRating(user, place, rating);
+        placeRatingRepository.save(placeRating);
+    }
+
+    public void updateRating(User user, Place place, double rating) {
+        PlaceRating placeRating = placeRatingRepository.findByUserIdAndPlaceId(user.getIdUser(), place.getIdPlace());
+        placeRating.setRating(rating);
+        placeRatingRepository.save(placeRating);
     }
 }

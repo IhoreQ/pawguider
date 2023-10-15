@@ -11,7 +11,7 @@ public class PlaceLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_like")
-    private int idLike;
+    private Long idLike;
 
 
     @ManyToOne
@@ -22,7 +22,7 @@ public class PlaceLike {
     @JoinColumn(name = "id_place", referencedColumnName = "id_place", nullable = false)
     private Place place;
 
-    public int getIdLike() {
+    public Long getIdLike() {
         return idLike;
     }
 
@@ -33,5 +33,16 @@ public class PlaceLike {
 
     public Place getPlace() {
         return place;
+    }
+
+    public PlaceLike() {}
+
+    public PlaceLike(Long idLike) {
+        this.idLike = idLike;
+    }
+
+    public PlaceLike(User user, Place place) {
+        this.user = user;
+        this.place = place;
     }
 }
