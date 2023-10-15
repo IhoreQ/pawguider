@@ -47,6 +47,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Collection<PlaceLike> placesLikes;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private Collection<PlaceRating> placesRatings;
+
     public User() {
     }
 

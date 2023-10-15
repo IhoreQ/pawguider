@@ -1,9 +1,6 @@
 package pl.pawguider.app.controller.dto.response;
 
-import pl.pawguider.app.model.Address;
-import pl.pawguider.app.model.Place;
-import pl.pawguider.app.model.PlaceLike;
-import pl.pawguider.app.model.User;
+import pl.pawguider.app.model.*;
 
 import java.util.Collection;
 
@@ -19,14 +16,15 @@ public record PlaceInfoResponse(String name,
 
     public static PlaceInfoResponse getResponse(User user, Place place) {
         Address address = place.getAddress();
-        Collection<PlaceLike> likes = place.getLikes();
-        double averageScore = likes.stream().mapToDouble(PlaceLike::getRating).average().orElse(0.0);
-        double currentUserScore = likes.stream()
-                .filter(like -> like.getUser().getIdUser().equals(user.getIdUser()))
+        Collection<PlaceRating> ratings = place.getRatings();
+        double averageScore = ratings.stream().mapToDouble(PlaceRating::getRating).average().orElse(0.0);
+        double currentUserScore = ratings.stream()
+                .filter(rating -> rating.getUser().getIdUser().equals(user.getIdUser()))
                 .findFirst()
-                .map(PlaceLike::getRating)
+                .map(PlaceRating::getRating)
                 .orElse(0.0);
-        boolean currentUserLiked = currentUserScore != 0.0;
+        boolean currentUserLiked = place.getLikes().stream()
+                .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
         return new PlaceInfoResponse(place.getName(), address.getStreet(), address.getPostalCode(), place.getCity().getName(), place.getDescription(), averageScore, currentUserScore, currentUserLiked, place.getPhoto());
     }
 }

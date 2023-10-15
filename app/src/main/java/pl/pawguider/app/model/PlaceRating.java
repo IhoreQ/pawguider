@@ -5,14 +5,16 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "places_likes", schema = "public", catalog = "dogout")
-public class PlaceLike {
+@Table(name = "places_ratings", schema = "public", catalog = "dogout")
+public class PlaceRating {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id_like")
+    @Column(name = "id_rating")
     private int idLike;
 
+    @Column(name = "rating")
+    private double rating;
 
     @ManyToOne
     @JoinColumn(name = "id_user", referencedColumnName = "id_user", nullable = false)
@@ -33,5 +35,9 @@ public class PlaceLike {
 
     public Place getPlace() {
         return place;
+    }
+
+    public double getRating() {
+        return rating;
     }
 }

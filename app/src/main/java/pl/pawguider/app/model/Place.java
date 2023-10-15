@@ -35,6 +35,9 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private Collection<PlaceLike> likes;
 
+    @OneToMany(mappedBy = "place")
+    private Collection<PlaceRating> ratings;
+
     public Place() {
     }
 
@@ -87,5 +90,9 @@ public class Place {
 
     public Collection<ActiveWalk> getActiveWalks() {
         return activeWalks;
+    }
+
+    public Collection<PlaceRating> getRatings() {
+        return ratings;
     }
 }
