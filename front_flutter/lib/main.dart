@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:front_flutter/providers/favourite_places_provider.dart';
 import 'package:front_flutter/providers/loading_provider.dart';
 import 'package:front_flutter/providers/register_details_provider.dart';
+import 'package:front_flutter/providers/user_dogs_provider.dart';
 import 'package:front_flutter/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:front_flutter/routes/router.dart';
@@ -31,6 +32,7 @@ class App extends StatelessWidget {
       ChangeNotifierProvider(create: (context) => LoadingProvider()),
       ChangeNotifierProvider(create: (context) => RegisterDetailsProvider()),
       ChangeNotifierProvider(create: (context) => FavouritePlacesProvider()),
+      ChangeNotifierProvider(create: (context) => UserDogsProvider()),
     ];
 
     return MultiProvider(

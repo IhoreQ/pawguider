@@ -3,9 +3,9 @@ import 'behavior.dart';
 class Dog {
   final int _id;
   String _name;
-  String _breed;
-  String _gender;
-  int _age;
+  String? _breed;
+  String? _gender;
+  int? _age;
   String _photoUrl;
   String? _size;
   String? _description;
@@ -13,11 +13,12 @@ class Dog {
   List<Behavior>? _behaviors;
   int? _ownerId;
   bool? _likedByUser;
+  bool? _selected;
 
   Dog.clone(Dog dog) : this(dog.id, dog.name, dog.breed, dog.gender, dog.age,
       dog.photoUrl, dog.size, dog.description, dog.likes, dog.behaviors!.map((e) => Behavior(e.id, e.name)).toList(), dog.ownerId, dog.likedByUser);
 
-  Dog.basic(this._id, this._name, this._breed, this._gender, this._age, this._photoUrl);
+  Dog.basic(this._id, this._name, this._breed, this._gender, this._age, this._photoUrl, this._selected);
 
   Dog(this._id, this._name, this._breed, this._gender, this._age,
       this._photoUrl, this._size, this._description, this._likes, this._behaviors, this._ownerId, this._likedByUser);
@@ -30,11 +31,11 @@ class Dog {
 
   int? get likes => _likes;
 
-  int get age => _age;
+  int? get age => _age;
 
-  String get gender => _gender;
+  String? get gender => _gender;
 
-  String get breed => _breed;
+  String? get breed => _breed;
 
   String get name => _name;
 
@@ -46,6 +47,7 @@ class Dog {
 
   bool? get likedByUser => _likedByUser;
 
+  bool? get selected => _selected;
 
   void addLike() {
     _likes = _likes! + 1;

@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter/providers/user_dogs_provider.dart';
 import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/services/dto/dog/dog_addition_request.dart';
 import 'package:front_flutter/services/image_service.dart';
@@ -15,6 +16,7 @@ import 'package:front_flutter/widgets/selectable_behavior_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 
 import '../../models/dog/behavior.dart';
@@ -58,18 +60,21 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   final DogService dogService = DogService();
   final ImageService imageService = ImageService();
 
+  late final UserDogsProvider userDogsProvider;
+
   bool _isLoading = false;
   bool _isDeletionLoading = false;
 
   @override
   void initState() {
     super.initState();
+    userDogsProvider = context.read<UserDogsProvider>();
 
     if (widget.dog != null) {
       _nameController.text = widget.dog!.name;
       _ageController.text = '${widget.dog!.age}';
       _descriptionController.text = widget.dog!.description!;
-      _selectedGender = widget.dog!.gender;
+      _selectedGender = widget.dog!.gender!;
       _selectedBehaviors = Dog.clone(widget.dog!).behaviors!;
     }
   }
@@ -82,8 +87,6 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
       setState(() {});
     }
   }
-
-  Future<void> uploadImage() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -422,10 +425,9 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     _isDeletionLoading = true;
     bool response = await dogService.deleteDog(widget.dog!.id);
     if (response && context.mounted) {
-      // TODO usunięcie z walk partners
+      userDogsProvider.fetchUserDogs();
       Navigator.of(context, rootNavigator: true).pop();
       context.router.popUntilRoot();
-      widget.onComplete();
     } else {
       Navigator.of(context, rootNavigator: true).pop();
       _isDeletionLoading = false;
@@ -455,9 +457,8 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
       }
 
       if (context.mounted) {
-        // TODO dodanie do walk partners
+        userDogsProvider.fetchUserDogs();
         context.router.pop();
-        widget.onComplete();
       }
     }
   }

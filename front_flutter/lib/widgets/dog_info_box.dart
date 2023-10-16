@@ -92,7 +92,7 @@ class DogInfoBox extends StatelessWidget {
                         style: AppTextStyle.heading2,
                       ),
                       Text(
-                        dog.breed,
+                        dog.breed!,
                         style: AppTextStyle.heading3,
                       ),
                     ],
@@ -108,7 +108,7 @@ class DogInfoBox extends StatelessWidget {
                               width: 30,
                               height: 30,
                               alignment: Alignment.center,
-                              child: getGenderIcon(dog.gender)),
+                              child: getGenderIcon(dog.gender!)),
                           const Gap(3.0),
                           Text(
                             'Gender',

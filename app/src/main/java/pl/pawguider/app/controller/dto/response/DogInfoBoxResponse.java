@@ -7,9 +7,10 @@ public record DogInfoBoxResponse(Long id,
                                  String breed,
                                  String gender,
                                  int age,
-                                 String photoName) {
+                                 String photoName,
+                                 boolean selected) {
 
     public static DogInfoBoxResponse getResponse(Dog dog) {
-        return new DogInfoBoxResponse(dog.getIdDog(), dog.getName(), dog.getBreed().getName(), dog.getGender().getName(), dog.getAge(), dog.getPhoto());
+        return new DogInfoBoxResponse(dog.getIdDog(), dog.getName(), dog.getBreed().getName(), dog.getGender().getName(), dog.getAge(), dog.getPhoto(), dog.getSelected());
     }
 }

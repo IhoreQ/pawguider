@@ -106,4 +106,8 @@ public class DogService {
         dogLikeRepository.delete(like);
     }
 
+    public void toggleSelected(Dog dog) {
+        dog.setSelected(!dog.getSelected());
+        dogRepository.save(dog);
+    }
 }

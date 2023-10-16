@@ -2,14 +2,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/models/dog/dog.dart';
+import 'package:front_flutter/providers/user_dogs_provider.dart';
 import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/services/dog_service.dart';
-import 'package:front_flutter/widgets/common_loading_indicator.dart';
 import 'package:front_flutter/widgets/routing_circle_add_button.dart';
 import 'package:front_flutter/widgets/dog_info_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:front_flutter/styles.dart';
+import 'package:provider/provider.dart';
 
 @RoutePage()
 class DogsScreen extends StatefulWidget {
@@ -21,6 +22,13 @@ class DogsScreen extends StatefulWidget {
 
 class _DogsScreenState extends State<DogsScreen> {
   final dogService = DogService();
+  late final UserDogsProvider userDogsProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    userDogsProvider = context.read<UserDogsProvider>();
+  }
 
   void refresh() {
     setState(() {});
@@ -28,17 +36,16 @@ class _DogsScreenState extends State<DogsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Dog>>(
-      future: dogService.getCurrentUserDogs(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          List<Dog> dogs = snapshot.data!;
-          return dogs.isNotEmpty ?
+    return Consumer<UserDogsProvider>(
+      builder: (context, userDogsProvider, _) {
+          List<Dog>? dogs = userDogsProvider.dogs;
+          if (dogs != null) {
+            return dogs.isNotEmpty ?
             DogsListPage(userDogs: dogs, refresh: () => refresh()) :
             const EmptyDogsListPage();
-        }
-
-        return const SizedLoadingIndicator(color: AppColor.primaryOrange);
+          } else {
+            return const SizedLoadingIndicator(color: AppColor.primaryOrange);
+          }
       },
     );
   }

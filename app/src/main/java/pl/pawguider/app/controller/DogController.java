@@ -8,6 +8,7 @@ import pl.pawguider.app.controller.dto.request.DogDeletionRequest;
 import pl.pawguider.app.controller.dto.response.DogBreedResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
+import pl.pawguider.app.controller.dto.response.WalkPartnerResponse;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.service.DogService;
 import pl.pawguider.app.service.JwtService;
@@ -110,6 +111,19 @@ public class DogController {
         return true;
     }
 
+    @PatchMapping("/select/{id}")
+    public Boolean toggleSelected(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+        User user = getUserFromHeader(header);
+        Dog dog = dogService.getDogById(id);
+
+        if (!isOwner(user, dog)) {
+            return false;
+        }
+
+        dogService.toggleSelected(dog);
+        return true;
+    }
+
     private User getUserFromHeader(String header) {
         String email = jwtService.extractEmailFromHeader(header);
         return userService.getUserByEmail(email);
@@ -119,5 +133,9 @@ public class DogController {
         return dog.getLikes()
                 .stream()
                 .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
+    }
+
+    private boolean isOwner(User user, Dog dog) {
+        return dog.getOwner().getIdUser().equals(user.getIdUser());
     }
 }

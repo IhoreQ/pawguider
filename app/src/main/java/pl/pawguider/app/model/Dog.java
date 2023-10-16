@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,6 +28,9 @@ public class Dog {
 
     @Column
     private String photo;
+
+    @Column
+    private Boolean selected;
 
     @ManyToOne
     @JoinColumn(name = "id_breed", referencedColumnName = "id_dog_breed", nullable = false)
@@ -57,6 +59,7 @@ public class Dog {
         this.photo = photo;
         this.breed = breed;
         this.owner = user;
+        this.selected = false;
     }
 
     public String getName() {
@@ -97,5 +100,13 @@ public class Dog {
 
     public Collection<DogLike> getLikes() {
         return likes;
+    }
+
+    public Boolean getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Boolean selected) {
+        this.selected = selected;
     }
 }

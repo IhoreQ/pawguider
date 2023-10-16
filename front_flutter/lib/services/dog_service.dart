@@ -22,6 +22,7 @@ class DogService {
         dogData["gender"],
         dogData["age"],
         Constants.imageServerUrl + dogData["photoName"],
+        dogData["selected"]
       )).toList();
 
       return dogs;
@@ -118,6 +119,15 @@ class DogService {
   Future<bool> deleteLike(int dogId) async {
     try {
       Response response = await _dio.delete('/dog/like/$dogId');
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
+  
+  Future<bool> toggleSelected(int dogId) async {
+    try {
+      Response response = await _dio.patch('/dog/select/$dogId');
       return true;
     } on DioException {
       return false;

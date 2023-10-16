@@ -285,7 +285,7 @@ class DogContentPage extends StatelessWidget {
                 child: Text(dog.name,
                     style: AppTextStyle.heading1.copyWith(fontSize: 25.0))),
             Center(
-                child: Text(dog.breed,
+                child: Text(dog.breed!,
                     style: AppTextStyle.heading3.copyWith(fontSize: 18.0))),
             const Gap(20.0),
             Row(

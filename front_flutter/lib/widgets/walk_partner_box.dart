@@ -1,7 +1,9 @@
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/providers/user_dogs_provider.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/widgets/overlay_inkwell.dart';
+import 'package:provider/provider.dart';
 
 import '../models/dog/dog.dart';
 
@@ -20,11 +22,13 @@ class _WalkPartnerBoxState extends State<WalkPartnerBox> {
 
   final double imageSize = 130.0;
   late bool _isSelected;
+  late final UserDogsProvider userDogsProvider;
 
   @override
   void initState() {
     super.initState();
-    _isSelected = widget.selected ?? false;
+    userDogsProvider = context.read<UserDogsProvider>();
+    _isSelected = widget.dog.selected!;
   }
 
   @override
@@ -85,9 +89,11 @@ class _WalkPartnerBoxState extends State<WalkPartnerBox> {
             ),
           ),
           OverlayInkwell(onTap: () {
-            _isSelected = !_isSelected;
-            setState(() {});
-            widget.onSelected(_isSelected);
+            if (userDogsProvider.isLimitNotExceeded() || _isSelected) {
+              _isSelected = !_isSelected;
+              setState(() {});
+              widget.onSelected(_isSelected);
+            }
           })
         ],
       )

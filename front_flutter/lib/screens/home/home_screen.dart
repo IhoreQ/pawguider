@@ -2,7 +2,10 @@ import 'package:auto_route/annotations.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/models/place.dart';
+import 'package:front_flutter/models/user.dart';
 import 'package:front_flutter/providers/favourite_places_provider.dart';
+import 'package:front_flutter/providers/user_dogs_provider.dart';
+import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/widgets/favorite_place_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:front_flutter/widgets/walk_info_box.dart';
@@ -29,7 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
   late final Place _place;
   late final Walk? _walk;
   late final Dog _dog;
+  final dogService = DogService();
   late final UserProvider userProvider;
+  late final UserDogsProvider userDogsProvider;
   late final FavouritePlacesProvider favouritePlacesProvider;
 
   @override
@@ -38,10 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _place = Place(1, 'Kleparski wybieg', 'Park kleparski', '30-002', 'Kraków', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est.', 5.0, 'https://lh6.googleusercontent.com/UdJXDyQXNwEtD91robiwnZPWjRcztSi1bZpWpmusPthVk32iD8nkGHtmaiWVI-VE4cCZrvUk9YQnBsdLgsRtMTmjH4GhtvWBkZ2nF-eZTVhei7_hYwvNb4oxsfqmypV0q70THeqGuThliKDEMpI7qhg', false, false, 3.0);
     _walk = null;
+
     userProvider = context.read<UserProvider>();
     favouritePlacesProvider = context.read<FavouritePlacesProvider>();
+    userDogsProvider = context.read<UserDogsProvider>();
+
     userProvider.fetchCurrentUser();
     favouritePlacesProvider.fetchFavouritePlaces();
+    userDogsProvider.fetchUserDogs();
+
     final List<Behavior> exampleBehaviors = [Behavior(1, 'Friendly'), Behavior(6, 'Calm'), Behavior(12, 'Curious'), Behavior(10, 'Independent')];
     _dog = Dog(12, 'Ciapek', 'Jack Russel Terrier', 'Male', 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10, false);
   }
@@ -175,36 +185,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text('You\'re walk partners', style: AppTextStyle.boldDark.copyWith(fontSize: 22.0)),
                 ),
                 const Gap(10.0),
-                SingleChildScrollView(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  scrollDirection: Axis.horizontal,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0, right: 20.0),
-                    child: Row(
-                      children: [
-                        WalkPartnerBox(
-                          dog: _dog,
-                          onSelected: (bool value) {
-                            print(value);
-                          },
+                Consumer<UserDogsProvider>(
+                  builder: (context, userDogsProvider, _) {
+                      return userDogsProvider.dogs != null ?
+                      SingleChildScrollView(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 15.0),
+                          child: Row(
+                            children: userDogsProvider.dogs!.map((dog) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 20.0),
+                                child: WalkPartnerBox(
+                                  dog: dog,
+                                  onSelected: (isSelected) => handleDogSelection(isSelected, dog),
+                                ),
+                              );
+                            }).toList(),
+                          ),
                         ),
-                        const Gap(20.0),
-                        WalkPartnerBox(
-                          dog: _dog,
-                          onSelected: (bool value) {
-                            print(value);
-                          },
-                        ),
-                        const Gap(20.0),
-                        WalkPartnerBox(
-                          dog: _dog,
-                          onSelected: (bool value) {
-                            print(value);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                      ) :
+                      const SizedLoadingIndicator(color: AppColor.primaryOrange);
+                    }
                 ),
                 const Gap(10.0),
                 Consumer<FavouritePlacesProvider>(builder: (context, favouritePlacesProvider, _) {
@@ -243,5 +246,16 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       })
     );
+  }
+
+  void handleDogSelection(bool isSelected, Dog dog) {
+    if (userDogsProvider.isLimitNotExceeded() || !isSelected) {
+      dogService.toggleSelected(dog.id);
+      if (isSelected) {
+        userDogsProvider.incrementDogsCount();
+      } else {
+        userDogsProvider.decrementDogsCount();
+      }
+    }
   }
 }
