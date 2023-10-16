@@ -8,7 +8,7 @@ public class DogLike {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id_like")
-    private int idLike;
+    private Long idLike;
 
     @ManyToOne
     @JoinColumn(name = "id_user", referencedColumnName = "id_user", nullable = false)
@@ -17,7 +17,18 @@ public class DogLike {
     @JoinColumn(name = "id_dog", referencedColumnName = "id_dog", nullable = false)
     private Dog dog;
 
-    public int getIdLike() {
+    public DogLike() {}
+
+    public DogLike(Long idLike) {
+        this.idLike = idLike;
+    }
+
+    public DogLike(User user, Dog dog) {
+        this.user = user;
+        this.dog = dog;
+    }
+
+    public Long getIdLike() {
         return idLike;
     }
 

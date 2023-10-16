@@ -14,7 +14,6 @@ import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.UserService;
 import pl.pawguider.app.service.WalkService;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -91,5 +90,41 @@ public class DogController {
     @GetMapping("/behaviors")
     public List<DogBehavior> getAllBehaviors() {
         return dogService.getAllBehaviors();
+    }
+
+    @PostMapping("/like/{id}")
+    public Boolean addLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+        User user = getUserFromHeader(header);
+        Dog dog = dogService.getDogById(id);
+
+        if (isAlreadyLiked(user, dog))
+            return false;
+
+        dogService.addLike(user, dog);
+        return true;
+    }
+
+    @DeleteMapping("/like/{id}")
+    public Boolean deleteLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+        User user = getUserFromHeader(header);
+        Dog dog = dogService.getDogById(id);
+
+        if (!isAlreadyLiked(user, dog))
+            return false;
+
+        dogService.deleteLike(user, dog);
+        return true;
+    }
+
+
+    private User getUserFromHeader(String header) {
+        String email = jwtService.extractEmailFromHeader(header);
+        return userService.getUserByEmail(email);
+    }
+
+    private boolean isAlreadyLiked(User user, Dog dog) {
+        return dog.getLikes()
+                .stream()
+                .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
     }
 }

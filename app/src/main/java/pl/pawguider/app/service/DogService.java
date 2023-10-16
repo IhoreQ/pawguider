@@ -20,8 +20,9 @@ public class DogService {
     private final DogBehaviorRepository dogBehaviorRepository;
     private final DogsBehaviorsRepository dogsBehaviorsRepository;
     private final GenderRepository genderRepository;
+    private final DogLikeRepository dogLikeRepository;
 
-    public DogService(UserService userService, ImageService imageService, DogRepository dogRepository, DogBreedRepository dogBreedRepository, DogBehaviorRepository dogBehaviorRepository, DogsBehaviorsRepository dogsBehaviorsRepository, GenderRepository genderRepository) {
+    public DogService(UserService userService, ImageService imageService, DogRepository dogRepository, DogBreedRepository dogBreedRepository, DogBehaviorRepository dogBehaviorRepository, DogsBehaviorsRepository dogsBehaviorsRepository, GenderRepository genderRepository, DogLikeRepository dogLikeRepository) {
         this.userService = userService;
         this.imageService = imageService;
         this.dogRepository = dogRepository;
@@ -29,6 +30,7 @@ public class DogService {
         this.dogBehaviorRepository = dogBehaviorRepository;
         this.dogsBehaviorsRepository = dogsBehaviorsRepository;
         this.genderRepository = genderRepository;
+        this.dogLikeRepository = dogLikeRepository;
     }
 
     public Dog getDogById(Long id) {
@@ -92,6 +94,16 @@ public class DogService {
 
     public List<DogBehavior> getAllBehaviors() {
         return dogBehaviorRepository.findAll();
+    }
+
+    public void addLike(User user, Dog dog) {
+        DogLike like = new DogLike(user, dog);
+        dogLikeRepository.save(like);
+    }
+
+    public void deleteLike(User user, Dog dog) {
+        DogLike like = dogLikeRepository.findByUserIdAndDogId(user.getIdUser(), dog.getIdDog());
+        dogLikeRepository.delete(like);
     }
 
 }

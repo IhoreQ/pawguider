@@ -43,11 +43,11 @@ public class Dog {
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "dog")
-    private Collection<DogsBehaviors> dogsBehaviors;
+    private Collection<DogsBehaviors> behaviors;
 
     @JsonIgnore
     @OneToMany(mappedBy = "dog")
-    private Collection<DogLike> dogsLikes;
+    private Collection<DogLike> likes;
 
     public Dog(String name, int age, Gender gender, String description, DogBreed breed, String photo, User user) {
         this.name = name;
@@ -91,11 +91,11 @@ public class Dog {
         return idDog;
     }
 
-    public Collection<DogsBehaviors> getDogsBehaviors() {
-        return dogsBehaviors;
+    public Collection<DogsBehaviors> getBehaviors() {
+        return behaviors;
     }
 
-    public Collection<DogLike> getDogsLikes() {
-        return dogsLikes;
+    public Collection<DogLike> getLikes() {
+        return likes;
     }
 }

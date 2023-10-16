@@ -82,4 +82,22 @@ class PlaceService {
       return false;
     }
   }
+
+  Future<bool> addLike(int placeId) async {
+    try {
+      Response response = await _dio.post('/place/like/$placeId');
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
+
+  Future<bool> deleteLike(int placeId) async {
+    try {
+      Response response = await _dio.delete('/place/like/$placeId');
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
 }

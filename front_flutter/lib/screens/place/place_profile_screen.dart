@@ -38,7 +38,7 @@ class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
       Behavior(10, 'Independent')
     ];
     final Dog exampleDog = Dog(
-        12,
+        77,
         'Ciapek',
         'Jack Russel Terrier',
         'Male',
@@ -97,7 +97,7 @@ class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
                     children: [
                       Stack(
                         children: [
-                          TopBar(place: place),
+                          TopBar(place: place, placeService: placeService),
                           MainContentBox(place: place, dogs: dogs, refreshFunction: refresh,),
                         ],
                       )
@@ -116,9 +116,10 @@ class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
 }
 
 class TopBar extends StatefulWidget {
-  const TopBar({super.key, required this.place});
+  const TopBar({super.key, required this.place, required this.placeService});
 
   final Place place;
+  final PlaceService placeService;
 
   @override
   State<TopBar> createState() => _TopBarState();
@@ -130,8 +131,6 @@ class _TopBarState extends State<TopBar> {
   @override
   void initState() {
     super.initState();
-
-    // TODO pobranie czy użytkownik już ma polajkowane miejsce
     _liked = widget.place.likedByUser!;
   }
 
@@ -178,7 +177,7 @@ class _TopBarState extends State<TopBar> {
                       key: ValueKey<bool>(_liked),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      onPressed: () => addLike(),
+                      onPressed: () => onClickLikeButton(),
                       icon: Icon(
                         _liked
                             ? FluentSystemIcons.ic_fluent_heart_filled
@@ -193,6 +192,20 @@ class _TopBarState extends State<TopBar> {
         ],
       ),
     );
+  }
+
+  Future<void> onClickLikeButton() async {
+    bool success = _liked ?
+      await widget.placeService.deleteLike(widget.place.id) :
+      await widget.placeService.addLike(widget.place.id);
+
+    if (success) {
+      _liked = !_liked;
+      setState(() {});
+    } else {
+      print('error');
+    }
+
   }
 
   void addLike() {
@@ -346,7 +359,6 @@ class _MainContentBoxState extends State<MainContentBox> {
                     maxRating: 5,
                     glowColor: AppColor.primaryOrange,
                     onRatingUpdate: (rating) {
-                      // TODO wysyłka na API i odbiór
                       _placeRating = rating;
                       setState(() {});
                     },

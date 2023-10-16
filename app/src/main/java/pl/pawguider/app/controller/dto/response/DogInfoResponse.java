@@ -29,8 +29,8 @@ public record DogInfoResponse(Long idDog,
         String gender = dog.getGender().getName();
         String breed = dog.getBreed().getName();
         String size = dog.getBreed().getSize().getName();
-        List<DogBehavior> behaviors = dog.getDogsBehaviors().stream().map(DogsBehaviors::getBehavior).toList();
-        boolean currentUserLiked = dog.getDogsLikes().stream().anyMatch(dogLike -> dogLike.getUser().getIdUser().equals(user.getIdUser()));
-        return new DogInfoResponse(dog.getIdDog(), dog.getName(), dog.getAge(), breed, gender, size, dog.getDescription(), dog.getPhoto(), behaviors, dog.getDogsLikes().size(), currentUserLiked, dog.getOwner().getIdUser());
+        List<DogBehavior> behaviors = dog.getBehaviors().stream().map(DogsBehaviors::getBehavior).toList();
+        boolean currentUserLiked = dog.getLikes().stream().anyMatch(dogLike -> dogLike.getUser().getIdUser().equals(user.getIdUser()));
+        return new DogInfoResponse(dog.getIdDog(), dog.getName(), dog.getAge(), breed, gender, size, dog.getDescription(), dog.getPhoto(), behaviors, dog.getLikes().size(), currentUserLiked, dog.getOwner().getIdUser());
     }
 }

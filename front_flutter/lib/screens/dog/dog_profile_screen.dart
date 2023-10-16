@@ -44,7 +44,7 @@ class DogProfileScreen extends StatelessWidget {
                     children: [
                       Stack(
                         children: [
-                          TopBar(dog: dog, onComplete: onComplete),
+                          TopBar(dog: dog, onComplete: onComplete, dogService: dogService),
                           DogContentPage(dog: dog),
                           DogAvatar(dog: dog),
                         ],
@@ -70,9 +70,10 @@ class DogProfileScreen extends StatelessWidget {
 
 class TopBar extends StatefulWidget {
   final Dog dog;
+  final DogService dogService;
   final VoidCallback onComplete;
 
-  const TopBar({Key? key, required this.dog, required this.onComplete}) : super(key: key);
+  const TopBar({Key? key, required this.dog, required this.onComplete, required this.dogService}) : super(key: key);
 
   @override
   State<TopBar> createState() => _TopBarState();
@@ -189,8 +190,7 @@ class _TopBarState extends State<TopBar> {
                                 key: ValueKey<bool>(_liked),
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
-                                onPressed: () =>
-                                    _liked ? subtractLike() : addLike(),
+                                onPressed: () => onLikeButtonClick(),
                                 icon: _liked
                                     ? const Icon(
                                         FluentSystemIcons
@@ -225,13 +225,29 @@ class _TopBarState extends State<TopBar> {
     });
   }
 
+  Future<void> onLikeButtonClick() async {
+    bool success = _liked ?
+    await widget.dogService.deleteLike(widget.dog.id) :
+    await widget.dogService.addLike(widget.dog.id);
+
+    if (success) {
+      if (_liked) {
+        deleteLike();
+      } else {
+        addLike();
+      }
+    } else {
+      print('error');
+    }
+  }
+
   void addLike() {
     widget.dog.addLike();
     _liked = !_liked;
     setState(() {});
   }
 
-  void subtractLike() {
+  void deleteLike() {
     widget.dog.subtractLike();
     _liked = !_liked;
     setState(() {});

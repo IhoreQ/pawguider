@@ -105,4 +105,22 @@ class DogService {
       return false;
     }
   }
+
+  Future<bool> addLike(int dogId) async {
+    try {
+      Response response = await _dio.post('/dog/like/$dogId');
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
+
+  Future<bool> deleteLike(int dogId) async {
+    try {
+      Response response = await _dio.delete('/dog/like/$dogId');
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
 }
