@@ -2,7 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/models/place.dart';
-import 'package:front_flutter/widgets/common_loading_indicator.dart';
+import 'package:front_flutter/providers/favourite_places_provider.dart';
 import 'package:front_flutter/widgets/favorite_place_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:front_flutter/widgets/walk_info_box.dart';
@@ -30,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final Walk? _walk;
   late final Dog _dog;
   late final UserProvider userProvider;
+  late final FavouritePlacesProvider favouritePlacesProvider;
 
   @override
   void initState() {
@@ -38,7 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _place = Place(1, 'Kleparski wybieg', 'Park kleparski', '30-002', 'Kraków', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est.', 5.0, 'https://lh6.googleusercontent.com/UdJXDyQXNwEtD91robiwnZPWjRcztSi1bZpWpmusPthVk32iD8nkGHtmaiWVI-VE4cCZrvUk9YQnBsdLgsRtMTmjH4GhtvWBkZ2nF-eZTVhei7_hYwvNb4oxsfqmypV0q70THeqGuThliKDEMpI7qhg', false, false, 3.0);
     _walk = null;
     userProvider = context.read<UserProvider>();
+    favouritePlacesProvider = context.read<FavouritePlacesProvider>();
     userProvider.fetchCurrentUser();
+    favouritePlacesProvider.fetchFavouritePlaces();
     final List<Behavior> exampleBehaviors = [Behavior(1, 'Friendly'), Behavior(6, 'Calm'), Behavior(12, 'Curious'), Behavior(10, 'Independent')];
     _dog = Dog(12, 'Ciapek', 'Jack Russel Terrier', 'Male', 12, 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG', 'Small', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.', 5, exampleBehaviors, 10, false);
   }
@@ -204,24 +207,36 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const Gap(10.0),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text('Favorite places', style: AppTextStyle.boldDark.copyWith(fontSize: 22.0)),
-                ),
-                const Gap(10.0),
-                SingleChildScrollView(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  scrollDirection: Axis.horizontal,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0, right: 20.0),
-                    child: Row(
-                      children: [
-                        FavoritePlaceBox(place: _place)
-                      ],
-                    ),
-                  ),
-                ),
-                const Gap(20.0),
+                Consumer<FavouritePlacesProvider>(builder: (context, favouritePlacesProvider, _) {
+                  return favouritePlacesProvider.favouritePlaces != null && favouritePlacesProvider.favouritePlaces!.isNotEmpty ?
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: Text('Favourite places', style: AppTextStyle.boldDark.copyWith(fontSize: 22.0)),
+                      ),
+                      const Gap(10.0),
+                      SingleChildScrollView(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 15.0),
+                          child: Row(
+                            children: favouritePlacesProvider.favouritePlaces!.map((place) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 20.0),
+                                child: FavoritePlaceBox(place: place),
+                              );
+                            }).toList()
+                          ),
+                        ),
+                      ),
+                      const Gap(20.0),
+                    ],
+                  )
+                  : const SizedBox();
+                }),
               ],
             )
           ],

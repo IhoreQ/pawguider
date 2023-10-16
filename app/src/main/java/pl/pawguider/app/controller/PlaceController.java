@@ -3,9 +3,11 @@ package pl.pawguider.app.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.RatingRequest;
+import pl.pawguider.app.controller.dto.response.LikedPlaceResponse;
 import pl.pawguider.app.controller.dto.response.PlaceInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.PlaceInfoResponse;
 import pl.pawguider.app.model.Place;
+import pl.pawguider.app.model.PlaceLike;
 import pl.pawguider.app.model.User;
 import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.PlaceService;
@@ -94,6 +96,14 @@ public class PlaceController {
 
         placeService.updateRating(user, place, request.rating());
         return true;
+    }
+
+    @GetMapping("/favourites")
+    public List<LikedPlaceResponse> getUserLikedPlaces(@RequestHeader("Authorization") String header) {
+        User user = getUserFromHeader(header);
+        List<Place> likedPlaces = placeService.getUserLikedPlaces(user);
+
+        return likedPlaces.stream().map(LikedPlaceResponse::getResponse).toList();
     }
 
     private User getUserFromHeader(String header) {

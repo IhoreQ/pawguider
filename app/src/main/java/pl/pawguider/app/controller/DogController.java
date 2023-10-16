@@ -36,9 +36,7 @@ public class DogController {
     @PostMapping
     public ResponseEntity<HttpStatus> addDog(@RequestHeader("Authorization") String header, @RequestBody DogAddRequest dogAddRequest) throws Exception {
 
-        String email = jwtService.extractEmailFromHeader(header);
-
-        User user = userService.getUserByEmail(email);
+        User user = getUserFromHeader(header);
 
         boolean isAdded = dogService.addDog(user, dogAddRequest);
 
@@ -50,8 +48,7 @@ public class DogController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) {
-        String email = jwtService.extractEmailFromHeader(header);
-        User user = userService.getUserByEmail(email);
+        User user = getUserFromHeader(header);
 
         Dog dog = dogService.getDogById(id);
         // TODO ErrorResponse z treścią błędu
@@ -61,9 +58,7 @@ public class DogController {
 
     @GetMapping("/owned")
     public List<DogInfoBoxResponse> getCurrentUserDogs(@RequestHeader("Authorization") String header) {
-        String email = jwtService.extractEmailFromHeader(header);
-
-        User user = userService.getUserByEmail(email);
+        User user = getUserFromHeader(header);
         List<Dog> dogs  = user.getDogs().stream().toList();
 
         return dogs.stream().map(DogInfoBoxResponse::getResponse).toList();
@@ -72,8 +67,7 @@ public class DogController {
     @DeleteMapping
     public Boolean deleteDog(@RequestHeader("Authorization") String header, @RequestBody DogDeletionRequest request) {
 
-        String email = jwtService.extractEmailFromHeader(header);
-        User user = userService.getUserByEmail(email);
+        User user = getUserFromHeader(header);
 
         return dogService.deleteDog(user, request.dogId());
     }
@@ -115,7 +109,6 @@ public class DogController {
         dogService.deleteLike(user, dog);
         return true;
     }
-
 
     private User getUserFromHeader(String header) {
         String email = jwtService.extractEmailFromHeader(header);

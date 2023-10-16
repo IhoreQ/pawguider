@@ -7,7 +7,7 @@ class Place {
   String? _city;
   String? _description;
   int? _dogsCount;
-  double _averageScore;
+  double? _averageScore;
   final String _photoUrl;
   bool? _likedByUser;
   bool? _ratedByUser;
@@ -16,6 +16,8 @@ class Place {
   Place.basicInfo(this._id, this._name, this._street, this._dogsCount,
       this._averageScore, this._photoUrl);
 
+  Place.favouriteInfo(this._id, this._name, this._street, this._city, this._photoUrl);
+
   Place(this._id, this._name, this._street, this._zipCode, this._city,
       this._description, this._averageScore, this._photoUrl, this._likedByUser, this._ratedByUser, this._scoreByUser);
 
@@ -23,7 +25,7 @@ class Place {
 
   String get photoUrl => _photoUrl;
 
-  double get averageScore => _averageScore;
+  double? get averageScore => _averageScore;
 
   int? get dogsCount => _dogsCount;
 
@@ -39,10 +41,6 @@ class Place {
 
 
   bool? get likedByUser => _likedByUser;
-
-  set averageScore(double value) {
-    _averageScore = value;
-  }
 
   double? get scoreByUser => _scoreByUser;
 

@@ -3,10 +3,12 @@ import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:front_flutter/models/dog/dog.dart';
+import 'package:front_flutter/providers/favourite_places_provider.dart';
 import 'package:front_flutter/services/place_service.dart';
 import 'package:front_flutter/widgets/dog_info_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/dog/behavior.dart';
 import '../../models/place.dart';
@@ -127,11 +129,13 @@ class TopBar extends StatefulWidget {
 
 class _TopBarState extends State<TopBar> {
   late bool _liked;
+  late FavouritePlacesProvider favouritePlacesProvider;
 
   @override
   void initState() {
     super.initState();
     _liked = widget.place.likedByUser!;
+    favouritePlacesProvider = context.read<FavouritePlacesProvider>();
   }
 
   @override
@@ -200,18 +204,12 @@ class _TopBarState extends State<TopBar> {
       await widget.placeService.addLike(widget.place.id);
 
     if (success) {
+      favouritePlacesProvider.toggleFavouritePlace(widget.place);
       _liked = !_liked;
       setState(() {});
     } else {
       print('error');
     }
-
-  }
-
-  void addLike() {
-    setState(() {
-      _liked = !_liked;
-    });
   }
 }
 

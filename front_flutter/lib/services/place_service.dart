@@ -100,4 +100,23 @@ class PlaceService {
       return false;
     }
   }
+
+  Future<List<Place>> getFavouritePlaces() async {
+    try {
+      Response response = await _dio.get('/place/favourites');
+      List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+      List<Place> places = rawData.map((placeData) => Place.favouriteInfo(
+          placeData['id'],
+          placeData['name'],
+          placeData['street'],
+          placeData['city'],
+          Constants.imageServerUrl + placeData['photoName']
+      )).toList();
+
+      return places;
+    } on DioException {
+      print('favourite places error');
+      return [];
+    }
+  }
 }

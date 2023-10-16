@@ -45,4 +45,8 @@ public class PlaceLike {
         this.user = user;
         this.place = place;
     }
+
+    public PlaceLike(Place place) {
+        this.place = place;
+    }
 }

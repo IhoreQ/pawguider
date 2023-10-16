@@ -64,4 +64,10 @@ public class PlaceService {
         placeRating.setRating(rating);
         placeRatingRepository.save(placeRating);
     }
+
+    public List<Place> getUserLikedPlaces(User user) {
+        List<PlaceLike> likes = placeLikeRepository.findByIdUser(user.getIdUser());
+
+        return likes.stream().map(PlaceLike::getPlace).toList();
+    }
 }
