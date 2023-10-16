@@ -8,7 +8,6 @@ import pl.pawguider.app.controller.dto.request.DogDeletionRequest;
 import pl.pawguider.app.controller.dto.response.DogBreedResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
-import pl.pawguider.app.controller.dto.response.WalkPartnerResponse;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.service.DogService;
 import pl.pawguider.app.service.JwtService;
