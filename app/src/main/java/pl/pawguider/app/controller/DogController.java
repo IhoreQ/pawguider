@@ -45,11 +45,15 @@ public class DogController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+    public ResponseEntity<?> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) throws Exception {
         User user = userService.getUserFromHeader(header);
 
         Dog dog = dogService.getDogById(id);
-        // TODO ErrorResponse z treścią błędu
+
+        if (dog == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         DogInfoResponse response = DogInfoResponse.getResponse(user, dog);
         return ResponseEntity.ok(response);
     }

@@ -31,10 +31,11 @@ class DogService {
     }
   }
 
-  Future<Dog> getDog(int dogId) async {
+  Future<dynamic> getDog(int dogId) async {
     try {
       Response response = await _dio.get('/dog/$dogId');
       Map<String, dynamic> rawData = response.data;
+
 
       List<Behavior> behaviors = (rawData['behaviors'] as List<dynamic>)
         .map((behaviorData) =>
@@ -57,8 +58,12 @@ class DogService {
       );
 
       return dog;
-    } on DioException {
-      rethrow;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return 404;
+      } else {
+        return null;
+      }
     }
   }
 

@@ -27,33 +27,49 @@ class DogProfileScreen extends StatelessWidget {
     final DogService dogService = DogService();
 
     return Scaffold(
-        body: FutureBuilder<Dog>(
+        body: FutureBuilder<dynamic>(
           future: dogService.getDog(dogId),
           builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final Dog dog = snapshot.data!;
-            return Stack(fit: StackFit.expand, children: [
-              Container(
-                height: 1.0,
-                color: AppColor.primaryOrange,
-              ),
-              Scaffold(
-                backgroundColor: Colors.transparent,
-                body: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          TopBar(dog: dog, onComplete: onComplete, dogService: dogService),
-                          DogContentPage(dog: dog),
-                          DogAvatar(dog: dog),
-                        ],
-                      )
-                    ],
-                  ),
+            if (snapshot.data == 404) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        backgroundColor: AppColor.darkText.withOpacity(0.7),
+                        elevation: 0,
+                        content: Text('Error 404: Dog not found', style: AppTextStyle.mediumWhite,),
+                      ),
+                );
+              });
+              context.router.pop();
+            }
+            else {
+              final Dog? dog = snapshot.data;
+              return Stack(fit: StackFit.expand, children: [
+                Container(
+                  height: 1.0,
+                  color: AppColor.primaryOrange,
                 ),
-              )
-            ]);
+                Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            TopBar(dog: dog!, onComplete: onComplete, dogService: dogService),
+                            DogContentPage(dog: dog),
+                            DogAvatar(dog: dog),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ]);
+            }
           }
           return const Center(
               child: SizedBox(
