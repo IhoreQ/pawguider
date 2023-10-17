@@ -10,9 +10,16 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.jwtService = jwtService;
+    }
+
+    public User getUserFromHeader(String header) {
+        String email = jwtService.extractEmailFromHeader(header);
+        return getUserByEmail(email);
     }
 
     public User getUserByEmail(String email) {

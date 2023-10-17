@@ -24,19 +24,17 @@ public class DogController {
     private final DogService dogService;
     private final UserService userService;
     private final WalkService walkService;
-    private final JwtService jwtService;
 
-    public DogController(DogService dogService, UserService userService, WalkService walkService, JwtService jwtService) {
+    public DogController(DogService dogService, UserService userService, WalkService walkService) {
         this.dogService = dogService;
         this.userService = userService;
         this.walkService = walkService;
-        this.jwtService = jwtService;
     }
 
     @PostMapping
     public ResponseEntity<HttpStatus> addDog(@RequestHeader("Authorization") String header, @RequestBody DogAddRequest dogAddRequest) throws Exception {
 
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
 
         boolean isAdded = dogService.addDog(user, dogAddRequest);
 
@@ -48,7 +46,7 @@ public class DogController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
 
         Dog dog = dogService.getDogById(id);
         // TODO ErrorResponse z treścią błędu
@@ -58,7 +56,7 @@ public class DogController {
 
     @GetMapping("/owned")
     public List<DogInfoBoxResponse> getCurrentUserDogs(@RequestHeader("Authorization") String header) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         List<Dog> dogs  = user.getDogs().stream().toList();
 
         return dogs.stream().map(DogInfoBoxResponse::getResponse).toList();
@@ -67,7 +65,7 @@ public class DogController {
     @DeleteMapping
     public Boolean deleteDog(@RequestHeader("Authorization") String header, @RequestBody DogDeletionRequest request) {
 
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
 
         return dogService.deleteDog(user, request.dogId());
     }
@@ -88,10 +86,10 @@ public class DogController {
 
     @PostMapping("/like/{id}")
     public Boolean addLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(id);
 
-        if (isAlreadyLiked(user, dog))
+        if (dogService.isDogAlreadyLiked(user, dog))
             return false;
 
         dogService.addLike(user, dog);
@@ -100,10 +98,10 @@ public class DogController {
 
     @DeleteMapping("/like/{id}")
     public Boolean deleteLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(id);
 
-        if (!isAlreadyLiked(user, dog))
+        if (!dogService.isDogAlreadyLiked(user, dog))
             return false;
 
         dogService.deleteLike(user, dog);
@@ -112,29 +110,14 @@ public class DogController {
 
     @PatchMapping("/select/{id}")
     public Boolean toggleSelected(@RequestHeader("Authorization") String header, @PathVariable Long id) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(id);
 
-        if (!isOwner(user, dog)) {
+        if (!dogService.isOwner(user, dog)) {
             return false;
         }
 
         dogService.toggleSelected(dog);
         return true;
-    }
-
-    private User getUserFromHeader(String header) {
-        String email = jwtService.extractEmailFromHeader(header);
-        return userService.getUserByEmail(email);
-    }
-
-    private boolean isAlreadyLiked(User user, Dog dog) {
-        return dog.getLikes()
-                .stream()
-                .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
-    }
-
-    private boolean isOwner(User user, Dog dog) {
-        return dog.getOwner().getIdUser().equals(user.getIdUser());
     }
 }

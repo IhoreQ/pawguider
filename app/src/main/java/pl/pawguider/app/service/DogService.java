@@ -110,4 +110,14 @@ public class DogService {
         dog.setSelected(!dog.getSelected());
         dogRepository.save(dog);
     }
+
+    public boolean isDogAlreadyLiked(User user, Dog dog) {
+        return dog.getLikes()
+                .stream()
+                .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
+    }
+
+    public boolean isOwner(User user, Dog dog) {
+        return dog.getOwner().getIdUser().equals(user.getIdUser());
+    }
 }

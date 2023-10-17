@@ -70,4 +70,16 @@ public class PlaceService {
 
         return likes.stream().map(PlaceLike::getPlace).toList();
     }
+
+    public boolean isPlaceAlreadyLiked(User user, Place place) {
+        return place.getLikes()
+                .stream()
+                .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
+    }
+
+    public boolean isPlaceAlreadyRated(User user, Place place) {
+        return place.getRatings()
+                .stream()
+                .anyMatch(rating -> rating.getUser().getIdUser().equals(user.getIdUser()));
+    }
 }

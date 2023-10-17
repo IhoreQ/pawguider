@@ -20,12 +20,10 @@ import java.util.List;
 public class PlaceController {
 
     private final PlaceService placeService;
-    private final JwtService jwtService;
     private final UserService userService;
 
-    public PlaceController(PlaceService placeService, JwtService jwtService, UserService userService) {
+    public PlaceController(PlaceService placeService, UserService userService) {
         this.placeService = placeService;
-        this.jwtService = jwtService;
         this.userService = userService;
     }
 
@@ -36,7 +34,7 @@ public class PlaceController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPlaceById(@RequestHeader("Authorization") String header, @PathVariable Long id) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(id);
 
         return ResponseEntity.ok(PlaceInfoResponse.getResponse(user, place));
@@ -50,10 +48,10 @@ public class PlaceController {
 
     @PostMapping("/like/{id}")
     public Boolean addLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(id);
 
-        if (isAlreadyLiked(user, place))
+        if (placeService.isPlaceAlreadyLiked(user, place))
             return false;
 
         placeService.addLike(user, place);
@@ -62,10 +60,10 @@ public class PlaceController {
 
     @DeleteMapping("/like/{id}")
     public Boolean deleteLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(id);
 
-        if (!isAlreadyLiked(user, place))
+        if (!placeService.isPlaceAlreadyLiked(user, place))
             return false;
 
         placeService.deleteLike(user, place);
@@ -74,10 +72,10 @@ public class PlaceController {
 
     @PostMapping("/rate")
     public Boolean addRating(@RequestHeader("Authorization") String header, @RequestBody RatingRequest request) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(request.placeId());
 
-        if (isAlreadyRated(user, place)) {
+        if (placeService.isPlaceAlreadyRated(user, place)) {
             return false;
         }
 
@@ -87,10 +85,10 @@ public class PlaceController {
 
     @PatchMapping("/rate")
     public Boolean updateRating(@RequestHeader("Authorization") String header, @RequestBody RatingRequest request) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(request.placeId());
 
-        if (!isAlreadyRated(user, place)) {
+        if (!placeService.isPlaceAlreadyRated(user, place)) {
             return false;
         }
 
@@ -100,27 +98,10 @@ public class PlaceController {
 
     @GetMapping("/favourites")
     public List<LikedPlaceResponse> getUserLikedPlaces(@RequestHeader("Authorization") String header) {
-        User user = getUserFromHeader(header);
+        User user = userService.getUserFromHeader(header);
         List<Place> likedPlaces = placeService.getUserLikedPlaces(user);
 
         return likedPlaces.stream().map(LikedPlaceResponse::getResponse).toList();
-    }
-
-    private User getUserFromHeader(String header) {
-        String email = jwtService.extractEmailFromHeader(header);
-        return userService.getUserByEmail(email);
-    }
-
-    private boolean isAlreadyLiked(User user, Place place) {
-        return place.getLikes()
-                .stream()
-                .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
-    }
-
-    private boolean isAlreadyRated(User user, Place place) {
-        return place.getRatings()
-                .stream()
-                .anyMatch(rating -> rating.getUser().getIdUser().equals(user.getIdUser()));
     }
 
 

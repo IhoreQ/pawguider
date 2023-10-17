@@ -1,6 +1,7 @@
 import 'package:auto_route/annotations.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/providers/places_provider.dart';
 import 'package:front_flutter/services/place_service.dart';
 import 'package:front_flutter/widgets/place_info_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
@@ -24,12 +25,15 @@ class _PlacesScreenState extends State<PlacesScreen> {
 
   final PlaceService placeService = PlaceService();
   late final UserProvider userProvider;
+  late final PlacesProvider placesProvider;
 
 
   @override
   void initState() {
     super.initState();
     userProvider = context.read<UserProvider>();
+    placesProvider = context.read<PlacesProvider>();
+    placesProvider.fetchPlacesByCityId(userProvider.user!.cityId);
   }
 
   Future<void> refresh() async {
@@ -133,29 +137,24 @@ class _PlacesScreenState extends State<PlacesScreen> {
               ],
             ),
             const Gap(20.0),
-            FutureBuilder<List<Place>>(
-              future: placeService.getPlacesByCityId(userProvider.user!.cityId),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<Place> places = snapshot.data!;
-
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: places.length,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          PlaceInfoBox(place: places[index]),
-                          const Gap(15.0),
-                        ],
-                      );
-                    },
-                  );
+            Consumer<PlacesProvider>(
+                builder: (context, placesProvider, _) {
+                  return placesProvider.places != null ?
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: placesProvider.places!.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            PlaceInfoBox(place: placesProvider.places![index]),
+                            const Gap(15.0),
+                          ],
+                        );
+                      },
+                    ) :
+                    const SizedLoadingIndicator(color: AppColor.primaryOrange);
                 }
-
-                return const SizedLoadingIndicator(color: AppColor.primaryOrange);
-              }
             ),
           ],
         ),

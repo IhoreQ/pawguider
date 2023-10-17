@@ -25,19 +25,16 @@ public class WalkController {
     private final UserService userService;
 
     private final WalkService walkService;
-    private final JwtService jwtService;
 
-    public WalkController(UserService userService, WalkService walkService, JwtService jwtService) {
+    public WalkController(UserService userService, WalkService walkService) {
         this.userService = userService;
         this.walkService = walkService;
-        this.jwtService = jwtService;
     }
 
     @PostMapping
     public ResponseEntity<?> goForAWalk(@RequestHeader("Authorization") String header, @RequestBody WalkStartRequest request) {
 
-        String email = jwtService.extractEmailFromHeader(header);
-        User user = userService.getUserByEmail(email);
+        User user = userService.getUserFromHeader(header);
 
         ActiveWalk activeWalk = new ActiveWalk(request.timeOfAWalk(), LocalTime.now(), new Place(request.placeId()), user);
 
@@ -48,8 +45,7 @@ public class WalkController {
     @GetMapping
     public ResponseEntity<?> getActiveWalk(@RequestHeader("Authorization") String header) {
 
-        String email = jwtService.extractEmailFromHeader(header);
-        User user = userService.getUserByEmail(email);
+        User user = userService.getUserFromHeader(header);
 
         ActiveWalk activeWalk = walkService.getActiveWalkByUser(user);
 
@@ -74,8 +70,7 @@ public class WalkController {
     @DeleteMapping
     public ResponseEntity<String> finishWalk(@RequestHeader("Authorization") String header) throws Exception {
 
-        String email = jwtService.extractEmailFromHeader(header);
-        User user = userService.getUserByEmail(email);
+        User user = userService.getUserFromHeader(header);
         Collection<ActiveWalk> activeWalks = user.getActiveWalks();
 
         if (activeWalks.isEmpty()) {

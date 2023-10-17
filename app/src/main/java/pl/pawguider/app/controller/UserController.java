@@ -15,20 +15,17 @@ import pl.pawguider.app.service.UserService;
 public class UserController {
 
     private final UserService userService;
-    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
-        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @PatchMapping("/password")
     public ResponseEntity<Boolean> updatePassword(@RequestHeader("Authorization") String header, @RequestBody PasswordUpdateRequest request) {
 
-        String email = jwtService.extractEmailFromHeader(header);
-        User user = userService.getUserByEmail(email);
+        User user = userService.getUserFromHeader(header);
 
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             return ResponseEntity.ok(false);
@@ -49,8 +46,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<CurrentUserResponse> getCurrentUser(@RequestHeader("Authorization") String header) {
-        String email = jwtService.extractEmailFromHeader(header);
-        User user = userService.getUserByEmail(email);
+        User user = userService.getUserFromHeader(header);
         CurrentUserResponse response = CurrentUserResponse.getResponse(user.getDetails());
 
         return ResponseEntity.ok(response);

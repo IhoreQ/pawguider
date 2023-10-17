@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:front_flutter/models/dog/dog.dart';
 import 'package:front_flutter/providers/favourite_places_provider.dart';
+import 'package:front_flutter/providers/places_provider.dart';
+import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/services/place_service.dart';
 import 'package:front_flutter/widgets/dog_info_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
@@ -228,11 +230,16 @@ class _MainContentBoxState extends State<MainContentBox> {
   late double _placeRating;
   final PlaceService placeService = PlaceService();
 
+  late final UserProvider userProvider;
+  late final PlacesProvider placesProvider;
+
 
   @override
   void initState() {
     super.initState();
     _placeRating = widget.place.scoreByUser!;
+    userProvider = context.read<UserProvider>();
+    placesProvider = context.read<PlacesProvider>();
   }
 
   @override
@@ -407,8 +414,9 @@ class _MainContentBoxState extends State<MainContentBox> {
                                 await placeService.addRating(widget.place.id, _placeRating);
 
                             if (success) {
-                              print('update');
                               widget.refreshFunction();
+                              int cityId = userProvider.user!.cityId;
+                              placesProvider.fetchPlacesByCityId(cityId);
                               if (context.mounted) {
                                 context.router.pop();
                               }
