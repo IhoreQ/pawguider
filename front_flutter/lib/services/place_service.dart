@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:front_flutter/models/place_area.dart';
 import 'package:front_flutter/utilities/constants.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../dio/dio_config.dart';
 import '../models/place.dart';
@@ -118,6 +120,17 @@ class PlaceService {
       return places;
     } on DioException {
       print('favourite places error');
+      return [];
+    }
+  }
+
+  Future<List<PlaceArea>> getPlacesAreasByCityId(int cityId) async {
+    try {
+      Response response = await _dio.get('/place/areas/city/$cityId');
+      List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+      List<PlaceArea> areas = rawData.map((areaData) => PlaceArea.fromJson(areaData)).toList();
+      return areas;
+    } on DioException {
       return [];
     }
   }

@@ -1,0 +1,79 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+class UserLocationProvider extends ChangeNotifier {
+  LatLng? _currentPosition;
+  final StreamController<LatLng> _locationController = StreamController<LatLng>.broadcast();
+
+  Stream<LatLng> get locationStream => _locationController.stream;
+
+  LatLng? get currentPosition => _currentPosition;
+
+  Future<void> fetchUserPosition() async {
+    bool serviceEnabled = await isAllowed();
+
+    if (!serviceEnabled) {
+      return Future.error('Localisation is not allowed!');
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    _currentPosition = LatLng(position.latitude, position.longitude);
+    _locationController.add(_currentPosition!);
+  }
+
+  Future<void> startListeningLocationUpdates() async {
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+    );
+
+    bool serviceEnabled = await isAllowed();
+
+    if (!serviceEnabled) {
+      return Future.error('Localisation is not allowed!');
+    }
+
+    Geolocator.getPositionStream(
+      locationSettings: locationSettings
+    ).listen((Position position) {
+      LatLng newPosition = LatLng(position.latitude, position.longitude);
+      _locationController.add(newPosition);
+      _currentPosition = newPosition;
+    });
+  }
+
+  Future<bool> isAllowed() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return false;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @override
+  void dispose() {
+    _locationController.close();
+    super.dispose();
+  }
+}

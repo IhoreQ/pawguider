@@ -38,6 +38,10 @@ public class Place {
     @OneToMany(mappedBy = "place")
     private Collection<PlaceRating> ratings;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_area", referencedColumnName = "id_area", nullable = false)
+    private PlaceArea area;
+
     public Place() {
     }
 
@@ -94,5 +98,9 @@ public class Place {
 
     public Collection<PlaceRating> getRatings() {
         return ratings;
+    }
+
+    public PlaceArea getArea() {
+        return area;
     }
 }

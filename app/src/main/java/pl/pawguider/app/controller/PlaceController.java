@@ -4,15 +4,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.RatingRequest;
 import pl.pawguider.app.controller.dto.response.LikedPlaceResponse;
+import pl.pawguider.app.controller.dto.response.PlaceAreaResponse;
 import pl.pawguider.app.controller.dto.response.PlaceInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.PlaceInfoResponse;
 import pl.pawguider.app.model.Place;
-import pl.pawguider.app.model.PlaceLike;
 import pl.pawguider.app.model.User;
-import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.PlaceService;
 import pl.pawguider.app.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -104,5 +104,10 @@ public class PlaceController {
         return likedPlaces.stream().map(LikedPlaceResponse::getResponse).toList();
     }
 
+    @GetMapping("/areas/city/{id}")
+    public List<PlaceAreaResponse> getAreas(@PathVariable Long id) {
+        List<Place> places = placeService.getPlacesByCityId(id);
+        return places.stream().map(PlaceAreaResponse::getResponse).toList();
+    }
 
 }

@@ -45,6 +45,7 @@ class AppRouter extends _$AppRouter {
           ]),
           AutoRoute(path: 'map', page: MapRouter.page, children: [
             AutoRoute(path: '', page: MapRoute.page),
+            CustomRoute(path: 'place/:placeId', page: PlaceProfileRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
           ]),
           AutoRoute(path: 'places', page: PlacesRouter.page, children: [
             AutoRoute(path: '', page: PlacesRoute.page),

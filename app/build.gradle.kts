@@ -17,7 +17,7 @@ dependencies {
 	implementation("org.postgresql:postgresql:42.5.4")
 	implementation("org.springframework.boot:spring-boot-devtools:3.0.4")
     implementation("io.github.cdimascio:java-dotenv:5.2.2")
-    compileOnly("org.projectlombok:lombok:1.18.26")
+	compileOnly("org.projectlombok:lombok:1.18.26")
 	annotationProcessor("org.projectlombok:lombok:1.18.26")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.0.4")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
@@ -26,7 +26,6 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	testImplementation("org.springframework.boot:spring-boot-starter-test:3.0.4")
-
 
 }
 

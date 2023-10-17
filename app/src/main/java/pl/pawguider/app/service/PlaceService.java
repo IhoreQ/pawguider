@@ -1,6 +1,7 @@
 package pl.pawguider.app.service;
 
 import org.springframework.stereotype.Service;
+import pl.pawguider.app.controller.dto.response.PlaceAreaResponse;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.CityRepository;
 import pl.pawguider.app.repository.PlaceLikeRepository;

@@ -1,10 +1,9 @@
 import 'package:auto_route/annotations.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:front_flutter/models/place.dart';
-import 'package:front_flutter/models/user.dart';
 import 'package:front_flutter/providers/favourite_places_provider.dart';
 import 'package:front_flutter/providers/user_dogs_provider.dart';
+import 'package:front_flutter/providers/user_location_provider.dart';
 import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/widgets/favorite_place_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
@@ -13,7 +12,6 @@ import 'package:front_flutter/widgets/walk_partner_box.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/dog/behavior.dart';
 import '../../models/dog/dog.dart';
 import '../../models/walk.dart';
 import '../../providers/user_provider.dart';
@@ -34,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final UserProvider userProvider;
   late final UserDogsProvider userDogsProvider;
   late final FavouritePlacesProvider favouritePlacesProvider;
+  late final UserLocationProvider userLocationProvider;
 
   @override
   void initState() {
@@ -43,6 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
     userProvider = context.read<UserProvider>();
     favouritePlacesProvider = context.read<FavouritePlacesProvider>();
     userDogsProvider = context.read<UserDogsProvider>();
+
+    userLocationProvider = context.read<UserLocationProvider>();
+    userLocationProvider.fetchUserPosition();
+    userLocationProvider.startListeningLocationUpdates();
 
     userProvider.fetchCurrentUser();
     favouritePlacesProvider.fetchFavouritePlaces();
