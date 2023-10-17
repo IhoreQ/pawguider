@@ -159,7 +159,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final loadingProvider = context.read<LoadingProvider>();
       loadingProvider.setLoading(true);
 
-      // TODO sprawdzenie czy jest taki użytkownik
       bool userExists = await _authService.userExists(_emailController.text);
 
       if (context.mounted) {

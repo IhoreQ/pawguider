@@ -6,6 +6,7 @@ import java.util.Collection;
 
 public record PlaceInfoResponse(String name,
                                 String street,
+                                String houseNumber,
                                 String zipCode,
                                 String city,
                                 String description,
@@ -27,6 +28,6 @@ public record PlaceInfoResponse(String name,
         boolean currentUserLiked = place.getLikes().stream()
                 .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
         boolean currentUserRated = currentUserScore != 0.0;
-        return new PlaceInfoResponse(place.getName(), address.getStreet(), address.getPostalCode(), place.getCity().getName(), place.getDescription(), averageScore, currentUserScore, currentUserLiked, currentUserRated, place.getPhoto());
+        return new PlaceInfoResponse(place.getName(), address.getStreet(), address.getHouseNumber(), address.getZipCode(), place.getCity().getName(), place.getDescription(), averageScore, currentUserScore, currentUserLiked, currentUserRated, place.getPhoto());
     }
 }

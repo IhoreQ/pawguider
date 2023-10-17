@@ -13,7 +13,7 @@ void main() {
   runApp(App());
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: AppColor.primaryOrange, // Kolor paska statusu
+      statusBarColor: AppColor.primaryOrange,
       statusBarBrightness: Brightness.light,
       statusBarIconBrightness: Brightness.light,
     ),

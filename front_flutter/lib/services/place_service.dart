@@ -15,6 +15,7 @@ class PlaceService {
           placeData['id'],
           placeData['name'],
           placeData['street'],
+          placeData['houseNumber'],
           placeData['dogsCount'],
           placeData['averageScore'],
           Constants.imageServerUrl + placeData['photoName']
@@ -35,6 +36,7 @@ class PlaceService {
           placeId,
           placeData['name'],
           placeData['street'],
+          placeData['houseNumber'],
           placeData['zipCode'],
           placeData['city'],
           placeData['description'],

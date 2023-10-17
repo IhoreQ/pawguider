@@ -30,8 +30,6 @@ public class User {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "owner")
     private Collection<Dog> dogs;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Collection<NewPlaceIdea> newPlacesIdeas;
     @ManyToOne
     @JoinColumn(name = "id_role", referencedColumnName = "id_role", nullable = false)
     private Role role;
@@ -65,14 +63,13 @@ public class User {
         this.details = details;
     }
 
-    public User(Long idUser, String email, String password, Date createdAt, Collection<ActiveWalk> activeWalks, Collection<Dog> dogs, Collection<NewPlaceIdea> newPlacesIdeas, Role role, UserDetails details) {
+    public User(Long idUser, String email, String password, Date createdAt, Collection<ActiveWalk> activeWalks, Collection<Dog> dogs, Role role, UserDetails details) {
         this.idUser = idUser;
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
         this.activeWalks = activeWalks;
         this.dogs = dogs;
-        this.newPlacesIdeas = newPlacesIdeas;
         this.role = role;
         this.details = details;
     }

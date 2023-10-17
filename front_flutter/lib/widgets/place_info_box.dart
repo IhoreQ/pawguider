@@ -87,7 +87,7 @@ class PlaceInfoBox extends StatelessWidget {
                         style: AppTextStyle.heading2,
                       ),
                       Text(
-                        place.street,
+                        "${place.street} ${place.houseNumber ?? ''}",
                         style: AppTextStyle.heading3,
                       ),
                     ],

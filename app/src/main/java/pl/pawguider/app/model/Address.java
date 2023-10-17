@@ -12,14 +12,14 @@ public class Address {
     @Column(name = "id_address")
     private Long idAddress;
 
-    @Column(name = "postal_code")
-    private String postalCode;
+    @Column(name = "zip_code")
+    private String zipCode;
 
     @Column
     private String street;
 
-    @Column(name = "home_number")
-    private String homeNumber;
+    @Column(name = "house_number")
+    private String houseNumber;
 
     @Column
     private String country;
@@ -34,26 +34,26 @@ public class Address {
     public Address() {
     }
 
-    public Address(Long idAddress, String postalCode, String street, String homeNumber, String country, City city, Collection<Place> places) {
+    public Address(Long idAddress, String zipCode, String street, String houseNumber, String country, City city, Collection<Place> places) {
         this.idAddress = idAddress;
-        this.postalCode = postalCode;
+        this.zipCode = zipCode;
         this.street = street;
-        this.homeNumber = homeNumber;
+        this.houseNumber = houseNumber;
         this.country = country;
         this.city = city;
         this.places = places;
     }
 
-    public String getPostalCode() {
-        return postalCode;
+    public String getZipCode() {
+        return zipCode;
     }
 
     public String getStreet() {
         return street;
     }
 
-    public String getHomeNumber() {
-        return homeNumber;
+    public String getHouseNumber() {
+        return houseNumber;
     }
 
     public String getCountry() {

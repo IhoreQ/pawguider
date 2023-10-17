@@ -291,7 +291,7 @@ class _MainContentBoxState extends State<MainContentBox> {
                     color: AppColor.primaryOrange,
                   ),
                   Text(
-                    '${widget.place.street}, ${widget.place.zipCode} ${widget.place.city}',
+                    '${widget.place.street}${widget.place.houseNumber == null ? '' : " ${widget.place.houseNumber}"}, ${widget.place.zipCode} ${widget.place.city}',
                     style: AppTextStyle.mediumLight.copyWith(fontSize: 14.0),
                   ),
                 ],
