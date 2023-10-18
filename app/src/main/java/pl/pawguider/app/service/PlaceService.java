@@ -40,7 +40,7 @@ public class PlaceService {
 
         if (foundCity.isPresent()) {
             City city = foundCity.get();
-            return placeRepository.findByCity(city);
+            return placeRepository.findAllByAddress_City(city);
         }
         return new ArrayList<>();
     }

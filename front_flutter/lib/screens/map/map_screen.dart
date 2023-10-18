@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/places_areas_provider.dart';
@@ -42,7 +41,7 @@ class _MapScreenState extends State<MapScreen> {
       body: Consumer2<UserLocationProvider, PlacesAreasProvider>(
         builder: (context, userLocationProvider, placesAreasProvider, _) {
           return userLocationProvider.currentPosition != null ? GoogleMap(
-            mapType: MapType.normal,
+            mapType: MapType  .normal,
             initialCameraPosition: CameraPosition(
               target: userLocationProvider.currentPosition!,
               zoom: 19
@@ -51,6 +50,14 @@ class _MapScreenState extends State<MapScreen> {
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
             },
+            // markers: {
+            //   Marker(
+            //     markerId: const MarkerId("5"),
+            //     position: LatLng(50.07643195460102, 19.93824100367522),
+            //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+            //     flat: true
+            //   )
+            // },
             polygons: placesAreasProvider.areas != null ? Set.from(placesAreasProvider.areas!.map((area) {
               return Polygon(
                 polygonId: PolygonId(area.id.toString()),

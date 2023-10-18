@@ -8,10 +8,8 @@ import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/place.dart';
 import '../../providers/user_provider.dart';
 import '../../styles.dart';
-import '../../widgets/common_loading_indicator.dart';
 
 @RoutePage()
 class PlacesScreen extends StatefulWidget {
@@ -47,7 +45,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
     return RefreshIndicator(
       backgroundColor: Colors.white,
       color: AppColor.primaryOrange,
-      onRefresh: () => refresh(),
+      onRefresh: () => placesProvider.fetchPlacesByCityId(userProvider.user!.cityId),
       child: Scaffold(
         body: ListView(
           children: [

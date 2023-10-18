@@ -28,10 +28,6 @@ public class Place {
     @JoinColumn(name = "id_address", referencedColumnName = "id_address", nullable = false)
     private Address address;
 
-    @ManyToOne
-    @JoinColumn(name = "id_city", referencedColumnName = "id_city", nullable = false)
-    private City city;
-
     @OneToMany(mappedBy = "place")
     private Collection<PlaceLike> likes;
 
@@ -55,13 +51,12 @@ public class Place {
         this.photo = photo;
     }
 
-    public Place(Long idPlace, String name, String photo, Collection<ActiveWalk> activeWalks, Address address, City city) {
+    public Place(Long idPlace, String name, String photo, Collection<ActiveWalk> activeWalks, Address address) {
         this.idPlace = idPlace;
         this.name = name;
         this.photo = photo;
         this.activeWalks = activeWalks;
         this.address = address;
-        this.city = city;
     }
 
     public Long getIdPlace() {
@@ -86,10 +81,6 @@ public class Place {
 
     public Collection<PlaceLike> getLikes() {
         return likes;
-    }
-
-    public City getCity() {
-        return city;
     }
 
     public Collection<ActiveWalk> getActiveWalks() {

@@ -9,6 +9,6 @@ public record LikedPlaceResponse(Long id,
                                  String photoName) {
 
     public static LikedPlaceResponse getResponse(Place place) {
-        return new LikedPlaceResponse(place.getIdPlace(), place.getName(), place.getCity().getName(), place.getAddress().getStreet(), place.getPhoto());
+        return new LikedPlaceResponse(place.getIdPlace(), place.getName(), place.getAddress().getCity().getName(), place.getAddress().getStreet(), place.getPhoto());
     }
 }

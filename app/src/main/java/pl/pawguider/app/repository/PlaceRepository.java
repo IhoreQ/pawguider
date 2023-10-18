@@ -14,5 +14,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     @Query("select new Place(p.idPlace, p.name, p.photo) from Place p")
     List<Place> findAllPlaces();
 
-    List<Place> findByCity(City city);
+    List<Place> findAllByAddress_City(City city);
 }

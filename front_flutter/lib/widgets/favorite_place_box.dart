@@ -28,10 +28,9 @@ class FavoritePlaceBox extends StatelessWidget {
             fit: BoxFit.cover,
           ),
           Positioned(
-            bottom: 0,
+            bottom: 10,
             child: BlurryContainer(
               width: imageSize,
-              height: 50.0,
               padding: EdgeInsets.zero,
               borderRadius: BorderRadius.circular(10.0),
               blur: 2,
@@ -44,7 +43,7 @@ class FavoritePlaceBox extends StatelessWidget {
                     Row(
                       children: [
                         const Icon(Icons.location_on_outlined, color: Colors.white, size: 16.0,),
-                        Text('${place.city}, ${place.street}', style: AppTextStyle.regularWhite.copyWith(fontSize: 11.0),)
+                        Expanded(child: Text('${place.city}, ${place.street}', style: AppTextStyle.regularWhite.copyWith(fontSize: 11.0),))
                       ],
                     )
                   ],
