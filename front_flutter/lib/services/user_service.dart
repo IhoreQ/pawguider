@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../dio/dio_config.dart';
 
@@ -11,6 +12,21 @@ class UserService {
       return response.data;
     } on DioException {
       rethrow;
+    }
+  }
+
+  Future<bool> updatePosition(LatLng newPosition) async {
+    try {
+      Response response = await _dio.patch(
+        '/user/location',
+        data: {
+          "latitude": newPosition.latitude,
+          "longitude": newPosition.longitude
+        }
+      );
+      return true;
+    } on DioException {
+      return false;
     }
   }
 }

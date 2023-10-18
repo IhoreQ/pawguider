@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:front_flutter/services/user_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class UserLocationProvider extends ChangeNotifier {
   LatLng? _currentPosition;
+  int _updatesCount = 0;
+  final _updatesLimit = 10;
+  final UserService userService = UserService();
   final StreamController<LatLng> _locationController = StreamController<LatLng>.broadcast();
 
   Stream<LatLng> get locationStream => _locationController.stream;
@@ -28,8 +32,15 @@ class UserLocationProvider extends ChangeNotifier {
   }
 
   Future<void> startListeningLocationUpdates() async {
-    const LocationSettings locationSettings = LocationSettings(
+    LocationSettings locationSettings = AndroidSettings(
       accuracy: LocationAccuracy.high,
+      forceLocationManager: true,
+      foregroundNotificationConfig: const ForegroundNotificationConfig(
+        notificationText:
+        "Example app will continue to receive your location even when you aren't using it",
+        notificationTitle: "Running in Background",
+        enableWakeLock: true,
+      )
     );
 
     bool serviceEnabled = await isAllowed();
@@ -44,6 +55,11 @@ class UserLocationProvider extends ChangeNotifier {
       LatLng newPosition = LatLng(position.latitude, position.longitude);
       _locationController.add(newPosition);
       _currentPosition = newPosition;
+      _updatesCount++;
+      if (_updatesCount == _updatesLimit) {
+        _updatesCount = 0;
+        userService.updatePosition(newPosition);
+      }
     });
   }
 

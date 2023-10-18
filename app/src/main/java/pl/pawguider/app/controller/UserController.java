@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
 import pl.pawguider.app.controller.dto.response.CurrentUserResponse;
 import pl.pawguider.app.model.User;
-import pl.pawguider.app.model.UserDetails;
-import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.UserService;
 
 @RestController

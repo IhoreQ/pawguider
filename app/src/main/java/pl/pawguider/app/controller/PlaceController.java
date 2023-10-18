@@ -3,6 +3,7 @@ package pl.pawguider.app.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.RatingRequest;
+import pl.pawguider.app.controller.dto.request.UserLocationRequest;
 import pl.pawguider.app.controller.dto.response.LikedPlaceResponse;
 import pl.pawguider.app.controller.dto.response.PlaceAreaResponse;
 import pl.pawguider.app.controller.dto.response.PlaceInfoBoxResponse;
@@ -108,6 +109,17 @@ public class PlaceController {
     public List<PlaceAreaResponse> getAreas(@PathVariable Long id) {
         List<Place> places = placeService.getPlacesByCityId(id);
         return places.stream().map(PlaceAreaResponse::getResponse).toList();
+    }
+
+    @GetMapping("/area/{placeId}")
+    public boolean isUserInPlaceArea(@PathVariable Long placeId, @RequestBody UserLocationRequest request) {
+        return placeService.isUserInPlaceArea(request.latitude(), request.longitude(), placeId);
+    }
+
+    @GetMapping("/area")
+    public Place findUserPlaceArea(@RequestHeader("Authorization") String header, @RequestBody UserLocationRequest request) {
+        User user = userService.getUserFromHeader(header);
+        return placeService.findPlaceBasedOnUserLocationAndHisCity(user, request.latitude(), request.longitude());
     }
 
 }

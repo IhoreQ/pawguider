@@ -12,9 +12,6 @@ public class ActiveWalk {
     @Column(name = "id_active_walk")
     private Long idActiveWalk;
 
-    @Column(name = "time_of_walk", nullable = false)
-    private String timeOfWalk;
-
     @Column(name = "started_at", nullable = false)
     private LocalTime startedAt;
 
@@ -28,16 +25,14 @@ public class ActiveWalk {
     public ActiveWalk() {
     }
 
-    public ActiveWalk(String timeOfWalk, LocalTime startedAt, Place place, User user) {
-        this.timeOfWalk = timeOfWalk;
+    public ActiveWalk(LocalTime startedAt, Place place, User user) {
         this.startedAt = startedAt;
         this.place = place;
         this.user = user;
     }
 
-    public ActiveWalk(Long idActiveWalk, String timeOfWalk, LocalTime startedAt, Place place, User user) {
+    public ActiveWalk(Long idActiveWalk, LocalTime startedAt, Place place, User user) {
         this.idActiveWalk = idActiveWalk;
-        this.timeOfWalk = timeOfWalk;
         this.startedAt = startedAt;
         this.place = place;
         this.user = user;
@@ -47,9 +42,6 @@ public class ActiveWalk {
         return idActiveWalk;
     }
 
-    public String getTimeOfWalk() {
-        return timeOfWalk;
-    }
 
     public LocalTime getStartedAt() {
         return startedAt;

@@ -1,5 +1,11 @@
 package pl.pawguider.app.service;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.stereotype.Service;
 import pl.pawguider.app.model.ActiveWalk;
 import pl.pawguider.app.model.Dog;
@@ -12,8 +18,10 @@ import pl.pawguider.app.repository.WalkRepository;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class WalkService {
@@ -41,38 +49,11 @@ public class WalkService {
 
         activeWalk = walk.get();
 
-        if (checkIfTimeExceeded(activeWalk)) {
-            finishWalk(activeWalk);
-            return null;
-        }
-
         return activeWalk;
     }
 
     public void finishWalk(ActiveWalk activeWalk) {
         walkRepository.delete(activeWalk);
-    }
-
-    private boolean checkIfTimeExceeded(ActiveWalk activeWalk) {
-        LocalTime now = LocalTime.now();
-        LocalTime startedAt = activeWalk.getStartedAt();
-        LocalTime duration = LocalTime.parse(activeWalk.getTimeOfWalk());
-
-        LocalTime endTime = startedAt.plusHours(duration.getHour())
-                .plusMinutes(duration.getMinute())
-                .plusSeconds(duration.getSecond());
-
-        return now.isAfter(endTime) || now.isBefore(startedAt);
-    }
-
-    public LocalTime getLeftTime(ActiveWalk activeWalk) {
-        LocalTime now = LocalTime.now();
-        LocalTime startedAt = activeWalk.getStartedAt();
-        LocalTime duration = LocalTime.parse(activeWalk.getTimeOfWalk());
-
-        LocalTime difference = now.minusSeconds(startedAt.getSecond()).minusMinutes(startedAt.getMinute()).minusHours(startedAt.getHour());
-
-        return duration.minusSeconds(difference.getSecond()).minusMinutes(difference.getMinute()).minusHours(difference.getHour());
     }
 
     public void saveWalk(ActiveWalk activeWalk) {
@@ -84,20 +65,8 @@ public class WalkService {
 
         List<ActiveWalk> activeWalks = walkRepository.findAllByPlace(place);
 
-        List<ActiveWalk> activeWalksAfterTheGreatPurge = new ArrayList<>();
-
-        for (ActiveWalk activeWalk : activeWalks) {
-            if (checkIfTimeExceeded(activeWalk))
-                finishWalk(activeWalk);
-            else
-                activeWalksAfterTheGreatPurge.add(activeWalk);
-        }
-
-        return activeWalksAfterTheGreatPurge.stream().map(walk -> walk.getUser()
-                        .getDogs()
-                        .stream()
-                        .findFirst()
-                        .get())
-                .toList();
+        return activeWalks.stream()
+                .flatMap(walk -> walk.getUser().getDogs().stream())
+                .filter(Dog::getSelected).toList();
     }
 }

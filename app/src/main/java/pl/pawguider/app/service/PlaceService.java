@@ -1,6 +1,13 @@
 package pl.pawguider.app.service;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.stereotype.Service;
+import pl.pawguider.app.controller.dto.request.UserLocationRequest;
 import pl.pawguider.app.controller.dto.response.PlaceAreaResponse;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.CityRepository;
@@ -9,6 +16,7 @@ import pl.pawguider.app.repository.PlaceRatingRepository;
 import pl.pawguider.app.repository.PlaceRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,5 +90,60 @@ public class PlaceService {
         return place.getRatings()
                 .stream()
                 .anyMatch(rating -> rating.getUser().getIdUser().equals(user.getIdUser()));
+    }
+
+    public boolean isUserInPlaceArea(double latitude, double longitude, Long placeId) {
+        Optional<Place> foundPlace = placeRepository.findById(placeId);
+
+        if (foundPlace.isPresent()) {
+            Place place = foundPlace.get();
+            return isPointInPolygon(latitude, longitude, place.getArea().getPolygon(), placeId);
+        }
+
+        return false;
+
+    }
+
+    public Place findPlaceBasedOnUserLocationAndHisCity(User user, double latitude, double longitude) {
+        List<Place> places = placeRepository.findAllByAddress_City(user.getDetails().getCity());
+
+        Optional<Place> foundPlace = places.stream()
+                .filter(place -> isPointInPolygon(latitude, longitude, place.getArea().getPolygon(), place.getIdPlace()))
+                .findFirst();
+
+        return foundPlace.orElse(null);
+    }
+
+    private boolean isPointInPolygon(double latitude, double longitude, String rawAreaString, Long placeId) {
+        // WKTReader needs string in format POLYGON((a b, c d, e f,...)) so area from database needs to be converted
+        String rawAreaWithoutCommasInside = removeInnerCommas(rawAreaString);
+        String rawAreaWithoutParentheses = removeParentheses(rawAreaWithoutCommasInside);
+        String firstPoint = getFirstPoint(rawAreaWithoutParentheses);
+        String completePolygon = rawAreaWithoutParentheses + ", " + firstPoint;
+        GeometryFactory geometryFactory = new GeometryFactory();
+        WKTReader reader = new WKTReader(geometryFactory);
+        Polygon polygon;
+        try {
+            polygon = (Polygon) reader.read("POLYGON((" + completePolygon + "))");
+        } catch (ParseException e) {
+            System.err.println("An error occurred while parsing the place area with place id: " + placeId);
+            return false;
+        }
+
+        Point point = geometryFactory.createPoint(new Coordinate(latitude, longitude));
+        return polygon.contains(point);
+    }
+
+    private String removeInnerCommas(String input) {
+        return input.replaceAll("\\(([^,]+),([^)]+)\\)", "($1 $2)");
+    }
+
+    private String removeParentheses(String input) {
+        return input.replaceAll("[()]", "");
+    }
+
+    private String getFirstPoint(String input) {
+        Optional<String> firstPointOptional = Arrays.stream(input.split(",")).findFirst();
+        return firstPointOptional.orElse("");
     }
 }

@@ -49,6 +49,8 @@ class _MapScreenState extends State<MapScreen> {
             myLocationEnabled: true,
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
+
+
             },
             // markers: {
             //   Marker(

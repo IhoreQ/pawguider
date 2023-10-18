@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../dio/dio_config.dart';
+import '../models/dog/dog.dart';
 
 class GenderService {
   final Dio _dio = DioConfig.createDio();
@@ -25,6 +26,10 @@ class GenderService {
     } on DioException {
       rethrow;
     }
+  }
+
+  void printTest(Dog dog) {
+    print("test");
   }
 
 }
