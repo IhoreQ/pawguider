@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter/providers/active_walk_provider.dart';
 import 'package:front_flutter/providers/favourite_places_provider.dart';
 import 'package:front_flutter/providers/loading_provider.dart';
 import 'package:front_flutter/providers/places_areas_provider.dart';
@@ -39,6 +40,7 @@ class App extends StatelessWidget {
       ChangeNotifierProvider(create: (context) => PlacesProvider()),
       ChangeNotifierProvider(create: (context) => UserLocationProvider()),
       ChangeNotifierProvider(create: (context) => PlacesAreasProvider()),
+      ChangeNotifierProvider(create: (context) => ActiveWalkProvider()),
     ];
 
     return MultiProvider(

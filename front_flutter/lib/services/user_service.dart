@@ -15,18 +15,8 @@ class UserService {
     }
   }
 
-  Future<bool> updatePosition(LatLng newPosition) async {
-    try {
-      Response response = await _dio.patch(
-        '/user/location',
-        data: {
-          "latitude": newPosition.latitude,
-          "longitude": newPosition.longitude
-        }
-      );
-      return true;
-    } on DioException {
-      return false;
-    }
+  Future<void> updatePosition(LatLng newPosition) async {
+    print('test');
   }
+
 }

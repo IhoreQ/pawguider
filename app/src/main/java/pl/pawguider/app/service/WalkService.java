@@ -52,7 +52,7 @@ public class WalkService {
         return activeWalk;
     }
 
-    public void finishWalk(ActiveWalk activeWalk) {
+    public void deleteWalk(ActiveWalk activeWalk) {
         walkRepository.delete(activeWalk);
     }
 
@@ -68,5 +68,20 @@ public class WalkService {
         return activeWalks.stream()
                 .flatMap(walk -> walk.getUser().getDogs().stream())
                 .filter(Dog::getSelected).toList();
+    }
+
+    public ActiveWalk addWalk(User user, Long placeId) {
+        Optional<Place> foundPlace = placeRepository.findById(placeId);
+        if (foundPlace.isPresent()) {
+            LocalTime now = LocalTime.now();
+            Place place = foundPlace.get();
+            ActiveWalk activeWalk = new ActiveWalk(now, place, user);
+            return walkRepository.save(activeWalk);
+        }
+        return null;
+    }
+
+    public boolean userHasWalk(User user) {
+        return walkRepository.findByUser(user).isPresent();
     }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:front_flutter/services/auth_service.dart';
 import 'package:front_flutter/services/user_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,6 +11,7 @@ class UserLocationProvider extends ChangeNotifier {
   int _updatesCount = 0;
   final _updatesLimit = 10;
   final UserService userService = UserService();
+  final AuthService authService = AuthService();
   final StreamController<LatLng> _locationController = StreamController<LatLng>.broadcast();
 
   Stream<LatLng> get locationStream => _locationController.stream;
@@ -44,6 +46,11 @@ class UserLocationProvider extends ChangeNotifier {
     );
 
     bool serviceEnabled = await isAllowed();
+    bool isAuthenticated = await authService.isAuthenticated();
+
+    if (!isAuthenticated) {
+      return Future.error('User is not authenticated');
+    }
 
     if (!serviceEnabled) {
       return Future.error('Localisation is not allowed!');
@@ -59,6 +66,7 @@ class UserLocationProvider extends ChangeNotifier {
       if (_updatesCount == _updatesLimit) {
         _updatesCount = 0;
         userService.updatePosition(newPosition);
+
       }
     });
   }

@@ -30,8 +30,9 @@ public class AuthService {
         Gender gender = genderRepository.findByName(request.gender()).orElse(null);
         String defaultPhotoName = "user_profile_picture.png";
         UserDetails userDetails = new UserDetails(request.firstName(), request.lastName(), request.phone(), city, gender, defaultPhotoName);
+        UserLocation userLocation = new UserLocation(50.07208368710892, 19.942688926110346);
 
-        User user = new User(request.email(), userDetails);
+        User user = new User(request.email(), userDetails, userLocation);
         user.setPassword(passwordEncoder.encode(request.password()));
 
         userRepository.save(user);

@@ -1,9 +1,11 @@
 package pl.pawguider.app.controller;
 
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.UserLocationRequest;
+import pl.pawguider.app.controller.dto.request.WalkAdditionRequest;
 import pl.pawguider.app.controller.dto.request.WalkStartRequest;
 import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
@@ -36,16 +38,16 @@ public class WalkController {
     }
 
     @GetMapping
-    public ResponseEntity<?> isUserOnTheWalk(@RequestHeader("Authorization") String header) {
+    public ResponseEntity<UserActiveWalkResponse> isUserOnTheWalk(@RequestHeader("Authorization") String header) {
 
         User user = userService.getUserFromHeader(header);
 
         ActiveWalk activeWalk = walkService.getActiveWalkByUser(user);
 
         if (activeWalk == null)
-            return ResponseEntity.ok(false);
+            return ResponseEntity.ok(null);
 
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(UserActiveWalkResponse.getResponse(activeWalk));
     }
 
     @GetMapping("/dogs/place/{placeId}")
@@ -57,7 +59,7 @@ public class WalkController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> finishWalk(@RequestHeader("Authorization") String header) throws Exception {
+    public ResponseEntity<?> deleteWalk(@RequestHeader("Authorization") String header) throws Exception {
 
         User user = userService.getUserFromHeader(header);
         Collection<ActiveWalk> activeWalks = user.getActiveWalks();
@@ -67,8 +69,23 @@ public class WalkController {
         }
 
         ActiveWalk activeWalk = activeWalks.stream().findFirst().get();
-        walkService.finishWalk(activeWalk);
+        walkService.deleteWalk(activeWalk);
 
-        return ResponseEntity.ok("Finished.");
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<UserActiveWalkResponse> addWalk(@RequestHeader("Authorization") String header, @RequestBody WalkAdditionRequest request) {
+        User user = userService.getUserFromHeader(header);
+        if (walkService.userHasWalk(user)) {
+            return null;
+        }
+        ActiveWalk walk = walkService.addWalk(user, request.placeId());
+
+        if (walk == null) {
+            return null;
+        }
+
+        return ResponseEntity.ok(UserActiveWalkResponse.getResponse(walk));
     }
 }

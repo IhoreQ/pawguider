@@ -37,6 +37,10 @@ public class User {
     @JoinColumn(name = "id_user_details", referencedColumnName = "id_user_details", nullable = false)
     private UserDetails details;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id_user_location", referencedColumnName = "id_user_location", nullable = false)
+    private UserLocation location;
+
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Collection<DogLike> dogsLikes;
@@ -56,11 +60,12 @@ public class User {
         this.idUser = idUser;
     }
 
-    public User(String email, UserDetails details) {
+    public User(String email, UserDetails details, UserLocation location) {
         this.email = email;
         this.createdAt = new Date(System.currentTimeMillis());
         this.role = new Role(1L);
         this.details = details;
+        this.location = location;
     }
 
     public User(Long idUser, String email, String password, Date createdAt, Collection<ActiveWalk> activeWalks, Collection<Dog> dogs, Role role, UserDetails details) {
@@ -104,5 +109,9 @@ public class User {
 
     public Long getIdUser() {
         return idUser;
+    }
+
+    public UserLocation getLocation() {
+        return location;
     }
 }
