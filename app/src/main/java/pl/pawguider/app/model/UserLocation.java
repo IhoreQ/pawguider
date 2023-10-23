@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -23,6 +24,9 @@ public class UserLocation {
     @Column(name = "longitude")
     private double longitude;
 
+    @Column(name = "last_update")
+    private LocalTime lastUpdate;
+
     @OneToOne(mappedBy = "location")
     private User user;
 
@@ -40,6 +44,14 @@ public class UserLocation {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public LocalTime getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(LocalTime lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 
     public UserLocation(double latitude, double longitude) {

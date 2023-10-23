@@ -28,48 +28,7 @@ class PlaceProfileScreen extends StatefulWidget {
 }
 
 class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
-  late List<Dog> dogs;
   final PlaceService placeService = PlaceService();
-
-  @override
-  void initState() {
-    super.initState();
-
-    final List<Behavior> exampleBehaviors = [
-      Behavior(1, 'Friendly'),
-      Behavior(6, 'Calm'),
-      Behavior(12, 'Curious'),
-      Behavior(10, 'Independent')
-    ];
-    final Dog exampleDog = Dog(
-        77,
-        'Ciapek',
-        'Jack Russel Terrier',
-        'Male',
-        12,
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Jack_Russell_Terrier_-_bitch_Demi.JPG/1200px-Jack_Russell_Terrier_-_bitch_Demi.JPG',
-        'Small',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non ante at diam elementum volutpat a ac neque. In eu dui accumsan, viverra urna eget, sagittis diam. Pellentesque eget pharetra odio, vitae volutpat est. Maecenas quis sapien aliquam, porta eros a, pretium nunc. Fusce velit orci, volutpat nec urna in, euismod varius diam. Suspendisse quis ante tellus. Quisque aliquam malesuada justo eget accumsan.',
-        5,
-        exampleBehaviors,
-        10,
-        false);
-    final Dog exampleDog2 = Dog(
-        13,
-        'Binia',
-        'Mongrel',
-        'Female',
-        2,
-        'https://www.pedigree.pl/cdn-cgi/image/width=520,format=auto,q=90/sites/g/files/fnmzdf4096/files/2023-01/jack-russell-terrier_1640009953951.png',
-        'Small',
-        '',
-        10,
-        exampleBehaviors,
-        11,
-        false);
-
-    dogs = [exampleDog, exampleDog2];
-  }
 
   void refresh() {
     setState(() {});
@@ -102,7 +61,7 @@ class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
                       Stack(
                         children: [
                           TopBar(place: place, placeService: placeService),
-                          MainContentBox(place: place, dogs: dogs, refreshFunction: refresh,),
+                          MainContentBox(place: place, refreshFunction: refresh,),
                         ],
                       )
                     ],
@@ -216,10 +175,9 @@ class _TopBarState extends State<TopBar> {
 }
 
 class MainContentBox extends StatefulWidget {
-  const MainContentBox({super.key, required this.place, required this.dogs, required this.refreshFunction});
+  const MainContentBox({super.key, required this.place, required this.refreshFunction});
 
   final Place place;
-  final List<Dog> dogs;
   final Function() refreshFunction;
 
   @override
@@ -307,33 +265,65 @@ class _MainContentBoxState extends State<MainContentBox> {
               Text('${widget.place.description}',
                   style: AppTextStyle.regularLight.copyWith(fontSize: 14.0)),
               const Gap(10.0),
-              Row(
-                children: [
-                  Text('Dogs here',
-                      style: AppTextStyle.heading2.copyWith(fontSize: 20.0)),
-                  const Gap(5.0),
-                  Text(
-                    '(${widget.dogs.length})',
-                    style: AppTextStyle.mediumLight,
-                  )
-                ],
-              ),
-              const Gap(10.0),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: widget.dogs.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      DogInfoBox(
-                        dog: widget.dogs[index],
-                        onComplete: () {},
-                      ),
-                      const Gap(15.0),
-                    ],
-                  );
-                },
+              FutureBuilder<List<Dog>>(
+                future: placeService.getAllDogsFromPlace(widget.place.id),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Dog> dogs = snapshot.data!;
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Text('Dogs here',
+                                      style: AppTextStyle.heading2.copyWith(fontSize: 20.0)),
+                                  const Gap(5.0),
+                                  Text(
+                                    '(${dogs.length})',
+                                    style: AppTextStyle.mediumLight,
+                                  )
+                                ],
+                              )
+                            ),
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: AppColor.lightGray.withOpacity(0.5),
+                              child: IconButton(
+                                style: AppButtonStyle.lightSplashColor,
+                                onPressed: () => widget.refreshFunction(),
+                                icon: const Icon(
+                                  Icons.refresh,
+                                  size: 20,
+                                  color: AppColor.lightText,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        const Gap(10.0),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: dogs.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                DogInfoBox(
+                                  dog: dogs[index],
+                                  onComplete: () {},
+                                ),
+                                const Gap(15.0),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedLoadingIndicator(color: AppColor.primaryOrange);
+                }
               ),
             ],
           ),

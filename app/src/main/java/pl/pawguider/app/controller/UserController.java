@@ -1,9 +1,11 @@
 package pl.pawguider.app.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
+import pl.pawguider.app.controller.dto.request.UserLocationRequest;
 import pl.pawguider.app.controller.dto.response.CurrentUserResponse;
 import pl.pawguider.app.model.User;
 import pl.pawguider.app.service.UserService;
@@ -48,5 +50,12 @@ public class UserController {
         CurrentUserResponse response = CurrentUserResponse.getResponse(user.getDetails());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/location")
+    public ResponseEntity<?> updateUserLocation(@RequestHeader("Authorization") String header, @RequestBody UserLocationRequest request) {
+        User user = userService.getUserFromHeader(header);
+        userService.updateUserLocation(user, request.latitude(), request.longitude());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -104,14 +104,14 @@ public class PlaceService {
 
     }
 
-    public Place findPlaceBasedOnUserLocationAndHisCity(User user, double latitude, double longitude) {
+    public Long findPlaceBasedOnUserLocationAndHisCity(User user, double latitude, double longitude) {
         List<Place> places = placeRepository.findAllByAddress_City(user.getDetails().getCity());
 
         Optional<Place> foundPlace = places.stream()
                 .filter(place -> isPointInPolygon(latitude, longitude, place.getArea().getPolygon(), place.getIdPlace()))
                 .findFirst();
 
-        return foundPlace.orElse(null);
+        return foundPlace.map(Place::getIdPlace).orElse(null);
     }
 
     private boolean isPointInPolygon(double latitude, double longitude, String rawAreaString, Long placeId) {

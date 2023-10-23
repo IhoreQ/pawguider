@@ -92,34 +92,14 @@ class _WalkInfoBoxState extends State<WalkInfoBox> {
                         style: AppTextStyle.heading2,
                       ),
                       Text(
-                        widget.walk.place.street,
+                        '${widget.walk.place.street} ${widget.walk.place.houseNumber ?? ''}',
                         style: AppTextStyle.heading3,
                       ),
                     ],
                   ),
                   Row(
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                color: AppColor.backgroundOrange2,
-                                borderRadius: BorderRadius.circular(50.0)),
-                            width: 30,
-                            height: 30,
-                            alignment: Alignment.center,
-                            child: const Icon(
-                              FluentSystemIcons.ic_fluent_timer_regular,
-                              color: AppColor.primaryOrange,
-                            )
-                          ),
-                          const Gap(3.0),
-                          Text(
-                              widget.walk.getTime(),
-                              style: AppTextStyle.regularOrange.copyWith(fontSize: 14.0)
-                          )
-                        ],
-                      ),
+
                     ],
                   )
                 ],

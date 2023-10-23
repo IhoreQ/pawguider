@@ -4,16 +4,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.RatingRequest;
 import pl.pawguider.app.controller.dto.request.UserLocationRequest;
-import pl.pawguider.app.controller.dto.response.LikedPlaceResponse;
-import pl.pawguider.app.controller.dto.response.PlaceAreaResponse;
-import pl.pawguider.app.controller.dto.response.PlaceInfoBoxResponse;
-import pl.pawguider.app.controller.dto.response.PlaceInfoResponse;
+import pl.pawguider.app.controller.dto.response.*;
+import pl.pawguider.app.model.Dog;
 import pl.pawguider.app.model.Place;
 import pl.pawguider.app.model.User;
 import pl.pawguider.app.service.PlaceService;
 import pl.pawguider.app.service.UserService;
+import pl.pawguider.app.service.WalkService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,10 +20,12 @@ public class PlaceController {
 
     private final PlaceService placeService;
     private final UserService userService;
+    private final WalkService walkService;
 
-    public PlaceController(PlaceService placeService, UserService userService) {
+    public PlaceController(PlaceService placeService, UserService userService, WalkService walkService) {
         this.placeService = placeService;
         this.userService = userService;
+        this.walkService = walkService;
     }
 
     @GetMapping("/all")
@@ -111,15 +111,24 @@ public class PlaceController {
         return places.stream().map(PlaceAreaResponse::getResponse).toList();
     }
 
-    @GetMapping("/area/{placeId}")
+    @GetMapping("/{placeId}/area")
     public boolean isUserInPlaceArea(@PathVariable Long placeId, @RequestBody UserLocationRequest request) {
         return placeService.isUserInPlaceArea(request.latitude(), request.longitude(), placeId);
     }
 
     @GetMapping("/area")
-    public Place findUserPlaceArea(@RequestHeader("Authorization") String header, @RequestBody UserLocationRequest request) {
+    public ResponseEntity<Long> findUserPlaceArea(@RequestHeader("Authorization") String header, @RequestBody UserLocationRequest request) {
         User user = userService.getUserFromHeader(header);
-        return placeService.findPlaceBasedOnUserLocationAndHisCity(user, request.latitude(), request.longitude());
+        Long placeId = placeService.findPlaceBasedOnUserLocationAndHisCity(user, request.latitude(), request.longitude());
+        return ResponseEntity.ok(placeId);
+    }
+
+    @GetMapping("/{placeId}/dogs")
+    public List<DogInfoBoxResponse> getAllDogsFromPlace(@PathVariable Long placeId) {
+        List<Dog> dogs = walkService.getDogsFromPlace(placeId);
+        return dogs.stream()
+                .map(DogInfoBoxResponse::getResponse)
+                .toList();
     }
 
 }

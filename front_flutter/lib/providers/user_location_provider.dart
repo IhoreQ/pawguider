@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:front_flutter/providers/active_walk_provider.dart';
 import 'package:front_flutter/services/auth_service.dart';
+import 'package:front_flutter/services/place_service.dart';
 import 'package:front_flutter/services/user_service.dart';
+import 'package:front_flutter/services/walk_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -11,6 +14,8 @@ class UserLocationProvider extends ChangeNotifier {
   int _updatesCount = 0;
   final _updatesLimit = 10;
   final UserService userService = UserService();
+  final PlaceService placeService = PlaceService();
+  final WalkService walkService = WalkService();
   final AuthService authService = AuthService();
   final StreamController<LatLng> _locationController = StreamController<LatLng>.broadcast();
 
@@ -33,7 +38,7 @@ class UserLocationProvider extends ChangeNotifier {
     _locationController.add(_currentPosition!);
   }
 
-  Future<void> startListeningLocationUpdates() async {
+  Future<void> startListeningLocationUpdates(ActiveWalkProvider walkProvider) async {
     LocationSettings locationSettings = AndroidSettings(
       accuracy: LocationAccuracy.high,
       forceLocationManager: true,
@@ -65,10 +70,29 @@ class UserLocationProvider extends ChangeNotifier {
       _updatesCount++;
       if (_updatesCount == _updatesLimit) {
         _updatesCount = 0;
-        userService.updatePosition(newPosition);
-
+        _handlePositionUpdate(newPosition, walkProvider);
       }
     });
+  }
+
+  Future<void> _handlePositionUpdate(LatLng newPosition, ActiveWalkProvider walkProvider) async {
+    userService.updatePosition(newPosition);
+
+    if (walkProvider.walk != null) {
+      if (!await placeService.isUserInPlaceArea(walkProvider.walk!.place.id, newPosition)) {
+        walkService.deleteWalk();
+        walkProvider.deleteWalk();
+      }
+    } else {
+      int? placeId = await placeService.findUserPlaceArea(newPosition);
+
+      if (placeId != null) {
+        bool added = await walkService.addWalk(placeId);
+        if (added) {
+          walkProvider.fetchActiveWalk();
+        }
+      }
+    }
   }
 
   Future<bool> isAllowed() async {

@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/dog/dog.dart';
 import '../../models/walk.dart';
+import '../../providers/active_walk_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../styles.dart';
 
@@ -27,29 +28,30 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  late final Walk? _walk;
   final dogService = DogService();
   late final UserProvider userProvider;
   late final UserDogsProvider userDogsProvider;
   late final FavouritePlacesProvider favouritePlacesProvider;
   late final UserLocationProvider userLocationProvider;
+  late final ActiveWalkProvider activeWalkProvider;
 
   @override
   void initState() {
     super.initState();
 
-    _walk = null;
     userProvider = context.read<UserProvider>();
     favouritePlacesProvider = context.read<FavouritePlacesProvider>();
     userDogsProvider = context.read<UserDogsProvider>();
+    activeWalkProvider = context.read<ActiveWalkProvider>();
 
     userLocationProvider = context.read<UserLocationProvider>();
     userLocationProvider.fetchUserPosition();
-    userLocationProvider.startListeningLocationUpdates();
+    userLocationProvider.startListeningLocationUpdates(activeWalkProvider);
 
     userProvider.fetchCurrentUser();
     favouritePlacesProvider.fetchFavouritePlaces();
     userDogsProvider.fetchUserDogs();
+    activeWalkProvider.fetchActiveWalk();
   }
 
   @override
@@ -164,17 +166,22 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.max,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: _walk != null ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('You\'re here', style: AppTextStyle.boldDark.copyWith(fontSize: 25.0)),
-                      const Gap(10.0),
-                      WalkInfoBox(walk: _walk!),
-                      const Gap(20.0),
-                    ],
-                  ) : null,
+                Consumer<ActiveWalkProvider>(
+                    builder: (context, activeWalkProvider, _) {
+                      Walk? walk = activeWalkProvider.walk;
+                      return walk != null ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('You\'re here', style: AppTextStyle.boldDark.copyWith(fontSize: 25.0)),
+                            const Gap(10.0),
+                            WalkInfoBox(walk: walk!),
+                            const Gap(20.0),
+                          ],
+                        ),
+                      ) : const SizedBox();
+                    }
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 20.0),

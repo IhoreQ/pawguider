@@ -138,5 +138,4 @@ class DogService {
       return false;
     }
   }
-
 }

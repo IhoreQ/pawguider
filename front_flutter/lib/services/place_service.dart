@@ -4,6 +4,7 @@ import 'package:front_flutter/utilities/constants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../dio/dio_config.dart';
+import '../models/dog/dog.dart';
 import '../models/place.dart';
 
 class PlaceService {
@@ -134,4 +135,58 @@ class PlaceService {
       return [];
     }
   }
+
+  Future<bool> isUserInPlaceArea(int placeId, LatLng position) async {
+    try {
+      Response response = await _dio.get(
+        '/place/$placeId/area',
+        data: {
+          "latitude": position.latitude,
+          "longitude": position.longitude
+        }
+      );
+      return response.data;
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<int?> findUserPlaceArea(LatLng position) async {
+    try {
+      Response response = await _dio.get(
+        '/place/area',
+        data: {
+          "latitude": position.latitude,
+          "longitude": position.longitude
+        }
+      );
+      return response.data == '' ? null : response.data;
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<List<Dog>> getAllDogsFromPlace(int placeId) async {
+    try {
+      Response response = await _dio.get(
+        '/place/$placeId/dogs'
+      );
+      List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+
+      List<Dog> dogs = rawData.map((dogData) => Dog.basic(
+          dogData['id'],
+          dogData['name'],
+          dogData["breed"],
+          dogData["gender"],
+          dogData["age"],
+          Constants.imageServerUrl + dogData["photoName"],
+          dogData["selected"]
+      )).toList();
+
+      return dogs;
+    } on DioException {
+      return [];
+    }
+   }
+
 }

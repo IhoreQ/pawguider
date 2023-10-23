@@ -17,6 +17,8 @@ class Place {
   Place.basicInfo(this._id, this._name, this._street, this._houseNumber, this._dogsCount,
       this._averageScore, this._photoUrl);
 
+  Place.walkInfo(this._id, this._name, this._photoUrl, this._street, this._houseNumber);
+
   Place.favouriteInfo(this._id, this._name, this._street, this._city, this._photoUrl);
 
   Place(this._id, this._name, this._street, this._houseNumber, this._zipCode, this._city,
