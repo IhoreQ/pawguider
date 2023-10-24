@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
 import pl.pawguider.app.controller.dto.request.UserLocationRequest;
 import pl.pawguider.app.controller.dto.response.CurrentUserResponse;
+import pl.pawguider.app.controller.dto.response.UserInfoResponse;
 import pl.pawguider.app.model.User;
 import pl.pawguider.app.service.UserService;
 
@@ -38,16 +39,20 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getUserById(@PathVariable Long id) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
 
-        return ResponseEntity.ok(user.getEmail());
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(UserInfoResponse.getResponse(user));
     }
 
     @GetMapping
-    public ResponseEntity<CurrentUserResponse> getCurrentUser(@RequestHeader("Authorization") String header) {
+    public ResponseEntity<UserInfoResponse> getCurrentUser(@RequestHeader("Authorization") String header) {
         User user = userService.getUserFromHeader(header);
-        CurrentUserResponse response = CurrentUserResponse.getResponse(user.getDetails());
+        UserInfoResponse response = UserInfoResponse.getResponse(user);
 
         return ResponseEntity.ok(response);
     }

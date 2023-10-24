@@ -10,13 +10,14 @@ class TwoElementsColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
     return SizedBox(
-      width: 100.0,
+      width: deviceWidth / 5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(topText, style: AppTextStyle.heading2),
-          Text(bottomText!, style: AppTextStyle.mediumLight)
+          Text(bottomText!, style: AppTextStyle.mediumLight.copyWith(fontSize: 14.0), overflow: TextOverflow.ellipsis,),
         ],
       ),
     );

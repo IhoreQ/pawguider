@@ -110,11 +110,9 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     PlacesRoute.name: (routeData) {
-      final args = routeData.argsAs<PlacesRouteArgs>(
-          orElse: () => const PlacesRouteArgs());
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: PlacesScreen(key: args.key),
+        child: const PlacesScreen(),
       );
     },
     PlaceProfileRoute.name: (routeData) {
@@ -396,30 +394,16 @@ class MapRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [PlacesScreen]
-class PlacesRoute extends PageRouteInfo<PlacesRouteArgs> {
-  PlacesRoute({
-    Key? key,
-    List<PageRouteInfo>? children,
-  }) : super(
+class PlacesRoute extends PageRouteInfo<void> {
+  const PlacesRoute({List<PageRouteInfo>? children})
+      : super(
           PlacesRoute.name,
-          args: PlacesRouteArgs(key: key),
           initialChildren: children,
         );
 
   static const String name = 'PlacesRoute';
 
-  static const PageInfo<PlacesRouteArgs> page = PageInfo<PlacesRouteArgs>(name);
-}
-
-class PlacesRouteArgs {
-  const PlacesRouteArgs({this.key});
-
-  final Key? key;
-
-  @override
-  String toString() {
-    return 'PlacesRouteArgs{key: $key}';
-  }
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for

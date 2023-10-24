@@ -7,12 +7,14 @@ import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/widgets/behavior_box.dart';
 import 'package:front_flutter/widgets/custom_vertical_divider.dart';
+import 'package:front_flutter/widgets/profile_avatar.dart';
 import 'package:front_flutter/widgets/two_elements_column.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/dog/dog.dart';
 import '../../widgets/common_loading_indicator.dart';
+import '../../widgets/sized_loading_indicator.dart';
 
 @RoutePage()
 class DogProfileScreen extends StatelessWidget {
@@ -61,7 +63,7 @@ class DogProfileScreen extends StatelessWidget {
                           children: [
                             TopBar(dog: dog!, onComplete: onComplete, dogService: dogService),
                             DogContentPage(dog: dog),
-                            DogAvatar(dog: dog),
+                            ProfileAvatar(photoUrl: dog.photoUrl)
                           ],
                         )
                       ],
@@ -71,14 +73,8 @@ class DogProfileScreen extends StatelessWidget {
               ]);
             }
           }
-          return const Center(
-              child: SizedBox(
-                  height: 48.0,
-                  width: 48.0,
-                  child: CommonLoadingIndicator(color: AppColor.primaryOrange)
-              )
-          );
-        },
+          return const SizedLoadingIndicator(color: AppColor.primaryOrange);
+          },
         )
     );
   }
@@ -333,30 +329,6 @@ class DogContentPage extends StatelessWidget {
                 style: AppTextStyle.mediumLight.copyWith(fontSize: 14.0)),
             const Gap(20.0),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class DogAvatar extends StatelessWidget {
-  final Dog dog;
-
-  const DogAvatar({Key? key, required this.dog}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.only(top: 65),
-        child: PhysicalModel(
-          color: Colors.black,
-          shape: BoxShape.circle,
-          elevation: 10.0,
-          child: CircleAvatar(
-            backgroundImage: NetworkImage(dog.photoUrl),
-            radius: 65.0,
-          ),
         ),
       ),
     );

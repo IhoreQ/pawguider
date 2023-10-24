@@ -10,9 +10,7 @@ class UserProvider extends ChangeNotifier {
 
 
   Future<void> fetchCurrentUser() async {
-    dynamic res = await UserService().getCurrentUser();
-    _user = User(res['idUser'], res['firstName'], res['lastName'], Constants.imageServerUrl + res['photoName'], res['city']['idCity'], res['city']['name']);
+    _user = await UserService().getCurrentUser();
     notifyListeners();
   }
-
 }

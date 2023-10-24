@@ -114,4 +114,6 @@ public class User {
     public UserLocation getLocation() {
         return location;
     }
+
+
 }

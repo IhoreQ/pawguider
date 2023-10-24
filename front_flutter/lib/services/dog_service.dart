@@ -36,7 +36,6 @@ class DogService {
       Response response = await _dio.get('/dog/$dogId');
       Map<String, dynamic> rawData = response.data;
 
-
       List<Behavior> behaviors = (rawData['behaviors'] as List<dynamic>)
         .map((behaviorData) =>
           Behavior(behaviorData['idBehavior'], behaviorData['name']))
