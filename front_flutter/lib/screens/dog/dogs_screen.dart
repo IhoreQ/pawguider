@@ -172,7 +172,7 @@ class _DogsListPageState extends State<DogsListPage> {
               itemBuilder: (context, index) {
                 return Column(
                   children: [
-                    DogInfoBox(dog: widget.userDogs[index], onComplete: () => widget.refresh(),),
+                    DogInfoBox(dog: widget.userDogs[index],),
                     const Gap(15.0),
                   ],
                 );

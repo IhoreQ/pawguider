@@ -62,6 +62,17 @@ public class Dog {
         this.selected = false;
     }
 
+    public Dog(Long idDog, String name, int age, String description, String photo, DogBreed breed, Gender gender, User owner) {
+        this.idDog = idDog;
+        this.name = name;
+        this.age = age;
+        this.description = description;
+        this.photo = photo;
+        this.breed = breed;
+        this.gender = gender;
+        this.owner = owner;
+    }
+
     public String getName() {
         return name;
     }
@@ -108,5 +119,37 @@ public class Dog {
 
     public void setSelected(Boolean selected) {
         this.selected = selected;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setBreed(DogBreed breed) {
+        this.breed = breed;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void setBehaviors(Collection<DogsBehaviors> behaviors) {
+        this.behaviors = behaviors;
     }
 }

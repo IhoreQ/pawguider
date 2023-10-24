@@ -41,4 +41,10 @@ public class ImageController {
                         .contentType(MediaType.valueOf(image.getType()))
                         .body(ImageUtil.decompressImage(image.getImage()));
     }
+
+    @DeleteMapping("/{name}")
+    public ResponseEntity<Boolean> deleteImage(@PathVariable("name") String name) {
+        boolean isDeleted = imageService.deleteImage(name);
+        return ResponseEntity.ok(isDeleted);
+    }
 }

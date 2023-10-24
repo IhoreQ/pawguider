@@ -99,7 +99,27 @@ class _WalkInfoBoxState extends State<WalkInfoBox> {
                   ),
                   Row(
                     children: [
-
+                      Row(
+                        children: [
+                          Container(
+                              decoration: BoxDecoration(
+                                  color: AppColor.backgroundOrange2,
+                                  borderRadius: BorderRadius.circular(50.0)),
+                              width: 30,
+                              height: 30,
+                              alignment: Alignment.center,
+                              child: const Icon(
+                                FluentSystemIcons.ic_fluent_clock_regular,
+                                color: AppColor.primaryOrange,
+                              )
+                          ),
+                          const Gap(3.0),
+                          Text(
+                              'Started at: ${widget.walk.startTime}',
+                              style: AppTextStyle.regularOrange.copyWith(fontSize: 14.0)
+                          )
+                        ],
+                      ),
                     ],
                   )
                 ],

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.DogAddRequest;
 import pl.pawguider.app.controller.dto.request.DogDeletionRequest;
+import pl.pawguider.app.controller.dto.request.DogUpdateRequest;
 import pl.pawguider.app.controller.dto.response.DogBreedResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
@@ -123,5 +124,19 @@ public class DogController {
 
         dogService.toggleSelected(dog);
         return true;
+    }
+
+    @PutMapping
+    public ResponseEntity<Boolean> updateDog(@RequestHeader("Authorization") String header, @RequestBody DogUpdateRequest request) {
+        User user = userService.getUserFromHeader(header);
+        Dog dog = dogService.getDogById(request.dogId());
+
+        if (dog != null && dogService.isOwner(user, dog)) {
+            boolean isUpdated = dogService.updateDog(dog, request);
+            return ResponseEntity.ok(isUpdated);
+        }
+
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

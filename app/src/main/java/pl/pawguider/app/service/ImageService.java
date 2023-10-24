@@ -39,9 +39,13 @@ public class ImageService {
         return image.orElse(null);
     }
 
-    public void deleteImage(String imageName) {
+    public boolean deleteImage(String imageName) {
         Optional<Image> foundImage = imageRepository.findByName(imageName);
-        foundImage.ifPresent(image -> imageRepository.delete(image));
+        if (foundImage.isPresent()) {
+            imageRepository.delete(foundImage.get());
+            return true;
+        }
+        return false;
     }
 
 }

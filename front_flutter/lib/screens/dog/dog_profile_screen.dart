@@ -13,16 +13,24 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/dog/dog.dart';
-import '../../widgets/common_loading_indicator.dart';
 import '../../widgets/sized_loading_indicator.dart';
 
 @RoutePage()
-class DogProfileScreen extends StatelessWidget {
-  const DogProfileScreen({Key? key, @PathParam() required this.dogId, required this.onComplete})
+class DogProfileScreen extends StatefulWidget {
+  const DogProfileScreen({Key? key, @PathParam() required this.dogId})
       : super(key: key);
 
-  final VoidCallback onComplete;
   final int dogId;
+
+  @override
+  State<DogProfileScreen> createState() => _DogProfileScreenState();
+}
+
+class _DogProfileScreenState extends State<DogProfileScreen> {
+
+  void refresh() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +38,7 @@ class DogProfileScreen extends StatelessWidget {
 
     return Scaffold(
         body: FutureBuilder<dynamic>(
-          future: dogService.getDog(dogId),
+          future: dogService.getDog(widget.dogId),
           builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data == 404) {
@@ -61,7 +69,7 @@ class DogProfileScreen extends StatelessWidget {
                       children: [
                         Stack(
                           children: [
-                            TopBar(dog: dog!, onComplete: onComplete, dogService: dogService),
+                            TopBar(dog: dog!, refreshFunction: refresh, dogService: dogService),
                             DogContentPage(dog: dog),
                             ProfileAvatar(photoUrl: dog.photoUrl)
                           ],
@@ -83,9 +91,9 @@ class DogProfileScreen extends StatelessWidget {
 class TopBar extends StatefulWidget {
   final Dog dog;
   final DogService dogService;
-  final VoidCallback onComplete;
+  final Function() refreshFunction;
 
-  const TopBar({Key? key, required this.dog, required this.onComplete, required this.dogService}) : super(key: key);
+  const TopBar({Key? key, required this.dog, required this.refreshFunction, required this.dogService}) : super(key: key);
 
   @override
   State<TopBar> createState() => _TopBarState();
@@ -146,7 +154,7 @@ class _TopBarState extends State<TopBar> {
                                 padding: EdgeInsets.zero,
                                 constraints: const BoxConstraints(),
                                 onPressed: () => context.router
-                                    .push(DogDetailsRoute(dog: widget.dog, onComplete: () => widget.onComplete())),
+                                    .push(DogDetailsRoute(dog: widget.dog, onComplete: () => widget.refreshFunction())),
                                 icon: const Icon(
                                   FluentSystemIcons.ic_fluent_edit_filled,
                                   size: iconSize,

@@ -11,6 +11,7 @@ import 'package:front_flutter/utilities/extensions.dart';
 import 'package:front_flutter/utilities/image_getter.dart';
 import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/custom_dropdown_button.dart';
+import 'package:front_flutter/widgets/dialogs/error_dialog.dart';
 import 'package:front_flutter/widgets/form_field/custom_form_field.dart';
 import 'package:front_flutter/widgets/selectable_behavior_box.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
@@ -22,6 +23,7 @@ import 'dart:io';
 import '../../models/dog/behavior.dart';
 import '../../models/dog/breed.dart';
 import '../../models/dog/dog.dart';
+import '../../services/dto/dog/dog_update_request.dart';
 import '../../widgets/common_loading_indicator.dart';
 
 @RoutePage()
@@ -54,6 +56,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   final int _behaviorsMinCount = 3;
   bool _minBehaviorCountSelected = true;
   bool _imageAdded = true;
+  late bool _imageUpdated;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -76,6 +79,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
       _descriptionController.text = widget.dog!.description!;
       _selectedGender = widget.dog!.gender!;
       _selectedBehaviors = Dog.clone(widget.dog!).behaviors!;
+      _imageUpdated = false;
     }
   }
 
@@ -213,7 +217,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                   controller: _nameController,
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
-                      RegExp(r"[a-zA-Z]+|\s"),
+                      RegExp(r"[a-zA-ZŁłĘęÓóŚśĄąŻżŹźĆćŃń]+|\s"),
                     ),
                   ],
                   validator: (value) {
@@ -254,7 +258,12 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                           }
                       );
                     }
-                    return const SizedLoadingIndicator(color: AppColor.primaryOrange);
+                    return const Column(
+                      children: [
+                        Gap(15.0),
+                        SizedLoadingIndicator(color: AppColor.primaryOrange),
+                      ],
+                    );
                   }
                 ),
                 CustomFormField(
@@ -391,6 +400,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
 
   showAlertDialog(BuildContext context) {
     Widget deleteButton = TextButton(
+      style: AppButtonStyle.lightSplashColor,
       child: !_isDeletionLoading ?
       Text("Delete", style: AppTextStyle.mediumOrange)
       : const SizedBox(width: 25.0, child: CommonLoadingIndicator(color: AppColor.primaryOrange)),
@@ -399,6 +409,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
       },
     );
     Widget cancelButton = TextButton(
+      style: AppButtonStyle.lightSplashColor,
       child: Text("Cancel", style: AppTextStyle.mediumOrange,),
       onPressed:  () {
         Navigator.of(context, rootNavigator: true).pop();
@@ -463,17 +474,63 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     }
   }
 
-  void updateDog() {
-    // TODO działanie
-    print('update');
-
+  Future<void> updateDog() async {
     validateBehaviorsCount();
-    validateImage();
-    if (_formKey.currentState!.validate() && _minBehaviorCountSelected && _imageAdded) {
-      // TODO wysyłka na API
-      // TODO capitalize() na name
+    isImageUpdated();
 
-      // context.router.pop();
+    if (_formKey.currentState!.validate() && _minBehaviorCountSelected) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      String fileName = widget.dog!.photoUrl.split('/').last;
+
+      if (_imageUpdated) {
+        bool isDeleted = await imageService.deleteImage(fileName);
+
+        if (isDeleted) {
+          fileName = await imageService.uploadImage(image!);
+        } else {
+          if (context.mounted) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const ErrorDialog(title: "Dog update error", content: "An error occurred during dog update.");
+                }
+            );
+          }
+
+          setState(() {
+            _isLoading = false;
+          });
+
+          return Future.error("Dog update error");
+        }
+      }
+
+      if (fileName.isNotEmpty) {
+        List<int> behaviorsIds = _selectedBehaviors.map((item) => item.id).toList();
+        final request = DogUpdateRequest(widget.dog!.id, fileName, _nameController.text.capitalize(), _selectedBreed!.id, _ageController.text, _selectedGender, behaviorsIds, _descriptionController.text);
+
+        bool isUpdated = await dogService.updateDog(request);
+
+        if (isUpdated) {
+          if (context.mounted) {
+            userDogsProvider.fetchUserDogs();
+            widget.onComplete();
+            context.router.pop();
+          }
+        } else {
+          if (context.mounted) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return const ErrorDialog(title: "Dog update error", content: "An error occurred during dog update.");
+                }
+            );
+          }
+        }
+      }
     }
   }
 
@@ -486,6 +543,12 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   void validateImage() {
     setState(() {
       _imageAdded = image != null;
+    });
+  }
+
+  void isImageUpdated() {
+    setState(() {
+      _imageUpdated = image != null;
     });
   }
 }

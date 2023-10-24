@@ -85,6 +85,7 @@ class PlaceInfoBox extends StatelessWidget {
                       Text(
                         place.name,
                         style: AppTextStyle.heading2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         "${place.street} ${place.houseNumber ?? ''}",

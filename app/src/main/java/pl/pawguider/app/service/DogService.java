@@ -3,6 +3,7 @@ package pl.pawguider.app.service;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import pl.pawguider.app.controller.dto.request.DogAddRequest;
+import pl.pawguider.app.controller.dto.request.DogUpdateRequest;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.*;
 
@@ -50,7 +51,10 @@ public class DogService {
         if (foundDog.isPresent()) {
             Dog dog = foundDog.get();
             if (isUserDogOwner(user, dog)) {
-                imageService.deleteImage(dog.getPhoto());
+                boolean imageDeleted = imageService.deleteImage(dog.getPhoto());
+                if (!imageDeleted)
+                    return false;
+
                 dogRepository.delete(dog);
                 return true;
             }
@@ -119,5 +123,34 @@ public class DogService {
 
     public boolean isOwner(User user, Dog dog) {
         return dog.getOwner().getIdUser().equals(user.getIdUser());
+    }
+
+    @Transactional
+    public boolean updateDog(Dog dog, DogUpdateRequest request) {
+        Optional<DogBreed> foundBreed = dogBreedRepository.findById(request.breedId());
+        Optional<Gender> foundGender = genderRepository.findByName(request.gender());
+
+        if (foundBreed.isPresent() && foundGender.isPresent()) {
+            DogBreed breed = foundBreed.get();
+            Gender gender = foundGender.get();
+            dog.setName(request.name());
+            dog.setAge(request.age());
+            dog.setDescription(request.description());
+            dog.setBreed(breed);
+            dog.setGender(gender);
+            dog.setPhoto(request.photoName());
+            Dog updatedDog = dogRepository.save(dog);
+
+            List<DogsBehaviors> behaviors = request.behaviorsIds()
+                    .stream().map((item) -> new DogsBehaviors(new DogBehavior(item), updatedDog))
+                    .toList();
+
+            dogsBehaviorsRepository.deleteAll(dog.getBehaviors());
+            dogsBehaviorsRepository.saveAll(behaviors);
+
+            return true;
+        }
+
+        return false;
     }
 }

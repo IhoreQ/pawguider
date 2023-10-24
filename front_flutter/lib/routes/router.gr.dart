@@ -87,13 +87,14 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     DogProfileRoute.name: (routeData) {
-      final args = routeData.argsAs<DogProfileRouteArgs>();
+      final pathParams = routeData.inheritedPathParams;
+      final args = routeData.argsAs<DogProfileRouteArgs>(
+          orElse: () => DogProfileRouteArgs(dogId: pathParams.getInt('dogId')));
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: DogProfileScreen(
           key: args.key,
           dogId: args.dogId,
-          onComplete: args.onComplete,
         ),
       );
     },
@@ -326,14 +327,12 @@ class DogProfileRoute extends PageRouteInfo<DogProfileRouteArgs> {
   DogProfileRoute({
     Key? key,
     required int dogId,
-    required void Function() onComplete,
     List<PageRouteInfo>? children,
   }) : super(
           DogProfileRoute.name,
           args: DogProfileRouteArgs(
             key: key,
             dogId: dogId,
-            onComplete: onComplete,
           ),
           rawPathParams: {'dogId': dogId},
           initialChildren: children,
@@ -349,18 +348,15 @@ class DogProfileRouteArgs {
   const DogProfileRouteArgs({
     this.key,
     required this.dogId,
-    required this.onComplete,
   });
 
   final Key? key;
 
   final int dogId;
 
-  final void Function() onComplete;
-
   @override
   String toString() {
-    return 'DogProfileRouteArgs{key: $key, dogId: $dogId, onComplete: $onComplete}';
+    return 'DogProfileRouteArgs{key: $key, dogId: $dogId}';
   }
 }
 

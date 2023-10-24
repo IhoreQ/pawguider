@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:front_flutter/models/dog/behavior.dart';
 import 'package:front_flutter/models/dog/dog.dart';
 import 'package:front_flutter/services/dto/dog/dog_addition_request.dart';
+import 'package:front_flutter/services/dto/dog/dog_update_request.dart';
 
 import '../dio/dio_config.dart';
 import '../models/dog/breed.dart';
@@ -132,6 +133,15 @@ class DogService {
   Future<bool> toggleSelected(int dogId) async {
     try {
       Response response = await _dio.patch('/dog/select/$dogId');
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
+
+  Future<bool> updateDog(DogUpdateRequest request) async {
+    try {
+      Response response = await _dio.put('/dog', data: request.toJson());
       return true;
     } on DioException {
       return false;

@@ -9,7 +9,6 @@ class ImageService {
   final Dio _dio = DioConfig.createDio();
 
   Future<String> uploadImage(File image) async {
-
     try {
       String fileName = image.path.split('/').last;
       FormData formData = FormData.fromMap({
@@ -24,6 +23,15 @@ class ImageService {
       return response.data;
     } on DioException {
       return '';
+    }
+  }
+
+  Future<bool> deleteImage(String imageName) async {
+    try {
+      Response response = await _dio.delete('/image/$imageName');
+      return response.data;
+    } on DioException {
+      return false;
     }
   }
 }

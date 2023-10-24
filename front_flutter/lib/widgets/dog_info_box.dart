@@ -8,9 +8,8 @@ import '../routes/router.dart';
 import 'overlay_inkwell.dart';
 
 class DogInfoBox extends StatelessWidget {
-  const DogInfoBox({Key? key, required this.dog, required this.onComplete}) : super(key: key);
+  const DogInfoBox({Key? key, required this.dog}) : super(key: key);
 
-  final VoidCallback onComplete;
   final Dog dog;
 
   Icon getGenderIcon(String gender) {
@@ -67,7 +66,7 @@ class DogInfoBox extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )),
-              OverlayInkwell(onTap: () => context.router.push(DogProfileRoute(dogId: dog.id, onComplete: () => onComplete()))),
+              OverlayInkwell(onTap: () => context.router.push(DogProfileRoute(dogId: dog.id))),
             ],
           ),
           Stack(children: <Widget>[
@@ -90,10 +89,12 @@ class DogInfoBox extends StatelessWidget {
                       Text(
                         dog.name,
                         style: AppTextStyle.heading2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         dog.breed!,
                         style: AppTextStyle.heading3,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
@@ -143,7 +144,7 @@ class DogInfoBox extends StatelessWidget {
                 ],
               ),
             ),
-            OverlayInkwell(onTap: () => context.router.push(DogProfileRoute(dogId: dog.id, onComplete: () => onComplete()))),
+            OverlayInkwell(onTap: () => context.router.push(DogProfileRoute(dogId: dog.id))),
           ])
         ],
       ),

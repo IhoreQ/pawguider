@@ -309,10 +309,7 @@ class _MainContentBoxState extends State<MainContentBox> {
                           itemBuilder: (context, index) {
                             return Column(
                               children: [
-                                DogInfoBox(
-                                  dog: dogs[index],
-                                  onComplete: () {},
-                                ),
+                                DogInfoBox(dog: dogs[index],),
                                 const Gap(15.0),
                               ],
                             );
