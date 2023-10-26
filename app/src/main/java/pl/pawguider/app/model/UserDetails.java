@@ -52,4 +52,28 @@ public class UserDetails {
         this.gender = gender;
         this.photoName = photoName;
     }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setPhotoName(String photoName) {
+        this.photoName = photoName;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
 }

@@ -22,4 +22,12 @@ public class GenderService {
     public List<Gender> getBasicGenders() {
         return genderRepository.findBasicGenders();
     }
+
+    public Gender getGenderById(Long id) {
+        return genderRepository.findById(id).orElse(null);
+    }
+
+    public Gender getGenderByName(String name) {
+        return genderRepository.findByName(name).orElse(null);
+    }
 }

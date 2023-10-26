@@ -113,9 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     PasswordFormField(
                         hintText: 'Retype password',
                         validator: (value) {
-                          if (_passwordController.text.isNotEmpty) {
-                            return value == _passwordController.text ? null : 'Passwords do not match';
-                          }
+                          return Validator.arePasswordsEqual(_passwordController.text, value) ? null : 'Passwords do not match';
                         },
                         controller: _retypedPasswordController
                     ),

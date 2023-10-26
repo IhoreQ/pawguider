@@ -2,11 +2,10 @@ package pl.pawguider.app.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
 import pl.pawguider.app.controller.dto.request.UserLocationRequest;
-import pl.pawguider.app.controller.dto.response.CurrentUserResponse;
+import pl.pawguider.app.controller.dto.request.UserUpdateRequest;
 import pl.pawguider.app.controller.dto.response.UserInfoResponse;
 import pl.pawguider.app.model.User;
 import pl.pawguider.app.service.UserService;
@@ -16,11 +15,9 @@ import pl.pawguider.app.service.UserService;
 public class UserController {
 
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @PatchMapping("/password")
@@ -28,14 +25,9 @@ public class UserController {
 
         User user = userService.getUserFromHeader(header);
 
-        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
-            return ResponseEntity.ok(false);
-        }
+        Boolean isUpdated = userService.updateUserPassword(user, request);
 
-        user.setPassword(passwordEncoder.encode(request.newPassword()));
-        userService.saveUser(user);
-
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(isUpdated);
     }
 
     @GetMapping("/{id}")
@@ -62,5 +54,13 @@ public class UserController {
         User user = userService.getUserFromHeader(header);
         userService.updateUserLocation(user, request.latitude(), request.longitude());
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/details")
+    public ResponseEntity<Boolean> updateUserDetails(@RequestHeader("Authorization") String header, @RequestBody UserUpdateRequest request) {
+        User user = userService.getUserFromHeader(header);
+        Boolean isUpdated = userService.updateUserDetails(user, request);
+
+        return ResponseEntity.ok(isUpdated);
     }
 }

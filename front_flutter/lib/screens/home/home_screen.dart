@@ -43,12 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
     favouritePlacesProvider = context.read<FavouritePlacesProvider>();
     userDogsProvider = context.read<UserDogsProvider>();
     activeWalkProvider = context.read<ActiveWalkProvider>();
-
     userLocationProvider = context.read<UserLocationProvider>();
+
+    userProvider.fetchCurrentUser(context);
     userLocationProvider.fetchUserPosition();
     userLocationProvider.startListeningLocationUpdates(activeWalkProvider);
 
-    userProvider.fetchCurrentUser();
     favouritePlacesProvider.fetchFavouritePlaces();
     userDogsProvider.fetchUserDogs();
     activeWalkProvider.fetchActiveWalk();

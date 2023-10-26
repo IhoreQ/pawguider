@@ -1,8 +1,12 @@
 package pl.pawguider.app.service;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.pawguider.app.model.User;
-import pl.pawguider.app.model.UserLocation;
+import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
+import pl.pawguider.app.controller.dto.request.UserUpdateRequest;
+import pl.pawguider.app.model.*;
+import pl.pawguider.app.repository.UserDetailsRepository;
 import pl.pawguider.app.repository.UserLocationRepository;
 import pl.pawguider.app.repository.UserRepository;
 
@@ -15,11 +19,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final UserLocationRepository userLocationRepository;
+    private final UserDetailsRepository userDetailsRepository;
+    private final GenderService genderService;
+    private final CityService cityService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, JwtService jwtService, UserLocationRepository userLocationRepository) {
+
+    public UserService(UserRepository userRepository, JwtService jwtService, UserLocationRepository userLocationRepository, UserDetailsRepository userDetailsRepository, GenderService genderService, CityService cityService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.userLocationRepository = userLocationRepository;
+        this.userDetailsRepository = userDetailsRepository;
+        this.genderService = genderService;
+        this.cityService = cityService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User getUserFromHeader(String header) {
@@ -50,5 +63,37 @@ public class UserService {
             location.setLastUpdate(LocalTime.now());
             userLocationRepository.save(location);
         }
+    }
+
+    public Boolean updateUserDetails(User user, UserUpdateRequest request) {
+        Gender gender = genderService.getGenderById(request.genderId());
+        City city = cityService.getCityById(request.cityId());
+
+        if (gender != null && city != null) {
+            UserDetails details = user.getDetails();
+
+            details.setFirstName(request.firstName());
+            details.setLastName(request.lastName());
+            details.setPhotoName(request.photoName());
+            details.setPhone(request.phone());
+            details.setGender(gender);
+            details.setCity(city);
+
+            userDetailsRepository.save(details);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public Boolean updateUserPassword(User user, PasswordUpdateRequest request) {
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            return false;
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+        return true;
     }
 }

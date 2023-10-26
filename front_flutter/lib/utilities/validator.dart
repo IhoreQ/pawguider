@@ -34,4 +34,8 @@ abstract class Validator {
     final passwordRegExp = RegExp(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$");
     return passwordRegExp.hasMatch(password!);
   }
+
+  static bool arePasswordsEqual(String? password, String? newPassword) {
+    return password == newPassword;
+  }
 }

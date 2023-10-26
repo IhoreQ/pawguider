@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Component
 public class JwtService {
 
-    public static final long JWT_TOKEN_EXPIRATION = 5 * 60 * 60;
+    public static final long JWT_TOKEN_EXPIRATION = 30 * 24 * 60 * 60;
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);

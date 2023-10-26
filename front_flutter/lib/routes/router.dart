@@ -19,6 +19,8 @@ import '../screens/authentication/register_screen.dart';
 import '../screens/dog/dog_details_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/place/place_profile_screen.dart';
+import '../screens/user/edit_password_screen.dart';
+import '../screens/user/user_edit_screen.dart';
 
 part 'router.gr.dart';
 
@@ -57,6 +59,8 @@ class AppRouter extends _$AppRouter {
           ]),
           AutoRoute(path: 'profile', page: UserProfileRouter.page, children: [
             AutoRoute(path: '', page: UserProfileRoute.page),
+            CustomRoute(path: 'edit', page: UserEditRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
+            CustomRoute(path: 'edit/password', page: EditPasswordRoute.page, transitionsBuilder: TransitionsBuilders.noTransition),
           ])
         ]),
       ];

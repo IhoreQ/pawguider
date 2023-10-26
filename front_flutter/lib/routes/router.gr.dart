@@ -135,6 +135,18 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const UserProfileScreen(),
       );
     },
+    EditPasswordRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const EditPasswordScreen(),
+      );
+    },
+    UserEditRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const UserEditScreen(),
+      );
+    },
   };
 }
 
@@ -451,6 +463,34 @@ class UserProfileRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'UserProfileRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [EditPasswordScreen]
+class EditPasswordRoute extends PageRouteInfo<void> {
+  const EditPasswordRoute({List<PageRouteInfo>? children})
+      : super(
+          EditPasswordRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'EditPasswordRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [UserEditScreen]
+class UserEditRoute extends PageRouteInfo<void> {
+  const UserEditRoute({List<PageRouteInfo>? children})
+      : super(
+          UserEditRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'UserEditRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }

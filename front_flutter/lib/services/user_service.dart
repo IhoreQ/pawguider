@@ -8,14 +8,17 @@ import '../models/user.dart';
 class UserService {
   final Dio _dio = DioConfig.createDio();
 
-  Future<User> getCurrentUser() async {
+  Future<User?> getCurrentUser() async {
     try {
       Response response = await _dio.get('/user',);
       Map<String, dynamic> rawData = response.data;
       User user = _getUserFromData(rawData);
 
       return user;
-    } on DioException {
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 401) {
+        return null;
+      }
       rethrow;
     }
   }
@@ -68,5 +71,20 @@ class UserService {
         rawData['gender'],
         rawData['dogsCount']
     );
+  }
+
+  Future<bool> updatePassword(String oldPassword, String newPassword) async {
+    try {
+      Response response = await _dio.patch(
+        '/user/password',
+        data: {
+          'oldPassword': oldPassword,
+          'newPassword': newPassword
+        }
+      );
+      return response.data;
+    } on DioException {
+      rethrow;
+    }
   }
 }

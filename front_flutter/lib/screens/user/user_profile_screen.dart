@@ -77,7 +77,7 @@ class TopBar extends StatelessWidget {
                 child: IconButton(
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
-                    onPressed: () {},
+                    onPressed: () => context.router.push(const UserEditRoute()),
                     icon: const Icon(
                       FluentSystemIcons.ic_fluent_edit_filled,
                       size: iconSize,

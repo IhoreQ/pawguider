@@ -1,13 +1,16 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
-import 'package:front_flutter/dio/dio_config.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:front_flutter/services/basic_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthService {
-  final Dio _dio = DioConfig.createDio();
+import '../routes/router.dart';
+
+class AuthService extends BasicService{
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      Response response = await _dio.post(
+      Response response = await dio.post(
         '/auth/authenticate',
         data: {
           'email': email,
@@ -22,7 +25,7 @@ class AuthService {
 
   Future<Map<String, dynamic>> register(Map<String, dynamic> details) async {
     try {
-      Response response = await _dio.post(
+      Response response = await dio.post(
         '/auth/signup',
         data: details
       );
@@ -34,7 +37,7 @@ class AuthService {
 
   Future<bool> userExists(String email) async {
     try {
-      Response response = await _dio.get(
+      Response response = await dio.get(
         '/auth/user-exists',
         data: {'email': email}
       );
@@ -60,5 +63,13 @@ class AuthService {
     return jwtToken;
   }
 
-  // TODO refresh token
+  Future<void> logout(BuildContext context) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.remove('jwtToken');
+    if (context.mounted) {
+      context.router.pushAndPopUntil(
+          const LoginRoute(), predicate: (route) => false);
+    }
+  }
+
 }

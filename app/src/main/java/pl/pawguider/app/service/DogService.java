@@ -14,33 +14,26 @@ import java.util.Optional;
 @Service
 public class DogService {
 
-    private final UserService userService;
     private final ImageService imageService;
     private final DogRepository dogRepository;
     private final DogBreedRepository dogBreedRepository;
     private final DogBehaviorRepository dogBehaviorRepository;
     private final DogsBehaviorsRepository dogsBehaviorsRepository;
-    private final GenderRepository genderRepository;
+    private final GenderService genderService;
     private final DogLikeRepository dogLikeRepository;
 
-    public DogService(UserService userService, ImageService imageService, DogRepository dogRepository, DogBreedRepository dogBreedRepository, DogBehaviorRepository dogBehaviorRepository, DogsBehaviorsRepository dogsBehaviorsRepository, GenderRepository genderRepository, DogLikeRepository dogLikeRepository) {
-        this.userService = userService;
+    public DogService(ImageService imageService, DogRepository dogRepository, DogBreedRepository dogBreedRepository, DogBehaviorRepository dogBehaviorRepository, DogsBehaviorsRepository dogsBehaviorsRepository, GenderService genderService, DogLikeRepository dogLikeRepository) {
         this.imageService = imageService;
         this.dogRepository = dogRepository;
         this.dogBreedRepository = dogBreedRepository;
         this.dogBehaviorRepository = dogBehaviorRepository;
         this.dogsBehaviorsRepository = dogsBehaviorsRepository;
-        this.genderRepository = genderRepository;
+        this.genderService = genderService;
         this.dogLikeRepository = dogLikeRepository;
     }
 
     public Dog getDogById(Long id) {
         Optional<Dog> dog = dogRepository.findById(id);
-        return dog.orElse(null);
-    }
-
-    public Dog getDogInfo(User user) {
-        Optional<Dog> dog = dogRepository.findByOwner(user);
         return dog.orElse(null);
     }
 
@@ -71,11 +64,10 @@ public class DogService {
     public boolean addDog(User user, DogAddRequest dogAddRequest) {
 
         Optional<DogBreed> foundBreed = dogBreedRepository.findById(dogAddRequest.breedId());
-        Optional<Gender> foundGender = genderRepository.findByName(dogAddRequest.gender());
+        Gender gender = genderService.getGenderByName(dogAddRequest.gender());
 
-        if (foundBreed.isPresent() && foundGender.isPresent()) {
+        if (foundBreed.isPresent() && gender != null) {
             DogBreed breed = foundBreed.get();
-            Gender gender = foundGender.get();
             Dog dog = new Dog(dogAddRequest.name(), dogAddRequest.age(), gender, dogAddRequest.description(), breed, dogAddRequest.photoName(), user);
 
             Dog addedDog = dogRepository.save(dog);
@@ -128,11 +120,10 @@ public class DogService {
     @Transactional
     public boolean updateDog(Dog dog, DogUpdateRequest request) {
         Optional<DogBreed> foundBreed = dogBreedRepository.findById(request.breedId());
-        Optional<Gender> foundGender = genderRepository.findByName(request.gender());
+        Gender gender = genderService.getGenderByName(request.gender());
 
-        if (foundBreed.isPresent() && foundGender.isPresent()) {
+        if (foundBreed.isPresent() && gender != null) {
             DogBreed breed = foundBreed.get();
-            Gender gender = foundGender.get();
             dog.setName(request.name());
             dog.setAge(request.age());
             dog.setDescription(request.description());
