@@ -29,7 +29,7 @@ class ImageService {
   Future<bool> deleteImage(String imageName) async {
     try {
       Response response = await _dio.delete('/image/$imageName');
-      return response.data;
+      return true;
     } on DioException {
       return false;
     }
