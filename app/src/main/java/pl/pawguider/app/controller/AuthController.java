@@ -1,5 +1,6 @@
 package pl.pawguider.app.controller;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,6 +13,8 @@ import pl.pawguider.app.controller.dto.request.LoginRequest;
 import pl.pawguider.app.controller.dto.request.UserAddRequest;
 import pl.pawguider.app.controller.dto.request.UserExistsRequest;
 import pl.pawguider.app.controller.dto.response.JwtTokenResponse;
+import pl.pawguider.app.exception.auth.UserAlreadyExistsException;
+import pl.pawguider.app.exception.auth.UserNotFoundException;
 import pl.pawguider.app.service.AuthService;
 import pl.pawguider.app.service.JwtService;
 
@@ -40,17 +43,17 @@ public class AuthController {
                 token = jwtService.generateToken(loginRequest.email());
 
         } catch (BadCredentialsException e) {
-            return ResponseEntity.ok(new JwtTokenResponse(token));
+            throw new UserNotFoundException(loginRequest.email());
         }
 
         return ResponseEntity.ok(new JwtTokenResponse(token));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserAddRequest request) {
 
         if (authService.userExists(request.email())) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            throw new UserAlreadyExistsException(request.email());
         }
 
         authService.addUser(request);
@@ -58,12 +61,8 @@ public class AuthController {
     }
 
     @GetMapping("/user-exists")
-    public ResponseEntity<?> userExists(@RequestBody UserExistsRequest request) {
-        if (authService.userExists(request.email())) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Boolean> userExists(@RequestBody UserExistsRequest request) {
+        return ResponseEntity.ok(authService.userExists(request.email()));
     }
 
 }

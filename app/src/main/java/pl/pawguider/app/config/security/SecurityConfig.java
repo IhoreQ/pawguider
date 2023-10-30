@@ -52,7 +52,8 @@ public class SecurityConfig {
                                         "/api/v1/image/{name}",
                                         "/api/v1/city/all",
                                         "/api/v1/gender/all",
-                                        "/api/v1/auth/user-exists"
+                                        "/api/v1/auth/user-exists",
+                                        "/error"
                                 )
                                 .permitAll()
                 )
@@ -64,9 +65,6 @@ public class SecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(
-                        handler -> handler.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

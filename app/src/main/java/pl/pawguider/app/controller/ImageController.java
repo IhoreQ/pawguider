@@ -43,8 +43,8 @@ public class ImageController {
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<Boolean> deleteImage(@PathVariable("name") String name) {
-        boolean isDeleted = imageService.deleteImage(name);
-        return ResponseEntity.ok(isDeleted);
+    public ResponseEntity<?> deleteImage(@PathVariable("name") String name) {
+        imageService.deleteImage(name);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

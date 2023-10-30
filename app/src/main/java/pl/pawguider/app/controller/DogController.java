@@ -9,11 +9,12 @@ import pl.pawguider.app.controller.dto.request.DogUpdateRequest;
 import pl.pawguider.app.controller.dto.response.DogBreedResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoBoxResponse;
 import pl.pawguider.app.controller.dto.response.DogInfoResponse;
-import pl.pawguider.app.model.*;
+import pl.pawguider.app.model.Dog;
+import pl.pawguider.app.model.DogBehavior;
+import pl.pawguider.app.model.DogBreed;
+import pl.pawguider.app.model.User;
 import pl.pawguider.app.service.DogService;
-import pl.pawguider.app.service.JwtService;
 import pl.pawguider.app.service.UserService;
-import pl.pawguider.app.service.WalkService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -24,36 +25,24 @@ public class DogController {
 
     private final DogService dogService;
     private final UserService userService;
-    private final WalkService walkService;
 
-    public DogController(DogService dogService, UserService userService, WalkService walkService) {
+    public DogController(DogService dogService, UserService userService) {
         this.dogService = dogService;
         this.userService = userService;
-        this.walkService = walkService;
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> addDog(@RequestHeader("Authorization") String header, @RequestBody DogAddRequest dogAddRequest) throws Exception {
-
+    public ResponseEntity<?> addDog(@RequestHeader("Authorization") String header, @RequestBody DogAddRequest dogAddRequest) {
         User user = userService.getUserFromHeader(header);
-
-        boolean isAdded = dogService.addDog(user, dogAddRequest);
-
-        if (!isAdded)
-            throw new Exception("An error occurred while adding a dog!");
+        dogService.addDog(user, dogAddRequest);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) throws Exception {
+    public ResponseEntity<?> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
-
         Dog dog = dogService.getDogById(id);
-
-        if (dog == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
 
         DogInfoResponse response = DogInfoResponse.getResponse(user, dog);
         return ResponseEntity.ok(response);
@@ -68,11 +57,11 @@ public class DogController {
     }
 
     @DeleteMapping
-    public Boolean deleteDog(@RequestHeader("Authorization") String header, @RequestBody DogDeletionRequest request) {
-
+    public ResponseEntity<?> deleteDog(@RequestHeader("Authorization") String header, @RequestBody DogDeletionRequest request) {
         User user = userService.getUserFromHeader(header);
 
-        return dogService.deleteDog(user, request.dogId());
+        dogService.deleteDog(user, request.dogId());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/breeds")
@@ -89,54 +78,39 @@ public class DogController {
         return dogService.getAllBehaviors();
     }
 
-    @PostMapping("/like/{id}")
-    public Boolean addLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> addLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(id);
-
-        if (dogService.isDogAlreadyLiked(user, dog))
-            return false;
 
         dogService.addLike(user, dog);
-        return true;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/like/{id}")
-    public Boolean deleteLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity<?> deleteLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(id);
 
-        if (!dogService.isDogAlreadyLiked(user, dog))
-            return false;
-
         dogService.deleteLike(user, dog);
-        return true;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/select/{id}")
+    @PatchMapping("/{id}/select")
     public Boolean toggleSelected(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(id);
 
-        if (!dogService.isOwner(user, dog)) {
-            return false;
-        }
-
-        dogService.toggleSelected(dog);
+        dogService.toggleSelected(user, dog);
         return true;
     }
 
     @PutMapping
-    public ResponseEntity<Boolean> updateDog(@RequestHeader("Authorization") String header, @RequestBody DogUpdateRequest request) {
+    public ResponseEntity<?> updateDog(@RequestHeader("Authorization") String header, @RequestBody DogUpdateRequest request) {
         User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(request.dogId());
 
-        if (dog != null && dogService.isOwner(user, dog)) {
-            boolean isUpdated = dogService.updateDog(dog, request);
-            return ResponseEntity.ok(isUpdated);
-        }
-
-
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        dogService.updateDog(user, dog, request);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

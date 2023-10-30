@@ -7,8 +7,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.stereotype.Service;
-import pl.pawguider.app.controller.dto.request.UserLocationRequest;
-import pl.pawguider.app.controller.dto.response.PlaceAreaResponse;
+import pl.pawguider.app.exception.place.PlaceNotFoundException;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.CityRepository;
 import pl.pawguider.app.repository.PlaceLikeRepository;
@@ -40,7 +39,7 @@ public class PlaceService {
     }
 
     public Place getPlaceById(Long id) {
-        return placeRepository.findById(id).orElse(null);
+        return placeRepository.findById(id).orElseThrow(() -> new PlaceNotFoundException(id));
     }
 
     public List<Place> getPlacesByCityId(Long cityId) {

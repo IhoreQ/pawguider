@@ -34,7 +34,7 @@ public class PlaceController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPlaceById(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+    public ResponseEntity<PlaceInfoResponse> getPlaceById(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(id);
 

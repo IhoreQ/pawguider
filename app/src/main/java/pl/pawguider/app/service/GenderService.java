@@ -1,6 +1,7 @@
 package pl.pawguider.app.service;
 
 import org.springframework.stereotype.Service;
+import pl.pawguider.app.exception.gender.GenderNotFoundException;
 import pl.pawguider.app.model.Gender;
 import pl.pawguider.app.repository.GenderRepository;
 
@@ -28,6 +29,6 @@ public class GenderService {
     }
 
     public Gender getGenderByName(String name) {
-        return genderRepository.findByName(name).orElse(null);
+        return genderRepository.findByName(name).orElseThrow(() -> new GenderNotFoundException(name));
     }
 }

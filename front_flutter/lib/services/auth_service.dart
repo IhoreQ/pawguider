@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../routes/router.dart';
 
-class AuthService extends BasicService{
+class AuthService extends BasicService {
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
@@ -26,7 +26,7 @@ class AuthService extends BasicService{
   Future<Map<String, dynamic>> register(Map<String, dynamic> details) async {
     try {
       Response response = await dio.post(
-        '/auth/signup',
+        '/auth/register',
         data: details
       );
       return {'created': response.data};
@@ -42,11 +42,8 @@ class AuthService extends BasicService{
         data: {'email': email}
       );
 
-      return false;
-    } on DioException catch (e) {
-      if (e.response!.statusCode == 409) {
-        return true;
-      }
+      return response.data;
+    } on DioException {
       rethrow;
     }
   }

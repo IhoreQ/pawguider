@@ -1,6 +1,7 @@
 package pl.pawguider.app.service;
 
 import org.springframework.stereotype.Service;
+import pl.pawguider.app.exception.city.CityNotFoundException;
 import pl.pawguider.app.model.City;
 import pl.pawguider.app.repository.CityRepository;
 
@@ -24,6 +25,6 @@ public class CityService {
     }
 
     public City getCityByName(String cityName) {
-        return cityRepository.findByName(cityName).orElse(null);
+        return cityRepository.findByName(cityName).orElseThrow(() -> new CityNotFoundException(cityName));
     }
 }

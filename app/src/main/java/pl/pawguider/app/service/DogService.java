@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import pl.pawguider.app.controller.dto.request.DogAddRequest;
 import pl.pawguider.app.controller.dto.request.DogUpdateRequest;
+import pl.pawguider.app.exception.dog.*;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.*;
 
@@ -16,16 +17,16 @@ public class DogService {
 
     private final ImageService imageService;
     private final DogRepository dogRepository;
-    private final DogBreedRepository dogBreedRepository;
+    private final DogBreedService dogBreedService;
     private final DogBehaviorRepository dogBehaviorRepository;
     private final DogsBehaviorsRepository dogsBehaviorsRepository;
     private final GenderService genderService;
     private final DogLikeRepository dogLikeRepository;
 
-    public DogService(ImageService imageService, DogRepository dogRepository, DogBreedRepository dogBreedRepository, DogBehaviorRepository dogBehaviorRepository, DogsBehaviorsRepository dogsBehaviorsRepository, GenderService genderService, DogLikeRepository dogLikeRepository) {
+    public DogService(ImageService imageService, DogRepository dogRepository, DogBreedService dogBreedService, DogBehaviorRepository dogBehaviorRepository, DogsBehaviorsRepository dogsBehaviorsRepository, GenderService genderService, DogLikeRepository dogLikeRepository) {
         this.imageService = imageService;
         this.dogRepository = dogRepository;
-        this.dogBreedRepository = dogBreedRepository;
+        this.dogBreedService = dogBreedService;
         this.dogBehaviorRepository = dogBehaviorRepository;
         this.dogsBehaviorsRepository = dogsBehaviorsRepository;
         this.genderService = genderService;
@@ -33,59 +34,43 @@ public class DogService {
     }
 
     public Dog getDogById(Long id) {
-        Optional<Dog> dog = dogRepository.findById(id);
-        return dog.orElse(null);
+        return dogRepository.findById(id).orElseThrow(() -> new DogNotFoundException(id));
     }
 
-    public boolean deleteDog(User user, Long dogId) {
+    public void deleteDog(User user, Long dogId) {
 
-        Optional<Dog> foundDog = dogRepository.findById(dogId);
+        Dog dog = getDogById(dogId);
 
-        if (foundDog.isPresent()) {
-            Dog dog = foundDog.get();
-            if (isUserDogOwner(user, dog)) {
-                boolean imageDeleted = imageService.deleteImage(dog.getPhoto());
-                if (!imageDeleted)
-                    return false;
+        if (!isUserDogOwner(user, dog))
+            throw new UnauthorizedDogOperationException("User is not authorized to delete a dog with id: %d".formatted(dogId));
 
-                dogRepository.delete(dog);
-                return true;
-            }
-        }
+        imageService.deleteImage(dog.getPhoto());
 
-        return false;
-    }
-
-    private boolean isUserDogOwner(User user, Dog dog) {
-        return Objects.equals(dog.getOwner().getIdUser(), user.getIdUser());
+        dogRepository.delete(dog);
     }
 
     @Transactional
-    public boolean addDog(User user, DogAddRequest dogAddRequest) {
-
-        Optional<DogBreed> foundBreed = dogBreedRepository.findById(dogAddRequest.breedId());
+    public Dog addDog(User user, DogAddRequest dogAddRequest) {
+        DogBreed breed = dogBreedService.getBreedById(dogAddRequest.breedId());
         Gender gender = genderService.getGenderByName(dogAddRequest.gender());
 
-        if (foundBreed.isPresent() && gender != null) {
-            DogBreed breed = foundBreed.get();
-            Dog dog = new Dog(dogAddRequest.name(), dogAddRequest.age(), gender, dogAddRequest.description(), breed, dogAddRequest.photoName(), user);
+        Dog dog = new Dog(dogAddRequest.name(), dogAddRequest.age(), gender, dogAddRequest.description(), breed, dogAddRequest.photoName(), user);
 
-            Dog addedDog = dogRepository.save(dog);
+        Dog addedDog = dogRepository.save(dog);
 
-            List<DogsBehaviors> behaviors = dogAddRequest.behaviorsIds()
-                    .stream().map((item) -> new DogsBehaviors(new DogBehavior(item), addedDog))
-                    .toList();
+        List<DogsBehaviors> behaviors = dogAddRequest.behaviorsIds()
+                .stream().map((item) -> new DogsBehaviors(new DogBehavior(item), addedDog))
+                .toList();
 
-            dogsBehaviorsRepository.saveAll(behaviors);
+        dogsBehaviorsRepository.saveAll(behaviors);
 
-            return true;
-        }
+        addedDog.setBehaviors(behaviors);
 
-        return false;
+        return addedDog;
     }
 
     public List<DogBreed> getAllBreeds() {
-        return dogBreedRepository.findAllNamesWithIds();
+        return dogBreedService.findAllNamesWithIds();
     }
 
     public List<DogBehavior> getAllBehaviors() {
@@ -93,16 +78,31 @@ public class DogService {
     }
 
     public void addLike(User user, Dog dog) {
+        if (isUserDogOwner(user, dog))
+            throw new UserOwnedDogLikeException();
+
+        if (isDogAlreadyLiked(user, dog))
+            throw new DogAlreadyLikedException(user.getIdUser(), dog.getIdDog());
+
         DogLike like = new DogLike(user, dog);
         dogLikeRepository.save(like);
     }
 
     public void deleteLike(User user, Dog dog) {
+        if (isUserDogOwner(user, dog))
+            throw new UserOwnedDogLikeException();
+
+        if (!isDogAlreadyLiked(user, dog))
+            throw new DogNotLikedException(user.getIdUser(), dog.getIdDog());
+
         DogLike like = dogLikeRepository.findByUserIdAndDogId(user.getIdUser(), dog.getIdDog());
         dogLikeRepository.delete(like);
     }
 
-    public void toggleSelected(Dog dog) {
+    public void toggleSelected(User user, Dog dog) {
+        if (!isUserDogOwner(user, dog))
+            throw new UnauthorizedDogOperationException("User is not authorized to select a dog with id: %d".formatted(dog.getIdDog()));
+
         dog.setSelected(!dog.getSelected());
         dogRepository.save(dog);
     }
@@ -113,35 +113,35 @@ public class DogService {
                 .anyMatch(like -> like.getUser().getIdUser().equals(user.getIdUser()));
     }
 
-    public boolean isOwner(User user, Dog dog) {
-        return dog.getOwner().getIdUser().equals(user.getIdUser());
+    public boolean isUserDogOwner(User user, Dog dog) {
+        return Objects.equals(dog.getOwner().getIdUser(), user.getIdUser());
     }
 
     @Transactional
-    public boolean updateDog(Dog dog, DogUpdateRequest request) {
-        Optional<DogBreed> foundBreed = dogBreedRepository.findById(request.breedId());
+    public Dog updateDog(User user, Dog dog, DogUpdateRequest request) {
+
+        if (!isUserDogOwner(user, dog))
+            throw new UnauthorizedDogOperationException("User is not authorized to update a dog with id: %d".formatted(request.dogId()));
+
+        DogBreed breed = dogBreedService.getBreedById(request.breedId());
         Gender gender = genderService.getGenderByName(request.gender());
 
-        if (foundBreed.isPresent() && gender != null) {
-            DogBreed breed = foundBreed.get();
-            dog.setName(request.name());
-            dog.setAge(request.age());
-            dog.setDescription(request.description());
-            dog.setBreed(breed);
-            dog.setGender(gender);
-            dog.setPhoto(request.photoName());
-            Dog updatedDog = dogRepository.save(dog);
+        dog.setName(request.name());
+        dog.setAge(request.age());
+        dog.setDescription(request.description());
+        dog.setBreed(breed);
+        dog.setGender(gender);
+        dog.setPhoto(request.photoName());
+        Dog updatedDog = dogRepository.save(dog);
 
-            List<DogsBehaviors> behaviors = request.behaviorsIds()
-                    .stream().map((item) -> new DogsBehaviors(new DogBehavior(item), updatedDog))
-                    .toList();
+        List<DogsBehaviors> behaviors = request.behaviorsIds()
+                .stream().map((item) -> new DogsBehaviors(new DogBehavior(item), updatedDog))
+                .toList();
 
-            dogsBehaviorsRepository.deleteAll(dog.getBehaviors());
-            dogsBehaviorsRepository.saveAll(behaviors);
+        dogsBehaviorsRepository.deleteAll(dog.getBehaviors());
+        dogsBehaviorsRepository.saveAll(behaviors);
 
-            return true;
-        }
-
-        return false;
+        updatedDog.setBehaviors(behaviors);
+        return updatedDog;
     }
 }

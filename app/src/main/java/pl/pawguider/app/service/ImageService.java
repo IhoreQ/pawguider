@@ -2,8 +2,11 @@ package pl.pawguider.app.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pl.pawguider.app.exception.image.ImageDeletionException;
+import pl.pawguider.app.exception.image.ImageNotFoundException;
 import pl.pawguider.app.model.Image;
 import pl.pawguider.app.repository.ImageRepository;
+import pl.pawguider.app.util.Constants;
 import pl.pawguider.app.util.ImageUtil;
 
 import java.io.IOException;
@@ -19,12 +22,15 @@ public class ImageService {
         this.imageRepository = imageRepository;
     }
 
+    public Image getImageByName(String name) {
+        return imageRepository.findByName(name).orElseThrow(() -> new ImageNotFoundException(name));
+    }
+
     public String uploadImage(MultipartFile file) throws IOException {
 
-        int nameLength = 10;
         String filename = UUID.randomUUID()
                 .toString()
-                .substring(0, nameLength);
+                .substring(0, Constants.IMAGE_NAME_LENGTH);
 
         imageRepository.save(Image.builder()
                 .name(filename)
@@ -36,16 +42,12 @@ public class ImageService {
 
     public Image downloadImage(String fileName) {
         Optional<Image> image = imageRepository.findByName(fileName);
-        return image.orElse(null);
+        return image.orElseThrow( () -> new ImageNotFoundException(fileName));
     }
 
-    public boolean deleteImage(String imageName) {
-        Optional<Image> foundImage = imageRepository.findByName(imageName);
-        if (foundImage.isPresent()) {
-            imageRepository.delete(foundImage.get());
-            return true;
-        }
-        return false;
+    public void deleteImage(String imageName) {
+        Image image = getImageByName(imageName);
+        imageRepository.delete(image);
     }
 
 }
