@@ -18,4 +18,6 @@ class UserProvider extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  String? get photoName => _user!.photoUrl!.split('/').last;
 }

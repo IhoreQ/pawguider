@@ -1,11 +1,11 @@
 abstract class Validator {
 
-  static bool _basicValidation(String? value) {
+  static bool _isNullOrEmpty(String? value) {
     return value == null || value.isEmpty;
   }
 
   static bool isDogNameValid(String? name) {
-    if (_basicValidation(name)) {
+    if (_isNullOrEmpty(name)) {
       return false;
     }
     final nameRegExp = RegExp(r'^[A-Za-z]*$');
@@ -13,7 +13,7 @@ abstract class Validator {
   }
 
   static bool isAgeValid(String? age) {
-    if (_basicValidation(age)) {
+    if (_isNullOrEmpty(age)) {
       return false;
     }
     int value = int.parse(age!);
@@ -26,7 +26,7 @@ abstract class Validator {
   }
 
   static bool isEmailValid(String? email) {
-    final emailRegExp = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+    final emailRegExp = RegExp(r"^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$");
     return emailRegExp.hasMatch(email!);
   }
 
@@ -37,5 +37,13 @@ abstract class Validator {
 
   static bool arePasswordsEqual(String? password, String? newPassword) {
     return password == newPassword;
+  }
+
+  static bool isPhoneNumberValid(String? phoneNumber) {
+    if (_isNullOrEmpty(phoneNumber)) {
+      return true;
+    }
+    final phoneNumberRegExp = RegExp(r"^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$");
+    return phoneNumberRegExp.hasMatch(phoneNumber!);
   }
 }

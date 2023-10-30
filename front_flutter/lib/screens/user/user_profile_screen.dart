@@ -171,7 +171,7 @@ class MainContentPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Gap(65.0),
+            const Gap(75.0),
             Center(
               child: Text(
                 '${user.firstName} ${user.lastName}',

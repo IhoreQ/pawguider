@@ -32,7 +32,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final providers = [
-      ChangeNotifierProvider(create: (context) =>  UserProvider()),
+      ChangeNotifierProvider(create: (context) => UserProvider()),
       ChangeNotifierProvider(create: (context) => LoadingProvider()),
       ChangeNotifierProvider(create: (context) => RegisterDetailsProvider()),
       ChangeNotifierProvider(create: (context) => FavouritePlacesProvider()),

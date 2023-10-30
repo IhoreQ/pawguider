@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 public record UserUpdateRequest(String firstName,
                                 String lastName,
-                                String photoName,
-                                Long genderId,
-                                Long cityId,
+                                String gender,
+                                String city,
                                 String phone) {
 
     @JsonCreator

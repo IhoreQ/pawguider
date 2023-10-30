@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:front_flutter/services/dto/user/user_update_request.dart';
 import 'package:front_flutter/utilities/constants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -85,6 +86,32 @@ class UserService {
       return response.data;
     } on DioException {
       rethrow;
+    }
+  }
+
+  Future<bool> updateUserPhoto(String photoName) async {
+    try {
+      Response response = await _dio.patch(
+        '/user/photo',
+        data: {
+          "photoName": photoName
+        }
+      );
+      return true;
+    } on DioException {
+      return false;
+    }
+  }
+
+  Future<bool> updateUser(UserUpdateRequest request) async {
+    try {
+      Response response = await _dio.put(
+        '/user/details',
+        data: request.toJson()
+      );
+      return true;
+    } on DioException {
+      return false;
     }
   }
 }

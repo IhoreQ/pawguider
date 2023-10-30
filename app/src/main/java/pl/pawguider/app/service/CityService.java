@@ -22,4 +22,8 @@ public class CityService {
     public City getCityById(Long id) {
         return cityRepository.findById(id).orElse(null);
     }
+
+    public City getCityByName(String cityName) {
+        return cityRepository.findByName(cityName).orElse(null);
+    }
 }

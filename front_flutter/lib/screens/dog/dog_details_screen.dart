@@ -83,15 +83,6 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     }
   }
 
-  Future _getImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
-
-    if (pickedFile != null) {
-      image = File(pickedFile.path);
-      setState(() {});
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     const double iconSize = 30.0;
@@ -206,7 +197,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                       const Gap(10.0),
                       GestureDetector(
                           onTap: () => ImageGetter.selectPhoto(context, _getImage),
-                          child: Text('Change picture', style: AppTextStyle.semiBoldOrange)
+                          child: Text('Change photo', style: AppTextStyle.semiBoldOrange)
                       ),
                     ],
                   ),
@@ -550,6 +541,15 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     setState(() {
       _imageUpdated = image != null;
     });
+  }
+
+  Future _getImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
+
+    if (pickedFile != null) {
+      image = File(pickedFile.path);
+      setState(() {});
+    }
   }
 }
 

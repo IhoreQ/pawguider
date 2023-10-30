@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
 import pl.pawguider.app.controller.dto.request.UserLocationRequest;
+import pl.pawguider.app.controller.dto.request.UserPhotoUpdateRequest;
 import pl.pawguider.app.controller.dto.request.UserUpdateRequest;
 import pl.pawguider.app.controller.dto.response.UserInfoResponse;
 import pl.pawguider.app.model.User;
@@ -60,6 +61,15 @@ public class UserController {
     public ResponseEntity<Boolean> updateUserDetails(@RequestHeader("Authorization") String header, @RequestBody UserUpdateRequest request) {
         User user = userService.getUserFromHeader(header);
         Boolean isUpdated = userService.updateUserDetails(user, request);
+
+        System.out.println(isUpdated);
+        return ResponseEntity.ok(isUpdated);
+    }
+
+    @PatchMapping("/photo")
+    public ResponseEntity<Boolean> updateUserPhoto(@RequestHeader("Authorization") String header, @RequestBody UserPhotoUpdateRequest request) {
+        User user = userService.getUserFromHeader(header);
+        Boolean isUpdated = userService.updateUserPhoto(user, request.photoName());
 
         return ResponseEntity.ok(isUpdated);
     }

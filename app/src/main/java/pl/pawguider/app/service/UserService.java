@@ -66,15 +66,14 @@ public class UserService {
     }
 
     public Boolean updateUserDetails(User user, UserUpdateRequest request) {
-        Gender gender = genderService.getGenderById(request.genderId());
-        City city = cityService.getCityById(request.cityId());
+        Gender gender = genderService.getGenderByName(request.gender());
+        City city = cityService.getCityByName(request.city());
 
         if (gender != null && city != null) {
             UserDetails details = user.getDetails();
 
             details.setFirstName(request.firstName());
             details.setLastName(request.lastName());
-            details.setPhotoName(request.photoName());
             details.setPhone(request.phone());
             details.setGender(gender);
             details.setCity(city);
@@ -94,6 +93,18 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
+        return true;
+    }
+
+    public Boolean updateUserPhoto(User user, String photoName) {
+        UserDetails details = user.getDetails();
+
+        details.setPhotoName(photoName);
+        try {
+            userDetailsRepository.save(details);
+        } catch (Exception e) {
+            return false;
+        }
         return true;
     }
 }
