@@ -2,9 +2,13 @@ package pl.pawguider.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "dog_behaviors", schema = "public", catalog = "dogout")
 public class DogBehavior {
@@ -21,17 +25,8 @@ public class DogBehavior {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "behavior")
     private Collection<DogsBehaviors> dogsBehaviors;
 
-    public DogBehavior() {
-    }
-
     public DogBehavior(Long idBehavior) {
         this.idBehavior = idBehavior;
-    }
-
-    public DogBehavior(Long idBehavior, String name, Collection<DogsBehaviors> dogsBehaviors) {
-        this.idBehavior = idBehavior;
-        this.name = name;
-        this.dogsBehaviors = dogsBehaviors;
     }
 
     public Long getIdBehavior() {

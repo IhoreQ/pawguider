@@ -10,8 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface DogBreedRepository extends JpaRepository<DogBreed, Long> {
-
     @Query("select new DogBreed (idDogBreed, name) from DogBreed")
     List<DogBreed> findAllNamesWithIds();
-    Optional<DogBreed> findByName(String name);
 }

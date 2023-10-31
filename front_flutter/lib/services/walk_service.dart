@@ -19,7 +19,6 @@ class WalkService {
       Map<String, dynamic> rawData = response.data;
       Place place = Place.walkInfo(rawData['placeId'], rawData['placeName'], Constants.imageServerUrl + rawData['placePhoto'], rawData['placeStreet'], rawData['houseNumber']);
       Walk walk = Walk(rawData['walkId'], rawData['startTime'], place);
-      print(rawData['startTime'].runtimeType);
       return walk;
     } on DioException {
       rethrow;
@@ -42,7 +41,7 @@ class WalkService {
             "placeId": placeId
         }
       );
-      return response.data;
+      return true;
     } on DioException {
       return false;
     }

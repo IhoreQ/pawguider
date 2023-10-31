@@ -16,18 +16,19 @@ public record PlaceInfoBoxResponse(Long id,
                                    double averageScore,
                                    String photoName) {
 
-    public PlaceInfoBoxResponse {
-    }
 
     public static PlaceInfoBoxResponse getResponse(Place place) {
         List<Dog> dogs = place.getActiveWalks().stream()
                 .flatMap(walk -> walk.getUser().getDogs().stream())
                 .toList();
+
         long dogCount = dogs.stream()
                 .filter(Dog::getSelected)
                 .count();
+
         Collection<PlaceRating> ratings = place.getRatings();
         double averageScore = ratings.stream().mapToDouble(PlaceRating::getRating).average().orElse(0.0);
+
         return new PlaceInfoBoxResponse(place.getIdPlace(), place.getName(), place.getAddress().getStreet(), place.getAddress().getHouseNumber(), dogCount, averageScore, place.getPhoto());
     }
 }

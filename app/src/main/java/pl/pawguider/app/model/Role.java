@@ -1,9 +1,13 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "roles", schema = "public", catalog = "dogout")
 public class Role {
@@ -17,17 +21,8 @@ public class Role {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
     private Collection<User> usersByRole;
 
-    public Role() {
-    }
-
     public Role(Long idRole) {
         this.idRole = idRole;
-    }
-
-    public Role(Long idRole, String role, Collection<User> usersByRole) {
-        this.idRole = idRole;
-        this.role = role;
-        this.usersByRole = usersByRole;
     }
 
     public String getRole() {

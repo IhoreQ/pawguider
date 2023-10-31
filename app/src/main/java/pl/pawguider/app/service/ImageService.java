@@ -2,7 +2,6 @@ package pl.pawguider.app.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pl.pawguider.app.exception.image.ImageDeletionException;
 import pl.pawguider.app.exception.image.ImageNotFoundException;
 import pl.pawguider.app.model.Image;
 import pl.pawguider.app.repository.ImageRepository;
@@ -10,7 +9,6 @@ import pl.pawguider.app.util.Constants;
 import pl.pawguider.app.util.ImageUtil;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,8 +39,7 @@ public class ImageService {
     }
 
     public Image downloadImage(String fileName) {
-        Optional<Image> image = imageRepository.findByName(fileName);
-        return image.orElseThrow( () -> new ImageNotFoundException(fileName));
+        return getImageByName(fileName);
     }
 
     public void deleteImage(String imageName) {
@@ -50,4 +47,7 @@ public class ImageService {
         imageRepository.delete(image);
     }
 
+    public boolean isValidContentType(String contentType) {
+        return contentType.equals("image/png") || contentType.equals("image/jpeg");
+    }
 }

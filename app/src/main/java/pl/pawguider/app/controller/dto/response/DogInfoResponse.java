@@ -1,13 +1,11 @@
 package pl.pawguider.app.controller.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import pl.pawguider.app.model.Dog;
 import pl.pawguider.app.model.DogBehavior;
 import pl.pawguider.app.model.DogsBehaviors;
 import pl.pawguider.app.model.User;
 
 import java.util.List;
-import java.util.Objects;
 
 public record DogInfoResponse(Long idDog,
                               String name,
@@ -21,9 +19,6 @@ public record DogInfoResponse(Long idDog,
                               int likes,
                               boolean currentUserLiked,
                               Long ownerId) {
-    @JsonCreator
-    public DogInfoResponse {
-    }
 
     public static DogInfoResponse getResponse(User user, Dog dog) {
         String gender = dog.getGender().getName();

@@ -1,7 +1,11 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "dogs_behaviors", schema = "public", catalog = "dogout")
 public class DogsBehaviors {
@@ -19,17 +23,7 @@ public class DogsBehaviors {
     @Column(name = "id_dogs_behaviors")
     private Long idDogsBehaviors;
 
-    public DogsBehaviors() {
-
-    }
-
     public DogsBehaviors(DogBehavior behavior, Dog dog) {
-        this.behavior = behavior;
-        this.dog = dog;
-    }
-
-    public DogsBehaviors(Long idDogsBehaviors, DogBehavior behavior, Dog dog) {
-        this.idDogsBehaviors = idDogsBehaviors;
         this.behavior = behavior;
         this.dog = dog;
     }

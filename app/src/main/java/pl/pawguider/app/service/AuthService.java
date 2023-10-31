@@ -2,7 +2,7 @@ package pl.pawguider.app.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.pawguider.app.controller.dto.request.UserAddRequest;
+import pl.pawguider.app.controller.dto.request.RegisterRequest;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.UserRepository;
 import pl.pawguider.app.util.Constants;
@@ -23,7 +23,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void addUser(UserAddRequest request) {
+    public void addUser(RegisterRequest request) {
         City city = cityService.getCityByName(request.city());
         Gender gender = genderService.getGenderByName(request.gender());
 
@@ -31,6 +31,7 @@ public class AuthService {
 
         UserDetails userDetails = new UserDetails(request.firstName(), request.lastName(), request.phone(), city, gender, photoName);
         UserLocation userLocation = new UserLocation(Constants.DEFAULT_LATITUDE, Constants.DEFAULT_LONGITUDE);
+
         User user = new User(request.email(), userDetails, userLocation);
 
         user.setPassword(passwordEncoder.encode(request.password()));

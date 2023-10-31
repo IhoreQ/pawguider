@@ -2,7 +2,6 @@ package pl.pawguider.app.controller.dto.response;
 
 import pl.pawguider.app.model.Place;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;

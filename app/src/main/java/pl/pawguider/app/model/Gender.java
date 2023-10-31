@@ -2,11 +2,13 @@ package pl.pawguider.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
-@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "genders", schema = "public", catalog = "dogout")
 public class Gender {
@@ -27,13 +29,6 @@ public class Gender {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "gender")
     private Collection<Dog> dogs;
 
-    public Gender() {
-    }
-
-    public Gender(String name) {
-        this.name = name;
-    }
-
     public Gender(Long id) {
         this.idGender = id;
     }
@@ -43,13 +38,11 @@ public class Gender {
         this.name = name;
     }
 
-    public Gender(Long idGender, String name, Collection<UserDetails> usersDetails) {
-        this.idGender = idGender;
-        this.name = name;
-        this.usersDetails = usersDetails;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public Long getIdGender() {
+        return idGender;
     }
 }

@@ -3,7 +3,7 @@ package pl.pawguider.app.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.pawguider.app.controller.dto.request.DogAddRequest;
+import pl.pawguider.app.controller.dto.request.DogAdditionRequest;
 import pl.pawguider.app.controller.dto.request.DogDeletionRequest;
 import pl.pawguider.app.controller.dto.request.DogUpdateRequest;
 import pl.pawguider.app.controller.dto.response.DogBreedResponse;
@@ -32,7 +32,7 @@ public class DogController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addDog(@RequestHeader("Authorization") String header, @RequestBody DogAddRequest dogAddRequest) {
+    public ResponseEntity<?> addDog(@RequestHeader("Authorization") String header, @RequestBody DogAdditionRequest dogAddRequest) {
         User user = userService.getUserFromHeader(header);
         dogService.addDog(user, dogAddRequest);
 

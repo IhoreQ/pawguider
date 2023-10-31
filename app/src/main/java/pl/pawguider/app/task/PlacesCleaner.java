@@ -15,7 +15,6 @@ import java.util.List;
 @Component
 @EnableScheduling
 public class PlacesCleaner {
-
     private final WalkService walkService;
     private final PlaceService placeService;
 

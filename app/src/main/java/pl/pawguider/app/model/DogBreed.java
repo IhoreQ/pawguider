@@ -1,9 +1,13 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "dogs_breed", schema = "public", catalog = "dogout")
 public class DogBreed {
@@ -21,19 +25,9 @@ public class DogBreed {
     @JoinColumn(name = "id_dog_size", referencedColumnName = "id_dog_size")
     private DogSize size;
 
-    public DogBreed() {
-    }
-
     public DogBreed(Long idDogBreed, String name) {
         this.idDogBreed = idDogBreed;
         this.name = name;
-    }
-
-    public DogBreed(Long idDogBreed, String name, Collection<Dog> dogsByBreed, DogSize size) {
-        this.idDogBreed = idDogBreed;
-        this.name = name;
-        this.dogsByBreed = dogsByBreed;
-        this.size = size;
     }
 
     public Long getIdDogBreed() {

@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
-import pl.pawguider.app.controller.dto.request.UserLocationRequest;
+import pl.pawguider.app.controller.dto.request.UserLocationUpdateRequest;
 import pl.pawguider.app.controller.dto.request.UserPhotoUpdateRequest;
 import pl.pawguider.app.controller.dto.request.UserUpdateRequest;
 import pl.pawguider.app.controller.dto.response.UserInfoResponse;
@@ -22,24 +22,19 @@ public class UserController {
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<Boolean> updatePassword(@RequestHeader("Authorization") String header, @RequestBody PasswordUpdateRequest request) {
-
+    public ResponseEntity<HttpStatus> updatePassword(@RequestHeader("Authorization") String header, @RequestBody PasswordUpdateRequest request) {
         User user = userService.getUserFromHeader(header);
+        userService.updateUserPassword(user, request);
 
-        Boolean isUpdated = userService.updateUserPassword(user, request);
-
-        return ResponseEntity.ok(isUpdated);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserInfoResponse> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
+        UserInfoResponse response = UserInfoResponse.getResponse(user);
 
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return ResponseEntity.ok(UserInfoResponse.getResponse(user));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
@@ -51,26 +46,26 @@ public class UserController {
     }
 
     @PatchMapping("/location")
-    public ResponseEntity<?> updateUserLocation(@RequestHeader("Authorization") String header, @RequestBody UserLocationRequest request) {
+    public ResponseEntity<HttpStatus> updateUserLocation(@RequestHeader("Authorization") String header, @RequestBody UserLocationUpdateRequest request) {
         User user = userService.getUserFromHeader(header);
         userService.updateUserLocation(user, request.latitude(), request.longitude());
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/details")
-    public ResponseEntity<Boolean> updateUserDetails(@RequestHeader("Authorization") String header, @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<HttpStatus> updateUserDetails(@RequestHeader("Authorization") String header, @RequestBody UserUpdateRequest request) {
         User user = userService.getUserFromHeader(header);
-        Boolean isUpdated = userService.updateUserDetails(user, request);
+        userService.updateUserDetails(user, request);
 
-        System.out.println(isUpdated);
-        return ResponseEntity.ok(isUpdated);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/photo")
-    public ResponseEntity<Boolean> updateUserPhoto(@RequestHeader("Authorization") String header, @RequestBody UserPhotoUpdateRequest request) {
+    public ResponseEntity<HttpStatus> updateUserPhoto(@RequestHeader("Authorization") String header, @RequestBody UserPhotoUpdateRequest request) {
         User user = userService.getUserFromHeader(header);
-        Boolean isUpdated = userService.updateUserPhoto(user, request.photoName());
+        userService.updateUserPhoto(user, request.photoName());
 
-        return ResponseEntity.ok(isUpdated);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

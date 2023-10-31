@@ -1,10 +1,12 @@
 package pl.pawguider.app.service;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.pawguider.app.controller.dto.request.PasswordUpdateRequest;
 import pl.pawguider.app.controller.dto.request.UserUpdateRequest;
+import pl.pawguider.app.exception.auth.PasswordMismatchException;
+import pl.pawguider.app.exception.auth.UserNotFoundException;
+import pl.pawguider.app.exception.user.UserLocationNotFoundException;
 import pl.pawguider.app.model.*;
 import pl.pawguider.app.repository.UserDetailsRepository;
 import pl.pawguider.app.repository.UserLocationRepository;
@@ -41,70 +43,53 @@ public class UserService {
     }
 
     public User getUserByEmail(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
-        return user.orElse(null);
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
     }
 
     public User getUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.orElse(null);
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    public void saveUser(User user) {
-        userRepository.save(user);
+    public UserLocation getUserLocationByIdUser(Long idUser) {
+        return userLocationRepository.findByUserIdUser(idUser).orElseThrow(() -> new UserLocationNotFoundException(idUser));
     }
 
     public void updateUserLocation(User user, double latitude, double longitude) {
-        Optional<UserLocation> foundUserLocation = userLocationRepository.findByUserIdUser(user.getIdUser());
-        if (foundUserLocation.isPresent()) {
-            UserLocation location = foundUserLocation.get();
-            location.setLatitude(latitude);
-            location.setLongitude(longitude);
-            location.setLastUpdate(LocalTime.now());
-            userLocationRepository.save(location);
-        }
+        UserLocation location = getUserLocationByIdUser(user.getIdUser());
+
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        location.setLastUpdate(LocalTime.now());
+        userLocationRepository.save(location);
     }
 
-    public Boolean updateUserDetails(User user, UserUpdateRequest request) {
+    public void updateUserDetails(User user, UserUpdateRequest request) {
         Gender gender = genderService.getGenderByName(request.gender());
         City city = cityService.getCityByName(request.city());
 
-        if (gender != null && city != null) {
-            UserDetails details = user.getDetails();
+        UserDetails details = user.getDetails();
 
-            details.setFirstName(request.firstName());
-            details.setLastName(request.lastName());
-            details.setPhone(request.phone());
-            details.setGender(gender);
-            details.setCity(city);
+        details.setFirstName(request.firstName());
+        details.setLastName(request.lastName());
+        details.setPhone(request.phone());
+        details.setGender(gender);
+        details.setCity(city);
 
-            userDetailsRepository.save(details);
-
-            return true;
-        }
-
-        return false;
+        userDetailsRepository.save(details);
     }
 
-    public Boolean updateUserPassword(User user, PasswordUpdateRequest request) {
-        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
-            return false;
-        }
+    public void updateUserPassword(User user, PasswordUpdateRequest request) {
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword()))
+            throw new PasswordMismatchException();
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
-        return true;
     }
 
-    public Boolean updateUserPhoto(User user, String photoName) {
+    public void updateUserPhoto(User user, String photoName) {
         UserDetails details = user.getDetails();
 
         details.setPhotoName(photoName);
-        try {
-            userDetailsRepository.save(details);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
+        userDetailsRepository.save(details);
     }
 }

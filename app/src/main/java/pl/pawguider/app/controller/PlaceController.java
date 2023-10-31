@@ -1,9 +1,10 @@
 package pl.pawguider.app.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.RatingRequest;
-import pl.pawguider.app.controller.dto.request.UserLocationRequest;
+import pl.pawguider.app.controller.dto.request.UserLocationUpdateRequest;
 import pl.pawguider.app.controller.dto.response.*;
 import pl.pawguider.app.model.Dog;
 import pl.pawguider.app.model.Place;
@@ -38,63 +39,50 @@ public class PlaceController {
         User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(id);
 
-        return ResponseEntity.ok(PlaceInfoResponse.getResponse(user, place));
+        PlaceInfoResponse response = PlaceInfoResponse.getResponse(user, place);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/city-{cityId}")
+    @GetMapping("/city/{cityId}")
     public List<PlaceInfoBoxResponse> getPlacesByCityId(@PathVariable Long cityId) {
         List<Place> places = placeService.getPlacesByCityId(cityId);
         return places.stream().map(PlaceInfoBoxResponse::getResponse).toList();
     }
 
-    @PostMapping("/like/{id}")
-    public Boolean addLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+    @PostMapping("/{id}/like")
+    public ResponseEntity<?> addLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(id);
-
-        if (placeService.isPlaceAlreadyLiked(user, place))
-            return false;
 
         placeService.addLike(user, place);
-        return true;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/like/{id}")
-    public Boolean deleteLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+    @DeleteMapping("/{id}/like")
+    public ResponseEntity<?> deleteLike(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(id);
 
-        if (!placeService.isPlaceAlreadyLiked(user, place))
-            return false;
-
         placeService.deleteLike(user, place);
-        return true;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/rate")
-    public Boolean addRating(@RequestHeader("Authorization") String header, @RequestBody RatingRequest request) {
+    public ResponseEntity<?> addRating(@RequestHeader("Authorization") String header, @RequestBody RatingRequest request) {
         User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(request.placeId());
 
-        if (placeService.isPlaceAlreadyRated(user, place)) {
-            return false;
-        }
-
         placeService.addRating(user, place, request.rating());
-        return true;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping("/rate")
-    public Boolean updateRating(@RequestHeader("Authorization") String header, @RequestBody RatingRequest request) {
+    public ResponseEntity<?> updateRating(@RequestHeader("Authorization") String header, @RequestBody RatingRequest request) {
         User user = userService.getUserFromHeader(header);
         Place place = placeService.getPlaceById(request.placeId());
 
-        if (!placeService.isPlaceAlreadyRated(user, place)) {
-            return false;
-        }
-
         placeService.updateRating(user, place, request.rating());
-        return true;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/favourites")
@@ -112,12 +100,12 @@ public class PlaceController {
     }
 
     @GetMapping("/{placeId}/area")
-    public boolean isUserInPlaceArea(@PathVariable Long placeId, @RequestBody UserLocationRequest request) {
+    public boolean isUserInPlaceArea(@PathVariable Long placeId, @RequestBody UserLocationUpdateRequest request) {
         return placeService.isUserInPlaceArea(request.latitude(), request.longitude(), placeId);
     }
 
     @GetMapping("/area")
-    public ResponseEntity<Long> findUserPlaceArea(@RequestHeader("Authorization") String header, @RequestBody UserLocationRequest request) {
+    public ResponseEntity<Long> findUserPlaceArea(@RequestHeader("Authorization") String header, @RequestBody UserLocationUpdateRequest request) {
         User user = userService.getUserFromHeader(header);
         Long placeId = placeService.findPlaceBasedOnUserLocationAndHisCity(user, request.latitude(), request.longitude());
         return ResponseEntity.ok(placeId);

@@ -11,8 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface WalkRepository extends JpaRepository<ActiveWalk, Long> {
-
     List<ActiveWalk> findAllByPlace(Place place);
-
     Optional<ActiveWalk> findByUser(User user);
 }

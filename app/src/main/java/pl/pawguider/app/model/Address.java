@@ -1,9 +1,13 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "addresses", schema = "public", catalog = "dogout")
 public class Address {
@@ -31,17 +35,12 @@ public class Address {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "address")
     private Collection<Place> places;
 
-    public Address() {
+    public Long getIdAddress() {
+        return idAddress;
     }
 
-    public Address(Long idAddress, String zipCode, String street, String houseNumber, String country, City city, Collection<Place> places) {
-        this.idAddress = idAddress;
-        this.zipCode = zipCode;
-        this.street = street;
-        this.houseNumber = houseNumber;
-        this.country = country;
-        this.city = city;
-        this.places = places;
+    public Collection<Place> getPlaces() {
+        return places;
     }
 
     public String getZipCode() {

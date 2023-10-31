@@ -1,9 +1,13 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "places", schema = "public", catalog = "dogout")
 public class Place {
@@ -37,9 +41,6 @@ public class Place {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_area", referencedColumnName = "id_area", nullable = false)
     private PlaceArea area;
-
-    public Place() {
-    }
 
     public Place(Long idPlace) {
         this.idPlace = idPlace;

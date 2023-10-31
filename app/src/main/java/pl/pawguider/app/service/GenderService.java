@@ -25,7 +25,7 @@ public class GenderService {
     }
 
     public Gender getGenderById(Long id) {
-        return genderRepository.findById(id).orElse(null);
+        return genderRepository.findById(id).orElseThrow(() -> new GenderNotFoundException(id));
     }
 
     public Gender getGenderByName(String name) {

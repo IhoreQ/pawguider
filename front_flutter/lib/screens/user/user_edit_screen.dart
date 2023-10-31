@@ -225,7 +225,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
                         return CustomDropdownButton(
                             dropdownValue: _selectedCity,
                             valuesList: snapshot.data!,
-                            labelText: 'Gender',
+                            labelText: 'City',
                             onChanged: (value) {
                               setState(() {
                                 _selectedCity = value!;

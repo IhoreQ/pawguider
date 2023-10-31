@@ -1,8 +1,12 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Entity
 @Table(name = "users_details", schema = "public", catalog = "dogout")
@@ -33,9 +37,6 @@ public class UserDetails {
     @ManyToOne
     @JoinColumn(name = "id_gender", referencedColumnName = "id_gender", nullable = false)
     private Gender gender;
-
-    public UserDetails() {
-    }
 
     public UserDetails(String firstName, String lastName) {
         this.firstName = firstName;

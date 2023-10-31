@@ -1,7 +1,11 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "dogs_likes", schema = "public", catalog = "dogout")
 public class DogLike {
@@ -17,7 +21,6 @@ public class DogLike {
     @JoinColumn(name = "id_dog", referencedColumnName = "id_dog", nullable = false)
     private Dog dog;
 
-    public DogLike() {}
 
     public DogLike(Long idLike) {
         this.idLike = idLike;

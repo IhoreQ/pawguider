@@ -1,9 +1,11 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "places_ratings", schema = "public", catalog = "dogout")
 public class PlaceRating {
@@ -24,29 +26,15 @@ public class PlaceRating {
     @JoinColumn(name = "id_place", referencedColumnName = "id_place", nullable = false)
     private Place place;
 
-    public PlaceRating() {}
-
-    public PlaceRating(int idRating) {
-        this.idRating = idRating;
-    }
-
     public PlaceRating(User user, Place place, double rating) {
         this.user = user;
         this.place = place;
         this.rating = rating;
     }
 
-    public PlaceRating(int idRating, double rating, User user, Place place) {
-        this.idRating = idRating;
-        this.rating = rating;
-        this.user = user;
-        this.place = place;
-    }
-
     public int getIdLike() {
         return idRating;
     }
-
 
     public User getUser() {
         return user;

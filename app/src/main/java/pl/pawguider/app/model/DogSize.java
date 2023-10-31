@@ -1,9 +1,13 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "dogs_sizes", schema = "public", catalog = "dogout")
 public class DogSize {
@@ -15,16 +19,7 @@ public class DogSize {
     @Column
     private String name;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "size")
-    private Collection<DogBreed> breedsBySize;
-
-    public DogSize() {
-    }
-
-    public DogSize(Long idDogSize, String name, Collection<DogBreed> breedsBySize) {
-        this.idDogSize = idDogSize;
-        this.name = name;
-        this.breedsBySize = breedsBySize;
-    }
+    private Collection<DogBreed> breeds;
 
     public String getName() {
         return name;

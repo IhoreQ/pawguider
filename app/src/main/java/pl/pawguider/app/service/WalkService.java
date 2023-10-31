@@ -1,11 +1,11 @@
 package pl.pawguider.app.service;
 
 import org.springframework.stereotype.Service;
+import pl.pawguider.app.exception.walk.WalkAlreadyExistsException;
 import pl.pawguider.app.model.ActiveWalk;
 import pl.pawguider.app.model.Dog;
 import pl.pawguider.app.model.Place;
 import pl.pawguider.app.model.User;
-import pl.pawguider.app.repository.PlaceRepository;
 import pl.pawguider.app.repository.WalkRepository;
 
 import java.time.LocalTime;
@@ -16,23 +16,16 @@ import java.util.Optional;
 public class WalkService {
 
     private final WalkRepository walkRepository;
-    private final PlaceRepository placeRepository;
+    private final PlaceService placeService;
 
-    public WalkService(WalkRepository walkRepository, PlaceRepository placeRepository) {
+    public WalkService(WalkRepository walkRepository, PlaceService placeService) {
         this.walkRepository = walkRepository;
-        this.placeRepository = placeRepository;
+        this.placeService = placeService;
     }
 
     public ActiveWalk getActiveWalkByUser(User user) {
         Optional<ActiveWalk> walk = user.getActiveWalks().stream().findFirst();
-        ActiveWalk activeWalk;
-
-        if (walk.isEmpty())
-            return null;
-
-        activeWalk = walk.get();
-
-        return activeWalk;
+        return walk.orElse(null);
     }
 
     public void deleteWalk(ActiveWalk activeWalk) {
@@ -50,14 +43,15 @@ public class WalkService {
     }
 
     public ActiveWalk addWalk(User user, Long placeId) {
-        Optional<Place> foundPlace = placeRepository.findById(placeId);
-        if (foundPlace.isPresent()) {
-            LocalTime now = LocalTime.now();
-            Place place = foundPlace.get();
-            ActiveWalk activeWalk = new ActiveWalk(now, place, user);
-            return walkRepository.save(activeWalk);
-        }
-        return null;
+        if (userHasWalk(user))
+            throw new WalkAlreadyExistsException(user.getIdUser());
+
+        Place place = placeService.getPlaceById(placeId);
+
+        LocalTime now = LocalTime.now();
+        ActiveWalk activeWalk = new ActiveWalk(now, place, user);
+
+        return walkRepository.save(activeWalk);
     }
 
     public boolean userHasWalk(User user) {

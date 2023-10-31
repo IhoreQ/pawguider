@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
-
     @Query("select new Place(p.idPlace, p.name, p.photo) from Place p")
     List<Place> findAllPlaces();
 

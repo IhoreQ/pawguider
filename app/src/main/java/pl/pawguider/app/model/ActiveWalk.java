@@ -1,9 +1,13 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "active_walks", schema = "public", catalog = "dogout")
 public class ActiveWalk {
@@ -22,17 +26,7 @@ public class ActiveWalk {
     @JoinColumn(name = "id_user", referencedColumnName = "id_user", nullable = false)
     private User user;
 
-    public ActiveWalk() {
-    }
-
     public ActiveWalk(LocalTime startedAt, Place place, User user) {
-        this.startedAt = startedAt;
-        this.place = place;
-        this.user = user;
-    }
-
-    public ActiveWalk(Long idActiveWalk, LocalTime startedAt, Place place, User user) {
-        this.idActiveWalk = idActiveWalk;
         this.startedAt = startedAt;
         this.place = place;
         this.user = user;
@@ -41,7 +35,6 @@ public class ActiveWalk {
     public Long getIdActiveWalk() {
         return idActiveWalk;
     }
-
 
     public LocalTime getStartedAt() {
         return startedAt;

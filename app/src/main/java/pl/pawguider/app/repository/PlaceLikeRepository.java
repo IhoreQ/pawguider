@@ -7,7 +7,6 @@ import pl.pawguider.app.model.PlaceLike;
 import java.util.List;
 
 public interface PlaceLikeRepository extends JpaRepository<PlaceLike, Long> {
-
     @Query("select new PlaceLike(pl.idLike) from PlaceLike pl where pl.user.idUser = ?1 and pl.place.idPlace = ?2")
     PlaceLike findByUserIdAndPlaceId(Long userId, Long placeId);
 

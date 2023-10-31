@@ -12,7 +12,7 @@ class PlaceService {
 
   Future<List<Place>> getPlacesByCityId(int cityId) async {
     try {
-      Response response = await _dio.get('/place/city-$cityId');
+      Response response = await _dio.get('/place/city/$cityId');
       List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
       List<Place> places = rawData.map((placeData) => Place.basicInfo(
           placeData['id'],
@@ -90,7 +90,7 @@ class PlaceService {
 
   Future<bool> addLike(int placeId) async {
     try {
-      Response response = await _dio.post('/place/like/$placeId');
+      Response response = await _dio.post('/place/$placeId/like');
       return true;
     } on DioException {
       return false;
@@ -99,7 +99,7 @@ class PlaceService {
 
   Future<bool> deleteLike(int placeId) async {
     try {
-      Response response = await _dio.delete('/place/like/$placeId');
+      Response response = await _dio.delete('/place/$placeId/like');
       return true;
     } on DioException {
       return false;

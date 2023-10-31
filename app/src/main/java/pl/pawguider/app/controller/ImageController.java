@@ -5,6 +5,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.pawguider.app.exception.image.EmptyFileRequestException;
+import pl.pawguider.app.exception.image.WrongFileTypeException;
 import pl.pawguider.app.model.Image;
 import pl.pawguider.app.service.ImageService;
 import pl.pawguider.app.util.ImageUtil;
@@ -22,22 +24,24 @@ public class ImageController {
     }
 
     @PostMapping
-    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
-        try {
-            String response = imageService.uploadImage(file);
-            return ResponseEntity.ok(response);
-        } catch (IOException e) {
-            return ResponseEntity.ok(false);
-        }
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
+        String contentType = file.getContentType();
+
+        if (contentType == null)
+            throw new EmptyFileRequestException();
+
+        if (!imageService.isValidContentType(contentType))
+            throw new WrongFileTypeException(contentType);
+
+        String response = imageService.uploadImage(file);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{name}")
     public ResponseEntity<byte[]> downloadImage(@PathVariable("name") String name) {
         Image image = imageService.downloadImage(name);
 
-        return image == null ?
-                new ResponseEntity<>(HttpStatus.NOT_FOUND) :
-                ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity.status(HttpStatus.OK)
                         .contentType(MediaType.valueOf(image.getType()))
                         .body(ImageUtil.decompressImage(image.getImage()));
     }

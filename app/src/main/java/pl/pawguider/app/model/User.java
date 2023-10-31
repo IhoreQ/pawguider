@@ -2,11 +2,15 @@ package pl.pawguider.app.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Date;
 import java.util.Collection;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @DynamicUpdate
 @Table(name = "users", schema = "public", catalog = "dogout")
@@ -52,9 +56,6 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     private Collection<PlaceRating> placesRatings;
-
-    public User() {
-    }
 
     public User(Long idUser) {
         this.idUser = idUser;

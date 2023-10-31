@@ -2,15 +2,17 @@ package pl.pawguider.app.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import pl.pawguider.app.controller.dto.request.DogAddRequest;
+import pl.pawguider.app.controller.dto.request.DogAdditionRequest;
 import pl.pawguider.app.controller.dto.request.DogUpdateRequest;
 import pl.pawguider.app.exception.dog.*;
 import pl.pawguider.app.model.*;
-import pl.pawguider.app.repository.*;
+import pl.pawguider.app.repository.DogBehaviorRepository;
+import pl.pawguider.app.repository.DogLikeRepository;
+import pl.pawguider.app.repository.DogRepository;
+import pl.pawguider.app.repository.DogsBehaviorsRepository;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class DogService {
@@ -50,7 +52,7 @@ public class DogService {
     }
 
     @Transactional
-    public Dog addDog(User user, DogAddRequest dogAddRequest) {
+    public Dog addDog(User user, DogAdditionRequest dogAddRequest) {
         DogBreed breed = dogBreedService.getBreedById(dogAddRequest.breedId());
         Gender gender = genderService.getGenderByName(dogAddRequest.gender());
 

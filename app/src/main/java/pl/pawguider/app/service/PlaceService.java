@@ -7,14 +7,16 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.stereotype.Service;
+import pl.pawguider.app.exception.place.like.PlaceAlreadyLikedException;
+import pl.pawguider.app.exception.place.rating.PlaceAlreadyRatedException;
 import pl.pawguider.app.exception.place.PlaceNotFoundException;
+import pl.pawguider.app.exception.place.like.PlaceNotLikedException;
+import pl.pawguider.app.exception.place.rating.PlaceRatingNotFoundException;
 import pl.pawguider.app.model.*;
-import pl.pawguider.app.repository.CityRepository;
 import pl.pawguider.app.repository.PlaceLikeRepository;
 import pl.pawguider.app.repository.PlaceRatingRepository;
 import pl.pawguider.app.repository.PlaceRepository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,13 +25,13 @@ import java.util.Optional;
 public class PlaceService {
 
     private final PlaceRepository placeRepository;
-    private final CityRepository cityRepository;
+    private final CityService cityService;
     private final PlaceLikeRepository placeLikeRepository;
     private final PlaceRatingRepository placeRatingRepository;
 
-    public PlaceService(PlaceRepository placeRepository, CityRepository cityRepository, PlaceLikeRepository placeLikeRepository, PlaceRatingRepository placeRatingRepository) {
+    public PlaceService(PlaceRepository placeRepository, CityService cityService, PlaceLikeRepository placeLikeRepository, PlaceRatingRepository placeRatingRepository) {
         this.placeRepository = placeRepository;
-        this.cityRepository = cityRepository;
+        this.cityService = cityService;
         this.placeLikeRepository = placeLikeRepository;
         this.placeRatingRepository = placeRatingRepository;
     }
@@ -43,32 +45,38 @@ public class PlaceService {
     }
 
     public List<Place> getPlacesByCityId(Long cityId) {
-        Optional<City> foundCity = cityRepository.findById(cityId);
-
-        if (foundCity.isPresent()) {
-            City city = foundCity.get();
-            return placeRepository.findAllByAddress_City(city);
-        }
-        return new ArrayList<>();
+        City city = cityService.getCityById(cityId);
+        return placeRepository.findAllByAddress_City(city);
     }
 
     public void addLike(User user, Place place) {
+        if (isPlaceAlreadyLiked(user, place))
+            throw new PlaceAlreadyLikedException(user.getIdUser(), place.getIdPlace());
+
         PlaceLike like = new PlaceLike(user, place);
         placeLikeRepository.save(like);
     }
 
     public void deleteLike(User user, Place place) {
+        if (!isPlaceAlreadyLiked(user, place))
+            throw new PlaceNotLikedException(user.getIdUser(), place.getIdPlace());
+
         PlaceLike like = placeLikeRepository.findByUserIdAndPlaceId(user.getIdUser(), place.getIdPlace());
         placeLikeRepository.delete(like);
     }
 
     public void addRating(User user, Place place, double rating) {
+        if (isPlaceAlreadyRated(user, place))
+            throw new PlaceAlreadyRatedException(user.getIdUser(), place.getIdPlace());
+
         PlaceRating placeRating = new PlaceRating(user, place, rating);
         placeRatingRepository.save(placeRating);
     }
 
     public void updateRating(User user, Place place, double rating) {
-        PlaceRating placeRating = placeRatingRepository.findByUserIdAndPlaceId(user.getIdUser(), place.getIdPlace());
+        PlaceRating placeRating = placeRatingRepository.findByUserIdAndPlaceId(user.getIdUser(), place.getIdPlace())
+                .orElseThrow(() -> new PlaceRatingNotFoundException(user.getIdUser(), place.getIdPlace()));
+
         placeRating.setRating(rating);
         placeRatingRepository.save(placeRating);
     }
@@ -92,15 +100,8 @@ public class PlaceService {
     }
 
     public boolean isUserInPlaceArea(double latitude, double longitude, Long placeId) {
-        Optional<Place> foundPlace = placeRepository.findById(placeId);
-
-        if (foundPlace.isPresent()) {
-            Place place = foundPlace.get();
-            return isPointInPolygon(latitude, longitude, place.getArea().getPolygon(), placeId);
-        }
-
-        return false;
-
+        Place place = getPlaceById(placeId);
+        return isPointInPolygon(latitude, longitude, place.getArea().getPolygon(), placeId);
     }
 
     public Long findPlaceBasedOnUserLocationAndHisCity(User user, double latitude, double longitude) {
@@ -119,9 +120,11 @@ public class PlaceService {
         String rawAreaWithoutParentheses = removeParentheses(rawAreaWithoutCommasInside);
         String firstPoint = getFirstPoint(rawAreaWithoutParentheses);
         String completePolygon = rawAreaWithoutParentheses + ", " + firstPoint;
+
         GeometryFactory geometryFactory = new GeometryFactory();
         WKTReader reader = new WKTReader(geometryFactory);
         Polygon polygon;
+
         try {
             polygon = (Polygon) reader.read("POLYGON((" + completePolygon + "))");
         } catch (ParseException e) {
@@ -130,6 +133,7 @@ public class PlaceService {
         }
 
         Point point = geometryFactory.createPoint(new Coordinate(latitude, longitude));
+
         return polygon.contains(point);
     }
 

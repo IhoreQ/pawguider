@@ -22,14 +22,8 @@ public class Image {
     @Column
     private String type;
 
-    @Column(unique = false, nullable = false, length = 100000)
+    @Column(nullable = false, length = 100000)
     private byte[] image;
-
-    public Image(String name, String type, byte[] image) {
-        this.name = name;
-        this.type = type;
-        this.image = image;
-    }
 
     public byte[] getImage() {
         return image;

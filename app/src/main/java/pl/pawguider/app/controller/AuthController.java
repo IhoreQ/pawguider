@@ -1,6 +1,5 @@
 package pl.pawguider.app.controller;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,8 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import pl.pawguider.app.controller.dto.request.LoginRequest;
-import pl.pawguider.app.controller.dto.request.UserAddRequest;
-import pl.pawguider.app.controller.dto.request.UserExistsRequest;
+import pl.pawguider.app.controller.dto.request.RegisterRequest;
+import pl.pawguider.app.controller.dto.request.CheckUserExistenceRequest;
 import pl.pawguider.app.controller.dto.response.JwtTokenResponse;
 import pl.pawguider.app.exception.auth.UserAlreadyExistsException;
 import pl.pawguider.app.exception.auth.UserNotFoundException;
@@ -50,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserAddRequest request) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
 
         if (authService.userExists(request.email())) {
             throw new UserAlreadyExistsException(request.email());
@@ -61,7 +60,7 @@ public class AuthController {
     }
 
     @GetMapping("/user-exists")
-    public ResponseEntity<Boolean> userExists(@RequestBody UserExistsRequest request) {
+    public ResponseEntity<Boolean> userExists(@RequestBody CheckUserExistenceRequest request) {
         return ResponseEntity.ok(authService.userExists(request.email()));
     }
 

@@ -1,9 +1,11 @@
 package pl.pawguider.app.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "places_likes", schema = "public", catalog = "dogout")
 public class PlaceLike {
@@ -26,7 +28,6 @@ public class PlaceLike {
         return idLike;
     }
 
-
     public User getUser() {
         return user;
     }
@@ -34,8 +35,6 @@ public class PlaceLike {
     public Place getPlace() {
         return place;
     }
-
-    public PlaceLike() {}
 
     public PlaceLike(Long idLike) {
         this.idLike = idLike;

@@ -1,6 +1,5 @@
 package pl.pawguider.app.controller.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import pl.pawguider.app.model.ActiveWalk;
 import pl.pawguider.app.model.Address;
 import pl.pawguider.app.model.Place;
@@ -14,10 +13,6 @@ public record UserActiveWalkResponse(Long walkId,
                                      String placeStreet,
                                      String houseNumber,
                                      String startTime) {
-
-    @JsonCreator
-    public UserActiveWalkResponse {
-    }
 
     public static UserActiveWalkResponse getResponse(ActiveWalk activeWalk) {
         Place place = activeWalk.getPlace();

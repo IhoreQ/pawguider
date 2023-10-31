@@ -18,35 +18,6 @@ import java.util.Date;
 import java.util.Optional;
 
 public class WalkServiceTest {
-
-    @Test
-    void checkIfTimeExceededTest() throws ParseException {
-        LocalTime now = LocalTime.now();
-        String durationString = "01:00:00";
-        LocalTime duration = LocalTime.parse(durationString);
-        LocalTime endTime = now.plusHours(duration.getHour())
-                                .plusMinutes(duration.getMinute())
-                                .plusSeconds(duration.getSecond());
-
-
-        System.out.println("Now: " + now);
-        System.out.println("Duration: " + duration);
-        System.out.println("endTime: " + endTime);
-
-    }
-
-    @Test
-    void getLeftTimeTest() {
-        LocalTime now = LocalTime.now();
-        String durationString = "01:00:00";
-        LocalTime duration = LocalTime.parse(durationString);
-        String startedAtDuration = "13:45:12";
-        LocalTime startedAt = LocalTime.parse(startedAtDuration);
-
-        LocalTime difference = now.minusSeconds(startedAt.getSecond()).minusMinutes(startedAt.getMinute()).minusHours(startedAt.getHour());
-        LocalTime result = duration.minusSeconds(difference.getSecond()).minusMinutes(difference.getMinute()).minusHours(difference.getHour());
-    }
-
     @Test
     void isPointInPolygon() throws org.locationtech.jts.io.ParseException {
         String area = "(50.09305358981643,19.975102797167985),(50.09324330228522,19.974571719787775),(50.09355475604932,19.974849328418713),(50.093738013809016,19.97430685164863),(50.09399225052792,19.974518075606653),(50.09403006862937,19.97550872990501),(50.09390402599063,19.975553656905785),(50.09377110011716,19.975565056294183),(50.09363602296168,19.975540245861247),(50.09350266616048,19.975465814561705)";
