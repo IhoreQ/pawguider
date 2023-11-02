@@ -10,6 +10,7 @@ import 'package:front_flutter/utilities/dialog_utils.dart';
 import 'package:front_flutter/widgets/common_loading_indicator.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/icon_dropdown_button.dart';
+import 'package:front_flutter/widgets/sized_error_text.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -101,10 +102,7 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
                           );
                         } else {
                           final error = result as ApiError;
-                          return SizedBox(
-                            height: 48.0,
-                            child: Center(child: Text(error.message, style: AppTextStyle.errorText.copyWith(fontSize: 14.0), textAlign: TextAlign.center,)),
-                          );
+                          return SizedErrorText(message: error.message);
                         }
                       }
 
@@ -112,33 +110,45 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
                     },
                   ),
                   const Gap(15.0),
-                  FutureBuilder<List<String>>(
+                  FutureBuilder<Result<List<String>, ApiError>>(
                     future: _cityService.getAllCities(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return IconDropdownButton(
-                          dropdownValue: _selectCity,
-                          valuesList: snapshot.data!,
-                          validator: (value) {
-                            return value != null ? null : 'Choose a city';
-                          },
-                          labelText: 'City',
-                          prefixIcon: const Icon(
-                              FluentSystemIcons.ic_fluent_city_regular,
-                              color: AppColor.lightText),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectCity = value!;
-                            });
-                          },
-                        );
+                        final result = switch (snapshot.data!) {
+                          Success(value: final cities) => cities,
+                          Failure(error: final error) => error
+                        };
+
+                        if (result is List<String>) {
+                          final List<String> cities = result;
+
+                          return IconDropdownButton(
+                            dropdownValue: _selectCity,
+                            valuesList: cities,
+                            validator: (value) {
+                              return value != null ? null : 'Choose a city';
+                            },
+                            labelText: 'City',
+                            prefixIcon: const Icon(
+                                FluentSystemIcons.ic_fluent_city_regular,
+                                color: AppColor.lightText),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectCity = value!;
+                              });
+                            },
+                          );
+                        } else {
+                          final error = result as ApiError;
+                          return SizedErrorText(message: error.message);
+                        }
                       }
 
-                      return SizedBox(
-                          height: 48.0,
-                          child: snapshot.hasError ?
-                          Align(alignment: Alignment.center, child: Text('Unable to retrieve data. A timeout has occurred.', style: AppTextStyle.errorText,))
-                          : const CommonLoadingIndicator(color: AppColor.lightGray),
+                      return const Column(
+                        children: [
+                          Gap(15.0),
+                          SizedLoadingIndicator(color: AppColor.primaryOrange),
+                        ],
                       );
                     },
                   ),

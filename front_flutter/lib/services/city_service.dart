@@ -1,18 +1,24 @@
 import 'package:dio/dio.dart';
+import 'package:front_flutter/exceptions/api_error.dart';
+import 'package:front_flutter/services/basic_service.dart';
+import 'package:front_flutter/strings.dart';
 
-import '../dio/dio_config.dart';
+import '../exceptions/result.dart';
 
-class CityService {
-  final Dio _dio = DioConfig.createDio();
+class CityService extends BasicService {
 
-  Future<List<String>> getAllCities() async {
-    try {
-      Response response = await _dio.get('/city/all');
-      List<dynamic> data = response.data;
-      List<String> cities = data.map((item) => item['name'].toString()).toList();
-      return cities;
-    } on DioException {
-      rethrow;
-    }
+  Future<Result<List<String>, ApiError>> getAllCities() async {
+    return await handleRequest(() async {
+      Response response = await dio.get('/city/all');
+
+      switch (response.statusCode) {
+        case 200:
+          List<dynamic> data = response.data;
+          List<String> cities = data.map((item) => item['name'].toString()).toList();
+          return cities;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 }

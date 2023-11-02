@@ -14,6 +14,7 @@ import 'package:front_flutter/utilities/constants.dart';
 import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/custom_dropdown_button.dart';
 import 'package:front_flutter/widgets/form_field/custom_form_field.dart';
+import 'package:front_flutter/widgets/sized_error_text.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -205,8 +206,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
                         Failure(error: final error) => error
                       };
 
-                      if (result is! ApiError) {
-                        final List<String> genders = result as List<String>;
+                      if (result is List<String>) {
+                        final List<String> genders = result;
 
                         return CustomDropdownButton(
                             dropdownValue: _selectedGender,
@@ -219,10 +220,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
                             }
                         );
                       } else {
-                        return SizedBox(
-                          height: 48.0,
-                          child: Center(child: Text(result.message, style: AppTextStyle.errorText, textAlign: TextAlign.center,)),
-                        );
+                        final error = result as ApiError;
+                        return SizedErrorText(message: error.message);
                       }
                     }
 
@@ -234,20 +233,32 @@ class _UserEditScreenState extends State<UserEditScreen> {
                     );
                   }
                 ),
-                FutureBuilder<List<String>>(
+                FutureBuilder<Result<List<String>, ApiError>>(
                     future: cityService.getAllCities(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return CustomDropdownButton(
-                            dropdownValue: _selectedCity,
-                            valuesList: snapshot.data!,
-                            labelText: 'City',
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedCity = value!;
-                              });
-                            }
-                        );
+                        final result = switch (snapshot.data!) {
+                          Success(value: final cities) => cities,
+                          Failure(error: final error) => error
+                        };
+
+                        if (result is List<String>) {
+                          final List<String> cities = result;
+
+                          return CustomDropdownButton(
+                              dropdownValue: _selectedCity,
+                              valuesList: cities,
+                              labelText: 'City',
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedCity = value!;
+                                });
+                              }
+                          );
+                        } else {
+                          final error = result as ApiError;
+                          return SizedErrorText(message: error.message);
+                        }
                       }
 
                       return const Column(

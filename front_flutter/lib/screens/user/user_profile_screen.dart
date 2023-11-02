@@ -1,16 +1,15 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:front_flutter/providers/user_location_provider.dart';
 import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/routes/router.dart';
+import 'package:front_flutter/services/auth_service.dart';
 import 'package:front_flutter/widgets/contact_info.dart';
 import 'package:front_flutter/widgets/custom_vertical_divider.dart';
 import 'package:front_flutter/widgets/profile_avatar.dart';
 import 'package:front_flutter/widgets/two_elements_column.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/user.dart';
 import '../../styles.dart';
@@ -109,7 +108,8 @@ class TopBar extends StatelessWidget {
     Widget logOutButton = TextButton(
       style: AppButtonStyle.lightSplashColor,
       onPressed:  () {
-        logout(context);
+        final authService = AuthService();
+        authService.logout(context);
       },
       child: Text("Log Out", style: AppTextStyle.semiBoldOrange),
     );
@@ -134,19 +134,6 @@ class TopBar extends StatelessWidget {
         return alert;
       },
     );
-  }
-
-  Future<void> logout(BuildContext context) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.remove('jwtToken');
-
-    if (context.mounted) {
-      UserLocationProvider locationProvider = context.read<UserLocationProvider>();
-      locationProvider.stopListeningLocationUpdates();
-
-      context.router.pushAndPopUntil(
-          const LoginRoute(), predicate: (route) => false);
-    }
   }
 }
 

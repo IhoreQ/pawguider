@@ -5,10 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/services/basic_service.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../exceptions/api_error.dart';
 import '../exceptions/result.dart';
+import '../providers/user_location_provider.dart';
 import '../routes/router.dart';
 import '../strings.dart';
 
@@ -81,10 +83,13 @@ class AuthService extends BasicService {
     return jwtToken;
   }
 
-  Future<void> logout(BuildContext context) async {
+  Future logout(BuildContext context) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.remove('jwtToken');
     if (context.mounted) {
+      UserLocationProvider locationProvider = context.read<UserLocationProvider>();
+      locationProvider.stopListeningLocationUpdates();
+
       context.router.pushAndPopUntil(
           const LoginRoute(), predicate: (route) => false);
     }
