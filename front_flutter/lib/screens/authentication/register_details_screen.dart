@@ -1,21 +1,24 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:front_flutter/exceptions/api_error.dart';
 import 'package:front_flutter/services/auth_service.dart';
 import 'package:front_flutter/services/city_service.dart';
 import 'package:front_flutter/services/gender_service.dart';
 import 'package:front_flutter/styles.dart';
-import 'package:front_flutter/utilities/information_dialog.dart';
+import 'package:front_flutter/utilities/dialog_utils.dart';
 import 'package:front_flutter/widgets/common_loading_indicator.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/icon_dropdown_button.dart';
+import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
+import '../../exceptions/result.dart';
 import '../../providers/loading_provider.dart';
 import '../../providers/register_details_provider.dart';
+import '../../strings.dart';
+import '../../utilities/validator.dart';
 import '../../widgets/submit_button.dart';
 
 @RoutePage()
@@ -61,43 +64,51 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
                       hintText: 'Phone',
                       controller: _phoneController,
                       validator: (value) {
-                        return value!.length < 15 ? null : 'Phone number is too long';
+                        return Validator.isPhoneNumberValid(value) ? null : "Enter correct number";
                       },
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      keyboardType: TextInputType.number,
                       prefixIcon: const Icon(
                         FluentSystemIcons.ic_fluent_phone_regular,
                         color: AppColor.lightText,
                       )),
                   const Gap(15.0),
-                  FutureBuilder<List<String>>(
+                  FutureBuilder<Result<List<String>, ApiError>>(
                     future: _genderService.getAllGenders(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return IconDropdownButton(
-                          dropdownValue: _selectedGender,
-                          valuesList: snapshot.data!,
-                          labelText: 'Gender',
-                          validator: (value) {
-                            return value != null ? null : 'Choose a gender';
-                          },
-                          prefixIcon: const Icon(
-                              FluentSystemIcons.ic_fluent_people_team_regular,
-                              color: AppColor.lightText),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedGender = value!;
-                            });
-                          },
-                        );
+                        final result = switch (snapshot.data!) {
+                          Success(value: final genders) => genders,
+                          Failure(error: final error) => error
+                        };
+
+                        if (result is List<String>) {
+                          final List<String> genders = result;
+
+                          return IconDropdownButton(
+                            dropdownValue: _selectedGender,
+                            valuesList: genders,
+                            labelText: 'Gender',
+                            validator: (value) {
+                              return value != null ? null : 'Choose a gender';
+                            },
+                            prefixIcon: const Icon(
+                                FluentSystemIcons.ic_fluent_people_team_regular,
+                                color: AppColor.lightText),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedGender = value!;
+                              });
+                            },
+                          );
+                        } else {
+                          final error = result as ApiError;
+                          return SizedBox(
+                            height: 48.0,
+                            child: Center(child: Text(error.message, style: AppTextStyle.errorText.copyWith(fontSize: 14.0), textAlign: TextAlign.center,)),
+                          );
+                        }
                       }
 
-                      return SizedBox(
-                        height: 48.0,
-                        child: snapshot.hasError ?
-                        Align(alignment: Alignment.center, child: Text('Unable to retrieve data. A timeout has occurred.', style: AppTextStyle.errorText,))
-                            : const CommonLoadingIndicator(color: AppColor.lightGray),
-                      );
+                      return const SizedLoadingIndicator(color: AppColor.primaryOrange);
                     },
                   ),
                   const Gap(15.0),
@@ -154,30 +165,29 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
       final loadingProvider = context.read<LoadingProvider>();
       loadingProvider.setLoading(true);
 
-      dynamic res = await _authService.register(registerProvider.getRegisterDetails());
+      final result = await _authService.register(registerProvider.getRegisterDetails());
 
       if (context.mounted) {
-        if (res['error'] == null) {
-          loadingProvider.setLoading(false);
-          InformationDialog.show(
+        final value = switch (result) {
+          Success(value: final success) => success,
+          Failure(error: final error) => error
+        };
+
+        loadingProvider.setLoading(false);
+
+        if (value is! ApiError) {
+          showInformationDialog(
             context: context,
-            title: 'User created',
-            content: 'You can login to the application now.',
+            title: AppStrings.registerSuccessTitle,
+            message: AppStrings.registerSuccessBody,
             onPressed: () {
-                context.router.popUntilRoot();
-              }
+              context.router.popUntilRoot();
+            }
           );
         } else {
-          loadingProvider.setLoading(false);
-          InformationDialog.show(
-            context: context,
-            title: 'Connection timed out',
-            content: 'Unable to connect to PawGuider server'
-          );
+          showErrorDialog(context: context, message: value.message);
         }
       }
-
-      //context.router.navigate(LoginRoute(onResult: (result) {}));
     }
   }
 }

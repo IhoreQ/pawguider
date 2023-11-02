@@ -46,7 +46,7 @@ public class SecurityConfig {
                         request -> request
                                 .requestMatchers(
                                         "/api/v1/auth/authenticate",
-                                        "/api/v1/auth/signup",
+                                        "/api/v1/auth/register",
                                         "/api/v1/image/{name}",
                                         "/api/v1/city/all",
                                         "/api/v1/gender/all",

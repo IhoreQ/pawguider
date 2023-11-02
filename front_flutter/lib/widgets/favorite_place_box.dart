@@ -39,11 +39,21 @@ class FavoritePlaceBox extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(place.name, style: AppTextStyle.semiBoldWhite,),
+                    Text(
+                      place.name,
+                      style: AppTextStyle.semiBoldWhite,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     Row(
                       children: [
                         const Icon(Icons.location_on_outlined, color: Colors.white, size: 16.0,),
-                        Expanded(child: Text('${place.city}, ${place.street}', style: AppTextStyle.regularWhite.copyWith(fontSize: 11.0),))
+                        Expanded(
+                          child: Text(
+                            '${place.city}, ${place.street}',
+                            style: AppTextStyle.regularWhite.copyWith(fontSize: 11.0),
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        )
                       ],
                     )
                   ],

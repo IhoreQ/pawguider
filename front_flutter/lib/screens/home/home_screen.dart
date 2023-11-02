@@ -176,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Text('You\'re here', style: AppTextStyle.boldDark.copyWith(fontSize: 25.0)),
                             const Gap(10.0),
-                            WalkInfoBox(walk: walk!),
+                            WalkInfoBox(walk: walk),
                             const Gap(20.0),
                           ],
                         ),
@@ -191,37 +191,44 @@ class _HomeScreenState extends State<HomeScreen> {
                 Consumer<UserDogsProvider>(
                   builder: (context, userDogsProvider, _) {
                       return userDogsProvider.dogs != null ?
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 15.0),
-                          child: Row(
-                            children: userDogsProvider.dogs!.map((dog) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 20.0),
-                                child: WalkPartnerBox(
-                                  dog: dog,
-                                  onSelected: (isSelected) => handleDogSelection(isSelected, dog),
+                          userDogsProvider.dogs!.isNotEmpty ?
+                            SingleChildScrollView(
+                              padding: const EdgeInsets.only(left: 20.0),
+                              scrollDirection: Axis.horizontal,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 15.0),
+                                child: Row(
+                                  children: userDogsProvider.dogs!.map((dog) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 20.0),
+                                      child: WalkPartnerBox(
+                                        dog: dog,
+                                        onSelected: (isSelected) => handleDogSelection(isSelected, dog),
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ) :
-                      const SizedLoadingIndicator(color: AppColor.primaryOrange);
+                              ),
+                            ) : Column(
+                              children: [
+                                const Gap(20.0),
+                                Center(child: Text("Add your first dog to start walking!", style: AppTextStyle.mediumDark.copyWith(fontSize: 14.0),)),
+                                const Gap(20.0),
+                              ],
+                            )
+                      : const SizedLoadingIndicator(color: AppColor.primaryOrange);
                     }
                 ),
                 const Gap(10.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text('Favourite places', style: AppTextStyle.boldDark.copyWith(fontSize: 22.0)),
+                ),
                 Consumer<FavouritePlacesProvider>(builder: (context, favouritePlacesProvider, _) {
                   return favouritePlacesProvider.favouritePlaces != null && favouritePlacesProvider.favouritePlaces!.isNotEmpty ?
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0),
-                        child: Text('Favourite places', style: AppTextStyle.boldDark.copyWith(fontSize: 22.0)),
-                      ),
                       const Gap(10.0),
                       SingleChildScrollView(
                         padding: const EdgeInsets.only(left: 20.0),
@@ -240,8 +247,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const Gap(20.0),
                     ],
-                  )
-                  : const SizedBox();
+                  ) : Column(
+                        children: [
+                          const Gap(20.0),
+                          Center(child: Text("No places have been liked yet.", style: AppTextStyle.mediumDark.copyWith(fontSize: 14.0),)),
+                          const Gap(20.0),
+                        ],
+                  );
                 }),
               ],
             )

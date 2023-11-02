@@ -18,6 +18,7 @@ class UserLocationProvider extends ChangeNotifier {
   final WalkService walkService = WalkService();
   final AuthService authService = AuthService();
   final StreamController<LatLng> _locationController = StreamController<LatLng>.broadcast();
+  StreamSubscription<Position>? _positionStreamSubscription;
 
   Stream<LatLng> get locationStream => _locationController.stream;
 
@@ -44,7 +45,7 @@ class UserLocationProvider extends ChangeNotifier {
       forceLocationManager: true,
       foregroundNotificationConfig: const ForegroundNotificationConfig(
         notificationText:
-        "Example app will continue to receive your location even when you aren't using it",
+        "PawGuider is monitoring your location to let other users know if you're on a walk.",
         notificationTitle: "Running in Background",
         enableWakeLock: true,
       )
@@ -61,7 +62,7 @@ class UserLocationProvider extends ChangeNotifier {
       return Future.error('Localisation is not allowed!');
     }
 
-    Geolocator.getPositionStream(
+    _positionStreamSubscription = Geolocator.getPositionStream(
       locationSettings: locationSettings
     ).listen((Position position) {
       LatLng newPosition = LatLng(position.latitude, position.longitude);
@@ -117,6 +118,10 @@ class UserLocationProvider extends ChangeNotifier {
     }
 
     return true;
+  }
+
+  void stopListeningLocationUpdates() {
+    _positionStreamSubscription?.cancel();
   }
 
   @override

@@ -1,30 +1,25 @@
 import 'package:dio/dio.dart';
+import 'package:front_flutter/exceptions/api_error.dart';
+import 'package:front_flutter/exceptions/result.dart';
+import 'package:front_flutter/services/basic_service.dart';
 
-import '../dio/dio_config.dart';
+import '../strings.dart';
 
-class GenderService {
-  final Dio _dio = DioConfig.createDio();
+class GenderService extends BasicService {
+  final String path = '/gender';
 
-  Future<List<String>> getAllGenders() async {
-    try {
-      Response response = await _dio.get('/gender/all');
-      List<dynamic> data = response.data;
-      List<String> genderNames = data.map((item) => item['name'].toString()).toList();
-      return genderNames;
-    } on DioException {
-      rethrow;
-    }
+  Future<Result<List<String>, ApiError>> getAllGenders() async {
+    return await handleRequest(() async {
+      Response response = await dio.get('$path/all');
+
+      switch (response.statusCode) {
+        case 200:
+          List<dynamic> data = response.data;
+          List<String> genderNames = data.map((item) => item['name'].toString()).toList();
+          return genderNames;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
-
-  Future<List<String>> getBasicGenders() async {
-    try {
-      Response response = await _dio.get('/gender/basic');
-      List<dynamic> data = response.data;
-      List<String> genderNames = data.map((item) => item['name'].toString()).toList();
-      return genderNames;
-    } on DioException {
-      rethrow;
-    }
-  }
-
 }

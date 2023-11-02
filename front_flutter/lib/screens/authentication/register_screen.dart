@@ -2,19 +2,23 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter/exceptions/api_error.dart';
 import 'package:front_flutter/providers/register_details_provider.dart';
 import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/services/auth_service.dart';
+import 'package:front_flutter/utilities/dialog_utils.dart';
+import 'package:front_flutter/utilities/extensions.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/form_field/password_form_field.dart';
 import 'package:front_flutter/widgets/submit_button.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
+import '../../exceptions/result.dart';
 import '../../providers/loading_provider.dart';
+import '../../strings.dart';
 import '../../styles.dart';
 import '../../utilities/validator.dart';
-import '../../widgets/dialogs/error_dialog.dart';
 
 @RoutePage()
 class RegisterScreen extends StatefulWidget {
@@ -157,28 +161,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final loadingProvider = context.read<LoadingProvider>();
       loadingProvider.setLoading(true);
 
-      bool userExists = await _authService.userExists(_emailController.text);
+      final result = await _authService.userExists(_emailController.text);
 
       if (context.mounted) {
-        if (userExists) {
-          loadingProvider.setLoading(false);
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const ErrorDialog(
-                title: 'Register error',
-                content: 'User with this email already exists.',
-              );
-            },
-          );
-        } else {
+        final value = switch (result) {
+          Success(value: final userExists) => userExists,
+          Failure(error: final error) => error,
+        };
+
+        if (value is! ApiError) {
+          bool userExists = value as bool;
+
+          if (userExists) {
+            loadingProvider.setLoading(false);
+            showErrorDialog(context: context, message: ErrorStrings.userAlreadyExists);
+          } else {
             var registerProvider = context.read<RegisterDetailsProvider>();
-            registerProvider.addBasicInfo(_firstNameController.text, _lastNameController.text, _emailController.text, _passwordController.text);
+            registerProvider.addBasicInfo(_firstNameController.text.capitalize(), _lastNameController.text.capitalize(), _emailController.text.toLowerCase(), _passwordController.text);
             loadingProvider.setLoading(false);
             context.router.navigate(const RegisterDetailsRoute());
+          }
+        } else {
+          loadingProvider.setLoading(false);
+          showErrorDialog(context: context, message: value.message);
         }
       }
-
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/providers/user_location_provider.dart';
 import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/routes/router.dart';
 import 'package:front_flutter/widgets/contact_info.dart';
@@ -138,7 +139,11 @@ class TopBar extends StatelessWidget {
   Future<void> logout(BuildContext context) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.remove('jwtToken');
+
     if (context.mounted) {
+      UserLocationProvider locationProvider = context.read<UserLocationProvider>();
+      locationProvider.stopListeningLocationUpdates();
+
       context.router.pushAndPopUntil(
           const LoginRoute(), predicate: (route) => false);
     }

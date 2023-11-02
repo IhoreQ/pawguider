@@ -13,7 +13,7 @@ import pl.pawguider.app.controller.dto.request.RegisterRequest;
 import pl.pawguider.app.controller.dto.request.CheckUserExistenceRequest;
 import pl.pawguider.app.controller.dto.response.JwtTokenResponse;
 import pl.pawguider.app.exception.auth.UserAlreadyExistsException;
-import pl.pawguider.app.exception.auth.UserNotFoundException;
+import pl.pawguider.app.exception.auth.WrongPasswordException;
 import pl.pawguider.app.service.AuthService;
 import pl.pawguider.app.service.JwtService;
 
@@ -42,7 +42,7 @@ public class AuthController {
                 token = jwtService.generateToken(loginRequest.email());
 
         } catch (BadCredentialsException e) {
-            throw new UserNotFoundException(loginRequest.email());
+            throw new WrongPasswordException();
         }
 
         return ResponseEntity.ok(new JwtTokenResponse(token));

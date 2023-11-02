@@ -18,6 +18,8 @@ import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../../exceptions/api_error.dart';
+import '../../exceptions/result.dart';
 import '../../models/user.dart';
 import '../../services/image_service.dart';
 import '../../styles.dart';
@@ -194,20 +196,34 @@ class _UserEditScreenState extends State<UserEditScreen> {
                     return Validator.isPhoneNumberValid(value) ? null : "Enter correct phone number";
                   },
                 ),
-                FutureBuilder<List<String>>(
+                FutureBuilder<Result<List<String>, ApiError>>(
                   future: genderService.getAllGenders(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return CustomDropdownButton(
-                        dropdownValue: _selectedGender,
-                        valuesList: snapshot.data!,
-                        labelText: 'Gender',
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedGender = value!;
-                          });
-                        }
-                      );
+                      final result = switch (snapshot.data!) {
+                        Success(value: final genders) => genders,
+                        Failure(error: final error) => error
+                      };
+
+                      if (result is! ApiError) {
+                        final List<String> genders = result as List<String>;
+
+                        return CustomDropdownButton(
+                            dropdownValue: _selectedGender,
+                            valuesList: genders,
+                            labelText: 'Gender',
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedGender = value!;
+                              });
+                            }
+                        );
+                      } else {
+                        return SizedBox(
+                          height: 48.0,
+                          child: Center(child: Text(result.message, style: AppTextStyle.errorText, textAlign: TextAlign.center,)),
+                        );
+                      }
                     }
 
                     return const Column(

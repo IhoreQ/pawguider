@@ -1,51 +1,72 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:front_flutter/services/basic_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../exceptions/api_error.dart';
+import '../exceptions/result.dart';
 import '../routes/router.dart';
+import '../strings.dart';
 
 class AuthService extends BasicService {
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
-    try {
-      Response response = await dio.post(
-        '/auth/authenticate',
-        data: {
-          'email': email,
-          'password': password
-        },
-      );
-      return response.data;
-    } on DioException catch (e) {
-      return {'error': 'DioError occurred', 'details': e.toString()};
-    }
+  final path = '/auth';
+
+  Future<Result<String, ApiError>> login(String email, String password) async {
+      return await handleRequest(() async {
+        Response response = await dio.post(
+          '$path/authenticate',
+          data: {
+            'email': email,
+            'password': password
+          },
+        );
+
+        switch (response.statusCode) {
+          case 200:
+            final jwtToken = response.data['jwtToken'];
+            return jwtToken;
+          default:
+            throw Exception(ErrorStrings.defaultError);
+        }
+      });
   }
 
-  Future<Map<String, dynamic>> register(Map<String, dynamic> details) async {
-    try {
+  Future<Result<int, ApiError>> register(Map<String, dynamic> details) async {
+    return await handleRequest(() async {
       Response response = await dio.post(
-        '/auth/register',
-        data: details
+          '$path/register',
+          data: details
       );
-      return {'created': response.data};
-    } on DioException catch (e) {
-      return {'error': 'DioError occurred', 'details': e.toString()};
-    }
+
+      switch (response.statusCode) {
+        case 201:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<bool> userExists(String email) async {
-    try {
+  Future<Result<bool, ApiError>> userExists(String email) async {
+    return await handleRequest(() async {
       Response response = await dio.get(
-        '/auth/user-exists',
+        '$path/user-exists',
         data: {'email': email}
       );
 
-      return response.data;
-    } on DioException {
-      rethrow;
-    }
+      switch (response.statusCode) {
+        case 200:
+          final bool userExists = response.data;
+          return userExists;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
   Future<bool> isAuthenticated() async {
