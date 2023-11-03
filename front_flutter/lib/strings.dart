@@ -1,6 +1,8 @@
 abstract class AppStrings {
   static const registerSuccessTitle = "Registered successfully";
   static const registerSuccessBody = "You can login to the application now.";
+  static const dogsLimitTitle = "Limit reached";
+  static const dogsLimitBody = "You can select only 3 dogs to walk with.";
 }
 
 abstract class ErrorStrings {

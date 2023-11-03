@@ -2,18 +2,21 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:front_flutter/exceptions/api_error.dart';
+import 'package:front_flutter/exceptions/result.dart';
 import 'package:front_flutter/providers/user_dogs_provider.dart';
 import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/services/dto/dog/dog_addition_request.dart';
 import 'package:front_flutter/services/image_service.dart';
 import 'package:front_flutter/styles.dart';
+import 'package:front_flutter/utilities/dialog_utils.dart';
 import 'package:front_flutter/utilities/extensions.dart';
 import 'package:front_flutter/utilities/image_getter.dart';
 import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/custom_dropdown_button.dart';
-import 'package:front_flutter/widgets/dialogs/error_dialog.dart';
 import 'package:front_flutter/widgets/form_field/custom_form_field.dart';
 import 'package:front_flutter/widgets/selectable_behavior_box.dart';
+import 'package:front_flutter/widgets/sized_error_text.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,8 +48,6 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
   final _ageController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  late List<Breed> _breeds;
-  late List<Behavior> _behaviors;
   final List<String> _genders = <String>['Male', 'Female'];
 
   Breed? _selectedBreed;
@@ -215,39 +216,53 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                     return Validator.isDogNameValid(value) ? null : 'Enter correct name';
                   },
                 ),
-                FutureBuilder<List<Breed>>(
+                FutureBuilder<Result<List<Breed>, ApiError>>(
                   future: dogService.getBreeds(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      _breeds = snapshot.data!;
-                      _selectedBreed ??= widget.dog != null
-                            ? _breeds.firstWhere((element) => element.name == widget.dog!.breed)
-                            : _breeds.first;
+                      final result = switch (snapshot.data!) {
+                        Success(value: final breeds) => breeds,
+                        Failure(error: final error) => error
+                      };
 
-                      return DropdownButtonFormField(
-                          value: _selectedBreed?.name,
-                          items: _breeds.map<DropdownMenuItem<String>>((Breed value) {
-                            return DropdownMenuItem<String>(
-                              value: value.name,
-                              child: Text(value.name),
-                            );
-                          }).toList(),
-                          icon: const Icon(Icons.keyboard_arrow_right_outlined, color: AppColor.lightText,),
-                          style: AppTextStyle.mediumDark,
-                          decoration: InputDecoration(
-                            focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(color: AppColor.primaryOrange)
+                      if (result is List<Breed>) {
+                        final List<Breed> breeds = result;
+                        _selectedBreed ??= widget.dog != null
+                            ? breeds.firstWhere((element) => element.name == widget.dog!.breed)
+                            : breeds.first;
+
+                        return DropdownButtonFormField(
+                            value: _selectedBreed?.name,
+                            items: breeds.map<DropdownMenuItem<String>>((Breed value) {
+                              return DropdownMenuItem<String>(
+                                value: value.name,
+                                child: Text(value.name),
+                              );
+                            }).toList(),
+                            icon: const Icon(Icons.keyboard_arrow_right_outlined, color: AppColor.lightText,),
+                            style: AppTextStyle.mediumDark,
+                            decoration: InputDecoration(
+                              focusedBorder: const UnderlineInputBorder(
+                                  borderSide: BorderSide(color: AppColor.primaryOrange)
+                              ),
+                              labelText: 'Breed',
+                              labelStyle: AppTextStyle.regularLight.copyWith(fontSize: 14.0),
                             ),
-                            labelText: 'Breed',
-                            labelStyle: AppTextStyle.regularLight.copyWith(fontSize: 14.0),
-                          ),
-                          onChanged: (String? value) {
-                            setState(() {
-                              _selectedBreed = _breeds.firstWhere((breed) => breed.name == value);
-                              print(_selectedBreed);
-                            });
-                          }
-                      );
+                            onChanged: (String? value) {
+                              setState(() {
+                                _selectedBreed = breeds.firstWhere((breed) => breed.name == value);
+                              });
+                            }
+                        );
+                      } else {
+                        final error = result as ApiError;
+                        return Column(
+                          children: [
+                            const Gap(20.0),
+                            SizedErrorText(message: error.message),
+                          ],
+                        );
+                      }
                     }
                     return const Column(
                       children: [
@@ -292,34 +307,44 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
                     )
                 ) : const SizedBox(),
                 const Gap(10.0),
-                FutureBuilder<List<Behavior>>(
+                FutureBuilder<Result<List<Behavior>, ApiError>>(
                   future: dogService.getBehaviors(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      _behaviors = snapshot.data!;
+                      final result = switch(snapshot.data!) {
+                        Success(value: final behaviors) => behaviors,
+                        Failure(error: final error) => error
+                      };
 
-                      return Wrap(
-                        spacing: 5.0,
-                        runSpacing: 10.0,
-                        children: _behaviors.map((behavior) {
-                          final isBehaviorSelected = _selectedBehaviors.any((
-                              selectedBehavior) =>
-                          selectedBehavior.id == behavior.id);
-                          return SelectableBehaviorBox(
-                            label: behavior.name,
-                            initValue: isBehaviorSelected,
-                            onSelected: (isSelected) {
-                              if (isSelected) {
-                                _selectedBehaviors.add(behavior);
-                              } else {
-                                _selectedBehaviors.removeWhere((
-                                    selectedBehavior) =>
-                                selectedBehavior.id == behavior.id);
-                              }
-                            },
-                          );
-                        }).toList(),
-                      );
+                      if (result is List<Behavior>) {
+                        final List<Behavior> behaviors = result;
+                        return Wrap(
+                          spacing: 5.0,
+                          runSpacing: 10.0,
+                          children: behaviors.map((behavior) {
+                            final isBehaviorSelected = _selectedBehaviors.any((
+                                selectedBehavior) =>
+                            selectedBehavior.id == behavior.id);
+                            return SelectableBehaviorBox(
+                              label: behavior.name,
+                              initValue: isBehaviorSelected,
+                              onSelected: (isSelected) {
+                                if (isSelected) {
+                                  _selectedBehaviors.add(behavior);
+                                } else {
+                                  _selectedBehaviors.removeWhere((
+                                      selectedBehavior) =>
+                                  selectedBehavior.id == behavior.id);
+                                }
+                              },
+                            );
+                          }).toList(),
+                        );
+
+                      } else {
+                        final error = result as ApiError;
+                        return SizedErrorText(message: error.message);
+                      }
                     }
                     return const SizedLoadingIndicator(color: AppColor.primaryOrange);
                   }
@@ -423,103 +448,155 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     );
   }
 
-  Future<void> deleteDog() async {
+  Future deleteDog() async {
     _isDeletionLoading = true;
-    bool response = await dogService.deleteDog(widget.dog!.id);
-    if (response && context.mounted) {
-      userDogsProvider.fetchUserDogs();
-      Navigator.of(context, rootNavigator: true).pop();
-      context.router.popUntilRoot();
-    } else {
-      Navigator.of(context, rootNavigator: true).pop();
+    final response = await dogService.deleteDog(widget.dog!.id);
+
+    if (context.mounted) {
+      final value = switch (response) {
+        Success(value: final successCode) => successCode,
+        Failure(error: final error) => error
+      };
+
       _isDeletionLoading = false;
-      print('error');
+      if (value is! ApiError) {
+        userDogsProvider.fetchUserDogs();
+        Navigator.of(context, rootNavigator: true).pop();
+        context.router.popUntilRoot();
+      } else {
+        showErrorDialog(context: context, message: value.message);
+      }
     }
   }
 
-  Future<void> addDog() async {
+  Future addDog() async {
     validateBehaviorsCount();
     validateImage();
+
     if (_formKey.currentState!.validate() && _minBehaviorCountSelected && _imageAdded) {
       setState(() {
         _isLoading = true;
       });
-      String fileName = await imageService.uploadImage(image!);
-      if (fileName.isNotEmpty) {
-        List<int> behaviorsIds = _selectedBehaviors.map((item) => item.id).toList();
-        final request = DogAdditionRequest(fileName, _nameController.text.capitalize(), _selectedBreed!.id, _ageController.text, _selectedGender, behaviorsIds, _descriptionController.text);
 
-        bool isAdded = await dogService.addDog(request);
+      final result = await imageService.uploadImage(image!);
 
-        if (isAdded) {
-          print("dodane");
-        } else {
-          print("blad");
+      final value = switch (result) {
+        Success(value: final photoName) => photoName,
+        Failure(error: final error) => error
+      };
+
+      if (value is String) {
+        String photoName = value;
+
+        List<int> behaviorsIds = _selectedBehaviors.map((item) => item.id)
+            .toList();
+        final request = DogAdditionRequest(
+            photoName,
+            _nameController.text.capitalize(),
+            _selectedBreed!.id,
+            _ageController.text,
+            _selectedGender,
+            behaviorsIds,
+            _descriptionController.text);
+
+        final additionResult = await dogService.addDog(request);
+
+        final additionValue = switch (additionResult) {
+          Success(value: final successCode) => successCode,
+          Failure(error: final error) => error
+        };
+
+        if (context.mounted) {
+          if (additionValue is! ApiError) {
+            userDogsProvider.fetchUserDogs();
+            context.router.pop();
+          } else {
+            showErrorDialog(context: context, message: additionValue.message);
+          }
+        }
+
+      } else {
+        final error = value as ApiError;
+
+        if (context.mounted) {
+          showErrorDialog(context: context, message: error.message);
         }
       }
 
       if (context.mounted) {
-        userDogsProvider.fetchUserDogs();
-        context.router.pop();
+
       }
     }
   }
 
-  Future<void> updateDog() async {
+  Future updateDog() async {
     validateBehaviorsCount();
     isImageUpdated();
 
     if (_formKey.currentState!.validate() && _minBehaviorCountSelected) {
-      setState(() {
-        _isLoading = true;
-      });
+      setLoading(true);
 
       String fileName = widget.dog!.photoUrl.split('/').last;
 
       if (_imageUpdated) {
-        bool isDeleted = await imageService.deleteImage(fileName);
+        final deletionResult = await imageService.deleteImage(fileName);
 
-        if (isDeleted) {
-          fileName = await imageService.uploadImage(image!);
+        final deletionValue = switch (deletionResult) {
+          Success(value: final successCode) => successCode,
+          Failure(error: final error) => error
+        };
+
+        if (deletionValue is! ApiError) {
+          final uploadResult = await imageService.uploadImage(image!);
+          final uploadValue = switch (uploadResult) {
+            Success(value: final photoName) => photoName,
+            Failure(error: final error) => error
+          };
+
+          if (uploadValue is String) {
+            fileName = uploadValue;
+          } else {
+            final error = uploadValue as ApiError;
+            if (context.mounted) {
+              showErrorDialog(context: context, message: error.message);
+            }
+            return;
+          }
         } else {
           if (context.mounted) {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const ErrorDialog(title: "Dog update error", content: "An error occurred during dog update.");
-                }
-            );
+            showErrorDialog(context: context, message: deletionValue.message);
           }
-
-          setState(() {
-            _isLoading = false;
-          });
-
-          return Future.error("Dog update error");
+          return;
         }
       }
 
-      if (fileName.isNotEmpty) {
-        List<int> behaviorsIds = _selectedBehaviors.map((item) => item.id).toList();
-        final request = DogUpdateRequest(widget.dog!.id, fileName, _nameController.text.capitalize(), _selectedBreed!.id, _ageController.text, _selectedGender, behaviorsIds, _descriptionController.text);
+      List<int> behaviorsIds = _selectedBehaviors.map((item) => item.id)
+                .toList();
+      final request = DogUpdateRequest(
+          widget.dog!.id,
+          fileName,
+          _nameController.text.capitalize(),
+          _selectedBreed!.id,
+          _ageController.text,
+          _selectedGender,
+          behaviorsIds,
+          _descriptionController.text);
 
-        bool isUpdated = await dogService.updateDog(request);
+      final updateResult = await dogService.updateDog(request);
 
-        if (isUpdated) {
-          if (context.mounted) {
-            userDogsProvider.fetchUserDogs();
-            widget.onComplete();
-            context.router.pop();
-          }
+      final updateValue = switch (updateResult) {
+        Success(value: final successCode) => successCode,
+        Failure(error: final error) => error
+      };
+
+      if (context.mounted) {
+        if (updateValue is! ApiError) {
+          userDogsProvider.fetchUserDogs();
+          widget.onComplete();
+          context.router.pop();
         } else {
-          if (context.mounted) {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return const ErrorDialog(title: "Dog update error", content: "An error occurred during dog update.");
-                }
-            );
-          }
+          setLoading(false);
+          showErrorDialog(context: context, message: updateValue.message);
         }
       }
     }
@@ -550,6 +627,12 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
       image = File(pickedFile.path);
       setState(() {});
     }
+  }
+
+  void setLoading(bool value) {
+    setState(() {
+      _isLoading = value;
+    });
   }
 }
 

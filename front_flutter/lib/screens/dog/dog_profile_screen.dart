@@ -1,10 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/exceptions/api_error.dart';
+import 'package:front_flutter/exceptions/result.dart';
 import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/routes/router.dart';
+import 'package:front_flutter/screens/error_screen.dart';
 import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/styles.dart';
+import 'package:front_flutter/utilities/dialog_utils.dart';
 import 'package:front_flutter/widgets/behavior_box.dart';
 import 'package:front_flutter/widgets/custom_vertical_divider.dart';
 import 'package:front_flutter/widgets/profile_avatar.dart';
@@ -37,26 +41,18 @@ class _DogProfileScreenState extends State<DogProfileScreen> {
     final DogService dogService = DogService();
 
     return Scaffold(
-        body: FutureBuilder<dynamic>(
+        body: FutureBuilder<Result<Dog, ApiError>>(
           future: dogService.getDog(widget.dogId),
           builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data == 404) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                ScaffoldMessenger.of(context)
-                    ..hideCurrentSnackBar()
-                    ..showSnackBar(
-                      SnackBar(
-                        backgroundColor: AppColor.darkText.withOpacity(0.7),
-                        elevation: 0,
-                        content: Text('Error 404: Dog not found', style: AppTextStyle.mediumWhite,),
-                      ),
-                );
-              });
-              context.router.pop();
-            }
-            else {
-              final Dog? dog = snapshot.data;
+            final result = switch (snapshot.data!) {
+              Success(value: final dog) => dog,
+              Failure(error: final error) => error
+            };
+
+            if (result is Dog) {
+              final Dog dog = result;
+
               return Stack(fit: StackFit.expand, children: [
                 Container(
                   height: 1.0,
@@ -69,7 +65,7 @@ class _DogProfileScreenState extends State<DogProfileScreen> {
                       children: [
                         Stack(
                           children: [
-                            TopBar(dog: dog!, refreshFunction: refresh, dogService: dogService),
+                            TopBar(dog: dog, refreshFunction: refresh, dogService: dogService),
                             DogContentPage(dog: dog),
                             ProfileAvatar(photoUrl: dog.photoUrl)
                           ],
@@ -79,7 +75,30 @@ class _DogProfileScreenState extends State<DogProfileScreen> {
                   ),
                 )
               ]);
+            } else {
+              final error = result as ApiError;
+              return ErrorScreen(
+                  errorMessage: error.message,
+                  retryFunction: () {
+                    refresh();
+                  }
+              );
             }
+
+            // if (snapshot.data == 404) {
+            //   WidgetsBinding.instance.addPostFrameCallback((_) {
+            //     ScaffoldMessenger.of(context)
+            //         ..hideCurrentSnackBar()
+            //         ..showSnackBar(
+            //           SnackBar(
+            //             backgroundColor: AppColor.darkText.withOpacity(0.7),
+            //             elevation: 0,
+            //             content: Text('Error 404: Dog not found', style: AppTextStyle.mediumWhite,),
+            //           ),
+            //     );
+            //   });
+            //   context.router.pop();
+            // }
           }
           return const SizedLoadingIndicator(color: AppColor.primaryOrange);
           },
@@ -246,18 +265,25 @@ class _TopBarState extends State<TopBar> {
   }
 
   Future<void> onLikeButtonClick() async {
-    bool success = _liked ?
+    final result = _liked ?
     await widget.dogService.deleteLike(widget.dog.id) :
     await widget.dogService.addLike(widget.dog.id);
 
-    if (success) {
+    final value = switch (result) {
+      Success(value: final successCode) => successCode,
+      Failure(error: final error) => error
+    };
+
+    if (value is! ApiError) {
       if (_liked) {
         deleteLike();
       } else {
         addLike();
       }
     } else {
-      print('error');
+      if (context.mounted) {
+        showErrorDialog(context: context, message: value.message);
+      }
     }
   }
 

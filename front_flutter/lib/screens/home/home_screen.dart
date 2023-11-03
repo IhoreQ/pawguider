@@ -12,7 +12,6 @@ import 'package:front_flutter/widgets/walk_partner_box.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/dog/dog.dart';
 import '../../models/walk.dart';
 import '../../providers/active_walk_provider.dart';
 import '../../providers/user_provider.dart';
@@ -201,10 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: userDogsProvider.dogs!.map((dog) {
                                     return Padding(
                                       padding: const EdgeInsets.only(right: 20.0),
-                                      child: WalkPartnerBox(
-                                        dog: dog,
-                                        onSelected: (isSelected) => handleDogSelection(isSelected, dog),
-                                      ),
+                                      child: WalkPartnerBox(dog: dog),
                                     );
                                   }).toList(),
                                 ),
@@ -261,16 +257,5 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       })
     );
-  }
-
-  void handleDogSelection(bool isSelected, Dog dog) {
-    if (userDogsProvider.isLimitNotExceeded() || !isSelected) {
-      dogService.toggleSelected(dog.id);
-      if (isSelected) {
-        userDogsProvider.incrementDogsCount();
-      } else {
-        userDogsProvider.decrementDogsCount();
-      }
-    }
   }
 }

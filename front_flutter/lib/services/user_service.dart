@@ -1,17 +1,20 @@
 import 'package:dio/dio.dart';
+import 'package:front_flutter/services/basic_service.dart';
 import 'package:front_flutter/services/dto/user/user_update_request.dart';
+import 'package:front_flutter/strings.dart';
 import 'package:front_flutter/utilities/constants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../dio/dio_config.dart';
+import '../exceptions/api_error.dart';
+import '../exceptions/result.dart';
 import '../models/user.dart';
 
-class UserService {
-  final Dio _dio = DioConfig.createDio();
+class UserService  extends BasicService {
+  final String path = '/user';
 
   Future<User?> getCurrentUser() async {
     try {
-      Response response = await _dio.get('/user',);
+      Response response = await dio.get('/user',);
       Map<String, dynamic> rawData = response.data;
       User user = _getUserFromData(rawData);
 
@@ -26,7 +29,7 @@ class UserService {
 
   Future<void> updatePosition(LatLng newPosition) async {
     try {
-      Response response = await _dio.patch(
+      Response response = await dio.patch(
         '/user/location',
         data: {
           "latitude": newPosition.latitude,
@@ -42,7 +45,7 @@ class UserService {
 
   Future<dynamic> getUserById(int userId) async {
     try {
-      Response response = await _dio.get(
+      Response response = await dio.get(
         '/user/$userId'
       );
 
@@ -76,7 +79,7 @@ class UserService {
 
   Future<bool> updatePassword(String oldPassword, String newPassword) async {
     try {
-      Response response = await _dio.patch(
+      Response response = await dio.patch(
         '/user/password',
         data: {
           'oldPassword': oldPassword,
@@ -89,23 +92,27 @@ class UserService {
     }
   }
 
-  Future<bool> updateUserPhoto(String photoName) async {
-    try {
-      Response response = await _dio.patch(
-        '/user/photo',
-        data: {
-          "photoName": photoName
-        }
+  Future<Result<int, ApiError>> updateUserPhoto(String photoName) async {
+    return await handleRequest(() async {
+      Response response = await dio.patch(
+          '/user/photo',
+          data: {
+            "photoName": photoName
+          }
       );
-      return true;
-    } on DioException {
-      return false;
-    }
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
   Future<bool> updateUser(UserUpdateRequest request) async {
     try {
-      Response response = await _dio.put(
+      Response response = await dio.put(
         '/user/details',
         data: request.toJson()
       );

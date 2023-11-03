@@ -97,12 +97,12 @@ public class DogController {
     }
 
     @PatchMapping("/{id}/select")
-    public Boolean toggleSelected(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+    public ResponseEntity<?> toggleSelected(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(id);
 
         dogService.toggleSelected(user, dog);
-        return true;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping

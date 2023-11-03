@@ -7,7 +7,6 @@ import 'package:front_flutter/services/city_service.dart';
 import 'package:front_flutter/services/gender_service.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/utilities/dialog_utils.dart';
-import 'package:front_flutter/widgets/common_loading_indicator.dart';
 import 'package:front_flutter/widgets/form_field/custom_icon_form_field.dart';
 import 'package:front_flutter/widgets/icon_dropdown_button.dart';
 import 'package:front_flutter/widgets/sized_error_text.dart';

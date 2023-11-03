@@ -1,19 +1,22 @@
 import 'package:dio/dio.dart';
 import 'package:front_flutter/models/dog/behavior.dart';
 import 'package:front_flutter/models/dog/dog.dart';
+import 'package:front_flutter/services/basic_service.dart';
 import 'package:front_flutter/services/dto/dog/dog_addition_request.dart';
 import 'package:front_flutter/services/dto/dog/dog_update_request.dart';
+import 'package:front_flutter/strings.dart';
 
-import '../dio/dio_config.dart';
+import '../exceptions/api_error.dart';
+import '../exceptions/result.dart';
 import '../models/dog/breed.dart';
 import '../utilities/constants.dart';
 
-class DogService {
-  final Dio _dio = DioConfig.createDio();
+class DogService extends BasicService {
+  final String path = '/dog';
 
   Future<List<Dog>> getCurrentUserDogs() async {
     try {
-      Response response = await _dio.get('/dog/owned');
+      Response response = await dio.get('/dog/owned');
       List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
 
       List<Dog> dogs = rawData.map((dogData) => Dog.basic(
@@ -32,119 +35,149 @@ class DogService {
     }
   }
 
-  Future<dynamic> getDog(int dogId) async {
-    try {
-      Response response = await _dio.get('/dog/$dogId');
-      Map<String, dynamic> rawData = response.data;
+  Future<Result<Dog, ApiError>> getDog(int dogId) async {
+    return await handleRequest(() async {
+      Response response = await dio.get('/dog/$dogId');
 
-      List<Behavior> behaviors = (rawData['behaviors'] as List<dynamic>)
-        .map((behaviorData) =>
-          Behavior(behaviorData['idBehavior'], behaviorData['name']))
-          .toList();
+      switch (response.statusCode) {
+        case 200:
+          Map<String, dynamic> rawData = response.data;
+          List<Behavior> behaviors = (rawData['behaviors'] as List<dynamic>)
+              .map((behaviorData) =>
+              Behavior(behaviorData['idBehavior'], behaviorData['name']))
+              .toList();
+          Dog dog = Dog(
+              rawData['idDog'],
+              rawData['name'],
+              rawData['breed'],
+              rawData['gender'],
+              rawData['age'],
+              Constants.imageServerUrl + rawData['photo'],
+              rawData['size'],
+              rawData['description'],
+              rawData['likes'],
+              behaviors,
+              rawData['ownerId'],
+              rawData['currentUserLiked']
+          );
 
-      Dog dog = Dog(
-        rawData['idDog'],
-        rawData['name'],
-        rawData['breed'],
-        rawData['gender'],
-        rawData['age'],
-        Constants.imageServerUrl + rawData['photo'],
-        rawData['size'],
-        rawData['description'],
-        rawData['likes'],
-        behaviors,
-        rawData['ownerId'],
-        rawData['currentUserLiked']
-      );
-
-      return dog;
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        return 404;
-      } else {
-        return null;
+          return dog;
+        default:
+          throw Exception(ErrorStrings.defaultError);
       }
-    }
+    });
   }
 
-  Future<List<Breed>> getBreeds() async {
-    try {
-      Response response = await _dio.get('/dog/breeds');
-      List<dynamic> data = response.data;
-      List<Breed> breeds = data.map((item) => Breed(item['id'], item['name'])).toList();
-      return breeds;
-    } on DioException {
-      rethrow;
-    }
+  Future<Result<List<Breed>, ApiError>> getBreeds() async {
+    return await handleRequest(() async {
+      Response response = await dio.get('$path/breeds');
+
+      switch (response.statusCode) {
+        case 200:
+          List<dynamic> data = response.data;
+          List<Breed> breeds = data.map((item) => Breed(item['id'], item['name'])).toList();
+          return breeds;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<List<Behavior>> getBehaviors() async {
-    try {
-      Response response = await _dio.get('/dog/behaviors');
-      List<dynamic> data = response.data;
-      List<Behavior> behaviors = data.map((item) => Behavior(item['idBehavior'], item['name'])).toList();
-      return behaviors;
-    } on DioException {
-      rethrow;
-    }
+  Future<Result<List<Behavior>, ApiError>> getBehaviors() async {
+    return await handleRequest(() async {
+      Response response = await dio.get('$path/behaviors');
+
+      switch (response.statusCode) {
+        case 200:
+          List<dynamic> data = response.data;
+          List<Behavior> behaviors = data.map((item) => Behavior(item['idBehavior'], item['name'])).toList();
+          return behaviors;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<bool> addDog(DogAdditionRequest request) async {
-    try {
-      Response response = await _dio.post('/dog', data: request.toJson());
-      return true;
-    } on DioException {
-      return false;
-    }
+  Future<Result<int, ApiError>> addDog(DogAdditionRequest request) async {
+    return await handleRequest(() async {
+      Response response = await dio.post(path, data: request.toJson());
+
+      switch (response.statusCode) {
+        case 201:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<bool> deleteDog(int dogId) async {
-    try {
-      Response response = await _dio.delete(
-        '/dog',
-        data: {
-        'dogId': dogId,
-        }
+  Future<Result<int, ApiError>> deleteDog(int dogId) async {
+    return await handleRequest(() async {
+      Response response = await dio.delete(
+          path,
+          data: {
+            'dogId': dogId,
+          }
       );
-      return true;
-    } on DioException {
-      return false;
-    }
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<bool> addLike(int dogId) async {
-    try {
-      Response response = await _dio.post('/dog/$dogId/like');
-      return true;
-    } on DioException {
-      return false;
-    }
+  Future<Result<int, ApiError>> addLike(int dogId) async {
+    return await handleRequest(() async {
+      Response response = await dio.post('$path/$dogId/like');
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<bool> deleteLike(int dogId) async {
-    try {
-      Response response = await _dio.delete('/dog/$dogId/like');
-      return true;
-    } on DioException {
-      return false;
-    }
+  Future<Result<int, ApiError>> deleteLike(int dogId) async {
+    return await handleRequest(() async {
+      Response response = await dio.delete('$path/$dogId/like');
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
   
-  Future<bool> toggleSelected(int dogId) async {
-    try {
-      Response response = await _dio.patch('/dog/$dogId/select');
-      return true;
-    } on DioException {
-      return false;
-    }
+  Future<Result<int, ApiError>> toggleSelected(int dogId) async {
+    return await handleRequest(() async {
+      Response response = await dio.patch('$path/$dogId/select');
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<bool> updateDog(DogUpdateRequest request) async {
-    try {
-      Response response = await _dio.put('/dog', data: request.toJson());
-      return true;
-    } on DioException {
-      return false;
-    }
+  Future<Result<int, ApiError>> updateDog(DogUpdateRequest request) async {
+    return await handleRequest(() async {
+      Response response = await dio.put(path, data: request.toJson());
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 }

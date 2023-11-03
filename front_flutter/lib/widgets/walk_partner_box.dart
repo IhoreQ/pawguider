@@ -1,17 +1,22 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/user_dogs_provider.dart';
+import 'package:front_flutter/services/dog_service.dart';
+import 'package:front_flutter/strings.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/widgets/overlay_inkwell.dart';
 import 'package:provider/provider.dart';
 
+import '../exceptions/api_error.dart';
+import '../exceptions/result.dart';
 import '../models/dog/dog.dart';
+import '../utilities/dialog_utils.dart';
 
 class WalkPartnerBox extends StatefulWidget {
-  const WalkPartnerBox({super.key, required this.dog, required this.onSelected, this.selected});
+  const WalkPartnerBox({super.key, required this.dog, this.selected});
 
   final Dog dog;
-  final ValueChanged<bool> onSelected;
   final bool? selected;
 
   @override
@@ -23,6 +28,7 @@ class _WalkPartnerBoxState extends State<WalkPartnerBox> {
   final double imageSize = 130.0;
   late bool _isSelected;
   late final UserDogsProvider userDogsProvider;
+  final dogService = DogService();
 
   @override
   void initState() {
@@ -88,15 +94,43 @@ class _WalkPartnerBoxState extends State<WalkPartnerBox> {
               ],
             ),
           ),
-          OverlayInkwell(onTap: () {
-            if (userDogsProvider.isLimitNotExceeded() || _isSelected) {
-              _isSelected = !_isSelected;
-              setState(() {});
-              widget.onSelected(_isSelected);
-            }
-          })
+          OverlayInkwell(onTap: () => handleDogSelection())
         ],
       )
     );
+  }
+
+  Future handleDogSelection() async {
+    if (userDogsProvider.isLimitNotExceeded() || _isSelected) {
+      final result = await dogService.toggleSelected(widget.dog.id);
+
+      final value = switch (result) {
+        Success(value: final successCode) => successCode,
+        Failure(error: final error) => error,
+      };
+
+      if (value is! ApiError) {
+        _isSelected = !_isSelected;
+        setState(() {});
+
+        if (_isSelected) {
+          userDogsProvider.incrementDogsCount();
+        } else {
+          userDogsProvider.decrementDogsCount();
+        }
+
+      } else {
+        if (context.mounted) {
+          showErrorDialog(context: context, message: value.message);
+        }
+      }
+    } else {
+      showInformationDialog(
+        context: context,
+        title: AppStrings.dogsLimitTitle,
+        message: AppStrings.dogsLimitBody,
+        onPressed: () => context.router.pop()
+      );
+    }
   }
 }

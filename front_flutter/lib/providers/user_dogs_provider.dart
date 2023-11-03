@@ -9,7 +9,7 @@ class UserDogsProvider extends ChangeNotifier {
   final int _walkPartnersLimit = 3;
   final DogService dogService = DogService();
 
-  Future<void> fetchUserDogs() async {
+  Future fetchUserDogs() async {
     _dogs = await dogService.getCurrentUserDogs();
     _dogsSelected = _dogs!.where((dog) => dog.selected!).toList().length;
     notifyListeners();

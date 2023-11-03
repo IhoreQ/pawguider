@@ -11,6 +11,7 @@ import 'package:front_flutter/services/dto/user/user_update_request.dart';
 import 'package:front_flutter/services/gender_service.dart';
 import 'package:front_flutter/services/user_service.dart';
 import 'package:front_flutter/utilities/constants.dart';
+import 'package:front_flutter/utilities/dialog_utils.dart';
 import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/custom_dropdown_button.dart';
 import 'package:front_flutter/widgets/form_field/custom_form_field.dart';
@@ -297,15 +298,35 @@ class _UserEditScreenState extends State<UserEditScreen> {
   Future deleteImage() async {
 
     String fileName = userProvider.user!.photoUrl!.split('/').last;
-    bool isDeleted = await imageService.deleteImage(fileName);
 
-    if (isDeleted) {
-      bool isUpdated = await userService.updateUserPhoto(Constants.defaultUserImageName);
+    final result = await imageService.deleteImage(fileName);
 
-      if (isUpdated && context.mounted) {
-        userProvider.fetchCurrentUser(context);
-        _userHasImage = false;
-        setState(() {});
+    final value = switch (result) {
+      Success(value: final successCode) => successCode,
+      Failure(error: final error) => error
+    };
+
+    if (value is! ApiError) {
+      final updateResult = await userService.updateUserPhoto(Constants.defaultUserImageName);
+
+      final updateValue = switch (updateResult) {
+        Success(value: final successCode) => successCode,
+        Failure(error: final error) => error
+      };
+
+      if (context.mounted) {
+        if (updateValue is! ApiError) {
+          userProvider.fetchCurrentUser(context);
+
+          _userHasImage = false;
+          setState(() {});
+        } else {
+          showErrorDialog(context: context, message: updateValue.message);
+        }
+      }
+    } else {
+      if(context.mounted) {
+        showErrorDialog(context: context, message: value.message);
       }
     }
   }
@@ -314,17 +335,53 @@ class _UserEditScreenState extends State<UserEditScreen> {
 
     if (_userHasImage) {
       String fileName = userProvider.user!.photoUrl!.split('/').last;
-      bool isDeleted = await imageService.deleteImage(fileName);
+
+      final result = await imageService.deleteImage(fileName);
+
+      final value = switch (result) {
+        Success(value: final successCode) => successCode,
+        Failure(error: final error) => error
+      };
+
+      if (value is ApiError) {
+        if (context.mounted) {
+          showErrorDialog(context: context, message: value.message);
+        }
+        return;
+      }
     }
 
-    String photoName = await imageService.uploadImage(image!);
+    final result = await imageService.uploadImage(image!);
 
-    bool isUpdated = await userService.updateUserPhoto(photoName);
+    final value = switch (result) {
+      Success(value: final photoName) => photoName,
+      Failure(error: final error) => error
+    };
 
-    if (isUpdated && context.mounted) {
-      userProvider.fetchCurrentUser(context);
-      _userHasImage = true;
-      setState(() {});
+    if (value is String) {
+      String photoName = value;
+      final updateResult = await userService.updateUserPhoto(photoName);
+
+      final updateValue = switch (updateResult) {
+        Success(value: final successCode) => successCode,
+        Failure(error: final error) => error
+      };
+
+      if (context.mounted) {
+        if (updateValue is! ApiError) {
+          userProvider.fetchCurrentUser(context);
+
+          _userHasImage = true;
+          setState(() {});
+        } else {
+          showErrorDialog(context: context, message: updateValue.message);
+        }
+      }
+    } else {
+      final error = value as ApiError;
+      if (context.mounted) {
+        showErrorDialog(context: context, message: error.message);
+      }
     }
   }
 
