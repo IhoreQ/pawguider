@@ -460,7 +460,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
 
       _isDeletionLoading = false;
       if (value is! ApiError) {
-        userDogsProvider.fetchUserDogs();
+        userDogsProvider.fetchUserDogs(context);
         Navigator.of(context, rootNavigator: true).pop();
         context.router.popUntilRoot();
       } else {
@@ -508,7 +508,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
 
         if (context.mounted) {
           if (additionValue is! ApiError) {
-            userDogsProvider.fetchUserDogs();
+            userDogsProvider.fetchUserDogs(context);
             context.router.pop();
           } else {
             showErrorDialog(context: context, message: additionValue.message);
@@ -591,7 +591,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
 
       if (context.mounted) {
         if (updateValue is! ApiError) {
-          userDogsProvider.fetchUserDogs();
+          userDogsProvider.fetchUserDogs(context);
           widget.onComplete();
           context.router.pop();
         } else {

@@ -14,30 +14,33 @@ import '../utilities/constants.dart';
 class DogService extends BasicService {
   final String path = '/dog';
 
-  Future<List<Dog>> getCurrentUserDogs() async {
-    try {
-      Response response = await dio.get('/dog/owned');
-      List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+  Future<Result<List<Dog>, ApiError>> getCurrentUserDogs() async {
+    return await handleRequest(() async {
+      Response response = await dio.get('$path/owned');
 
-      List<Dog> dogs = rawData.map((dogData) => Dog.basic(
-        dogData['id'],
-        dogData['name'],
-        dogData["breed"],
-        dogData["gender"],
-        dogData["age"],
-        Constants.imageServerUrl + dogData["photoName"],
-        dogData["selected"]
-      )).toList();
+      switch (response.statusCode) {
+        case 200:
+          List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+          List<Dog> dogs = rawData.map((dogData) => Dog.basic(
+              dogData['id'],
+              dogData['name'],
+              dogData["breed"],
+              dogData["gender"],
+              dogData["age"],
+              Constants.imageServerUrl + dogData["photoName"],
+              dogData["selected"]
+          )).toList();
 
-      return dogs;
-    } on DioException {
-      rethrow;
-    }
+          return dogs;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
   Future<Result<Dog, ApiError>> getDog(int dogId) async {
     return await handleRequest(() async {
-      Response response = await dio.get('/dog/$dogId');
+      Response response = await dio.get('$path/$dogId');
 
       switch (response.statusCode) {
         case 200:

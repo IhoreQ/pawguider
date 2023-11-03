@@ -31,7 +31,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
     super.initState();
     userProvider = context.read<UserProvider>();
     placesProvider = context.read<PlacesProvider>();
-    placesProvider.fetchPlacesByCityId(userProvider.user!.cityId);
+    placesProvider.fetchPlacesByCityId(context, userProvider.user!.cityId);
   }
 
   Future<void> refresh() async {
@@ -45,7 +45,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
     return RefreshIndicator(
       backgroundColor: Colors.white,
       color: AppColor.primaryOrange,
-      onRefresh: () => placesProvider.fetchPlacesByCityId(userProvider.user!.cityId),
+      onRefresh: () => placesProvider.fetchPlacesByCityId(context, userProvider.user!.cityId),
       child: Scaffold(
         body: ListView(
           children: [

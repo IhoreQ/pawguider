@@ -84,21 +84,6 @@ class _DogProfileScreenState extends State<DogProfileScreen> {
                   }
               );
             }
-
-            // if (snapshot.data == 404) {
-            //   WidgetsBinding.instance.addPostFrameCallback((_) {
-            //     ScaffoldMessenger.of(context)
-            //         ..hideCurrentSnackBar()
-            //         ..showSnackBar(
-            //           SnackBar(
-            //             backgroundColor: AppColor.darkText.withOpacity(0.7),
-            //             elevation: 0,
-            //             content: Text('Error 404: Dog not found', style: AppTextStyle.mediumWhite,),
-            //           ),
-            //     );
-            //   });
-            //   context.router.pop();
-            // }
           }
           return const SizedLoadingIndicator(color: AppColor.primaryOrange);
           },

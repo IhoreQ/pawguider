@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:front_flutter/exceptions/api_error.dart';
 import 'package:front_flutter/models/dog/dog.dart';
 import 'package:front_flutter/providers/favourite_places_provider.dart';
 import 'package:front_flutter/providers/places_provider.dart';
@@ -12,10 +13,12 @@ import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
+import '../../exceptions/result.dart';
 import '../../models/dog/behavior.dart';
 import '../../models/place.dart';
 import '../../styles.dart';
 import '../../widgets/common_loading_indicator.dart';
+import '../error_screen.dart';
 
 @RoutePage()
 class PlaceProfileScreen extends StatefulWidget {
@@ -39,35 +42,51 @@ class _PlaceProfileScreenState extends State<PlaceProfileScreen> {
     double deviceWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: FutureBuilder<Place>(
+      body: FutureBuilder<Result<Place, ApiError>>(
         future: placeService.getPlaceById(widget.placeId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            Place place = snapshot.data!;
-            return Stack(children: [
-              SizedBox(
-                width: deviceWidth,
-                child: Image.network(
-                  place.photoUrl,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Scaffold(
-                backgroundColor: Colors.transparent,
-                body: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Stack(
-                        children: [
-                          TopBar(place: place, placeService: placeService),
-                          MainContentBox(place: place, refreshFunction: refresh,),
-                        ],
-                      )
-                    ],
+            final result = switch (snapshot.data!) {
+              Success(value: final place) => place,
+              Failure(error: final error) => error,
+            };
+
+            if (result is Place) {
+              final Place place = result;
+              return Stack(children: [
+                SizedBox(
+                  width: deviceWidth,
+                  child: Image.network(
+                    place.photoUrl,
+                    fit: BoxFit.cover,
                   ),
                 ),
-              )
-            ]);
+                Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            TopBar(place: place, placeService: placeService),
+                            MainContentBox(place: place, refreshFunction: refresh,),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ]);
+
+            } else {
+              final error = result as ApiError;
+              return ErrorScreen(
+                  errorMessage: error.message,
+                  retryFunction: () {
+                    refresh();
+                  }
+              );
+            }
           }
 
           return const SizedLoadingIndicator(color: AppColor.primaryOrange);
@@ -402,8 +421,8 @@ class _MainContentBoxState extends State<MainContentBox> {
                             if (success) {
                               widget.refreshFunction();
                               int cityId = userProvider.user!.cityId;
-                              placesProvider.fetchPlacesByCityId(cityId);
                               if (context.mounted) {
+                                placesProvider.fetchPlacesByCityId(context, cityId);
                                 context.router.pop();
                               }
                             } else {

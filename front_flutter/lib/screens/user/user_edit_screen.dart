@@ -398,8 +398,8 @@ class _UserEditScreenState extends State<UserEditScreen> {
         if (context.mounted) {
           await userProvider.fetchCurrentUser(context);
           int cityId = userProvider.user!.cityId;
-          placesProvider.fetchPlacesByCityId(cityId);
           if (context.mounted) {
+            placesProvider.fetchPlacesByCityId(context, cityId);
             context.router.pop();
           }
         }

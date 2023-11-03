@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
     userLocationProvider.startListeningLocationUpdates(activeWalkProvider);
 
     favouritePlacesProvider.fetchFavouritePlaces();
-    userDogsProvider.fetchUserDogs();
+    userDogsProvider.fetchUserDogs(context);
     activeWalkProvider.fetchActiveWalk();
   }
 
