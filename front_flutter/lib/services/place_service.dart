@@ -66,136 +66,167 @@ class PlaceService extends BasicService {
     });
   }
 
-  Future<bool> addRating(int placeId, double rating) async {
-    try {
+  Future<Result<int, ApiError>> addRating(int placeId, double rating) async {
+    return await handleRequest(() async {
       Response response = await dio.post(
-        '/place/rate',
-        data: {
-          "placeId": placeId,
-          "rating": rating
-        }
-      );
-
-      return true;
-    } on DioException {
-      return false;
-    }
-  }
-
-  Future<bool> updateRating(int placeId, double rating) async {
-    try {
-      Response response = await dio.patch(
-          '/place/rate',
+          '$path/rate',
           data: {
             "placeId": placeId,
             "rating": rating
           }
       );
 
-      return true;
-    } on DioException {
-      return false;
-    }
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<bool> addLike(int placeId) async {
-    try {
-      Response response = await dio.post('/place/$placeId/like');
-      return true;
-    } on DioException {
-      return false;
-    }
-  }
-
-  Future<bool> deleteLike(int placeId) async {
-    try {
-      Response response = await dio.delete('/place/$placeId/like');
-      return true;
-    } on DioException {
-      return false;
-    }
-  }
-
-  Future<List<Place>> getFavouritePlaces() async {
-    try {
-      Response response = await dio.get('/place/favourites');
-      List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
-      List<Place> places = rawData.map((placeData) => Place.favouriteInfo(
-          placeData['id'],
-          placeData['name'],
-          placeData['street'],
-          placeData['city'],
-          Constants.imageServerUrl + placeData['photoName']
-      )).toList();
-
-      return places;
-    } on DioException {
-      return [];
-    }
-  }
-
-  Future<List<PlaceArea>> getPlacesAreasByCityId(int cityId) async {
-    try {
-      Response response = await dio.get('/place/areas/city/$cityId');
-      List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
-      List<PlaceArea> areas = rawData.map((areaData) => PlaceArea.fromJson(areaData)).toList();
-      return areas;
-    } on DioException {
-      return [];
-    }
-  }
-
-  Future<bool> isUserInPlaceArea(int placeId, LatLng position) async {
-    try {
-      Response response = await dio.get(
-        '/place/$placeId/area',
-        data: {
-          "latitude": position.latitude,
-          "longitude": position.longitude
-        }
+  Future<Result<int, ApiError>> updateRating(int placeId, double rating) async {
+    return await handleRequest(() async {
+      Response response = await dio.patch(
+          '$path/rate',
+          data: {
+            "placeId": placeId,
+            "rating": rating
+          }
       );
-      return response.data;
-    } on DioException {
-      rethrow;
-    }
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<int?> findUserPlaceArea(LatLng position) async {
-    try {
-      Response response = await dio.get(
-        '/place/area',
-        data: {
-          "latitude": position.latitude,
-          "longitude": position.longitude
-        }
-      );
-      return response.data == '' ? null : response.data;
-    } on DioException {
-      rethrow;
-    }
+  Future<Result<int, ApiError>> addLike(int placeId) async {
+    return await handleRequest(() async {
+      Response response = await dio.post('$path/$placeId/like');
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<List<Dog>> getAllDogsFromPlace(int placeId) async {
-    try {
+  Future<Result<int, ApiError>> deleteLike(int placeId) async {
+    return await handleRequest(() async {
+      Response response = await dio.delete('$path/$placeId/like');
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
+  }
+
+  Future<Result<List<Place>, ApiError>> getFavouritePlaces() async {
+    return await handleRequest(() async {
+      Response response = await dio.get('$path/favourites');
+
+      switch (response.statusCode) {
+        case 200:
+          List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+          List<Place> places = rawData.map((placeData) => Place.favouriteInfo(
+              placeData['id'],
+              placeData['name'],
+              placeData['street'],
+              placeData['city'],
+              Constants.imageServerUrl + placeData['photoName']
+          )).toList();
+
+          return places;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
+  }
+
+  Future<Result<List<PlaceArea>, ApiError>> getPlacesAreasByCityId(int cityId) async {
+    return await handleRequest(() async {
+      Response response = await dio.get('$path/areas/city/$cityId');
+
+      switch (response.statusCode) {
+        case 200:
+          List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+          List<PlaceArea> areas = rawData.map((areaData) => PlaceArea.fromJson(areaData)).toList();
+          return areas;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
+  }
+
+  Future<Result<bool, ApiError>> isUserInPlaceArea(int placeId, LatLng position) async {
+    return await handleRequest(() async {
       Response response = await dio.get(
-        '/place/$placeId/dogs'
+          '$path/$placeId/area',
+          data: {
+            "latitude": position.latitude,
+            "longitude": position.longitude
+          }
       );
-      List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
 
-      List<Dog> dogs = rawData.map((dogData) => Dog.basic(
-          dogData['id'],
-          dogData['name'],
-          dogData["breed"],
-          dogData["gender"],
-          dogData["age"],
-          Constants.imageServerUrl + dogData["photoName"],
-          dogData["selected"]
-      )).toList();
+      switch (response.statusCode) {
+        case 200:
+          return response.data;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
+  }
 
-      return dogs;
-    } on DioException {
-      return [];
-    }
+  Future<Result<int?, ApiError>> findUserPlaceArea(LatLng position) async {
+    return await handleRequest(() async {
+      Response response = await dio.get(
+          '$path/area',
+          data: {
+            "latitude": position.latitude,
+            "longitude": position.longitude
+          }
+      );
+
+      switch (response.statusCode) {
+        case 200:
+          return response.data == '' ? null : response.data;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
+  }
+
+  Future<Result<List<Dog>, ApiError>> getAllDogsFromPlace(int placeId) async {
+    return await handleRequest(() async {
+      Response response = await dio.get('$path/$placeId/dogs');
+
+      switch (response.statusCode) {
+        case 200:
+          List<Map<String, dynamic>> rawData = List<Map<String, dynamic>>.from(response.data);
+          List<Dog> dogs = rawData.map((dogData) => Dog.basic(
+              dogData['id'],
+              dogData['name'],
+              dogData["breed"],
+              dogData["gender"],
+              dogData["age"],
+              Constants.imageServerUrl + dogData["photoName"],
+              dogData["selected"]
+          )).toList();
+
+          return dogs;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
    }
 
 }

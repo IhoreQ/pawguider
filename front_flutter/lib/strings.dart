@@ -10,4 +10,6 @@ abstract class ErrorStrings {
   static const timeout = "Request timed out\nTry again later";
   static const defaultError = "An unexpected error has occurred\nPlease try again";
   static const checkInternetConnection = "Please check your internet connection or try again later";
+  static const notAuthenticated = "User is not authenticated!\nPlease sign in again.";
+  static const localisationNotAllowed = "Localisation is not allowed!\nPlease enable it for the app to work properly";
 }

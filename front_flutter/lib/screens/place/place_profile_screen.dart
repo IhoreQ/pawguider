@@ -8,7 +8,9 @@ import 'package:front_flutter/providers/favourite_places_provider.dart';
 import 'package:front_flutter/providers/places_provider.dart';
 import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/services/place_service.dart';
+import 'package:front_flutter/utilities/dialog_utils.dart';
 import 'package:front_flutter/widgets/dog_info_box.dart';
+import 'package:front_flutter/widgets/sized_error_text.dart';
 import 'package:front_flutter/widgets/sized_loading_indicator.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -177,17 +179,24 @@ class _TopBarState extends State<TopBar> {
     );
   }
 
-  Future<void> onClickLikeButton() async {
-    bool success = _liked ?
+  Future onClickLikeButton() async {
+    final result = _liked ?
       await widget.placeService.deleteLike(widget.place.id) :
       await widget.placeService.addLike(widget.place.id);
 
-    if (success) {
+    final value = switch (result) {
+      Success(value: final successCode) => successCode,
+      Failure(error: final error) => error
+    };
+
+    if (value is! ApiError) {
       favouritePlacesProvider.toggleFavouritePlace(widget.place);
       _liked = !_liked;
       setState(() {});
     } else {
-      print('error');
+      if (context.mounted) {
+        showErrorDialog(context: context, message: value.message);
+      }
     }
   }
 }
@@ -283,59 +292,70 @@ class _MainContentBoxState extends State<MainContentBox> {
               Text('${widget.place.description}',
                   style: AppTextStyle.regularLight.copyWith(fontSize: 14.0)),
               const Gap(10.0),
-              FutureBuilder<List<Dog>>(
+              FutureBuilder<Result<List<Dog>, ApiError>>(
                 future: placeService.getAllDogsFromPlace(widget.place.id),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    List<Dog> dogs = snapshot.data!;
-                    return Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Text('Dogs here',
-                                      style: AppTextStyle.heading2.copyWith(fontSize: 20.0)),
-                                  const Gap(5.0),
-                                  Text(
-                                    '(${dogs.length})',
-                                    style: AppTextStyle.mediumLight,
+                    final result = switch (snapshot.data!) {
+                      Success(value: final dogs) => dogs,
+                      Failure(error: final error) => error
+                    };
+
+                    if (result is List<Dog>) {
+                      final List<Dog> dogs = result;
+
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: Row(
+                                    children: [
+                                      Text('Dogs here',
+                                          style: AppTextStyle.heading2.copyWith(fontSize: 20.0)),
+                                      const Gap(5.0),
+                                      Text(
+                                        '(${dogs.length})',
+                                        style: AppTextStyle.mediumLight,
+                                      )
+                                    ],
                                   )
-                                ],
-                              )
-                            ),
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: AppColor.lightGray.withOpacity(0.5),
-                              child: IconButton(
-                                style: AppButtonStyle.lightSplashColor,
-                                onPressed: () => widget.refreshFunction(),
-                                icon: const Icon(
-                                  Icons.refresh,
-                                  size: 20,
-                                  color: AppColor.lightText,
-                                ),
                               ),
-                            )
-                          ],
-                        ),
-                        const Gap(10.0),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: dogs.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                DogInfoBox(dog: dogs[index],),
-                                const Gap(15.0),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
-                    );
+                              CircleAvatar(
+                                radius: 20,
+                                backgroundColor: AppColor.lightGray.withOpacity(0.5),
+                                child: IconButton(
+                                  style: AppButtonStyle.lightSplashColor,
+                                  onPressed: () => widget.refreshFunction(),
+                                  icon: const Icon(
+                                    Icons.refresh,
+                                    size: 20,
+                                    color: AppColor.lightText,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          const Gap(10.0),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: dogs.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  DogInfoBox(dog: dogs[index],),
+                                  const Gap(15.0),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    } else {
+                      final error = result as ApiError;
+                      return SizedErrorText(message: error.message);
+                    }
                   }
                   return const SizedLoadingIndicator(color: AppColor.primaryOrange);
                 }
@@ -412,13 +432,16 @@ class _MainContentBoxState extends State<MainContentBox> {
                       const Gap(20.0),
                       FilledButton(
                           onPressed: () async {
-                            bool success;
+                            final result = widget.place.ratedByUser! ?
+                              await placeService.updateRating(widget.place.id, _placeRating) :
+                              await placeService.addRating(widget.place.id, _placeRating);
 
-                            success = widget.place.ratedByUser! ?
-                                await placeService.updateRating(widget.place.id, _placeRating) :
-                                await placeService.addRating(widget.place.id, _placeRating);
+                            final value = switch (result) {
+                              Success(value: final successCode) => successCode,
+                              Failure(error: final error) => error
+                            };
 
-                            if (success) {
+                            if (value is! ApiError) {
                               widget.refreshFunction();
                               int cityId = userProvider.user!.cityId;
                               if (context.mounted) {
@@ -426,7 +449,9 @@ class _MainContentBoxState extends State<MainContentBox> {
                                 context.router.pop();
                               }
                             } else {
-                              print('error');
+                              if (context.mounted) {
+                                showErrorDialog(context: context, message: value.message);
+                              }
                             }
                           },
                           style: OutlinedButton.styleFrom(

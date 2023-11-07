@@ -31,7 +31,7 @@ class _MapScreenState extends State<MapScreen> {
     userLocationProvider = context.read<UserLocationProvider>();
     userProvider = context.read<UserProvider>();
     placesAreasProvider = context.read<PlacesAreasProvider>();
-    placesAreasProvider.fetchPlacesAreasByCityId(userProvider.user!.cityId);
+    placesAreasProvider.fetchPlacesAreasByCityId(context, userProvider.user!.cityId);
   }
 
 
