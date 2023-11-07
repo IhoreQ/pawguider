@@ -87,7 +87,16 @@ class UserLocationProvider extends ChangeNotifier {
   }
 
   Future _handlePositionUpdate(BuildContext context, LatLng newPosition, ActiveWalkProvider walkProvider) async {
-    userService.updatePosition(newPosition);
+    final result = await userService.updatePosition(newPosition);
+    final value = switch (result) {
+      Success(value: final successCode) => successCode,
+      Failure(error: final error) => error
+    };
+
+    if (value is ApiError && context.mounted) {
+      showErrorDialog(context: context, message: value.message);
+      return;
+    }
 
     if (walkProvider.walk != null) {
       final result = await placeService.isUserInPlaceArea(walkProvider.walk!.place.id, newPosition);
@@ -140,7 +149,9 @@ class UserLocationProvider extends ChangeNotifier {
               if (additionValue is! ApiError) {
                 walkProvider.fetchActiveWalk(context);
               } else {
-                showErrorDialog(context: context, message: additionValue.message);
+                if (additionValue.message != ErrorStrings.checkInternetConnection) {
+                  showErrorDialog(context: context, message: additionValue.message);
+                }
               }
             }
           }

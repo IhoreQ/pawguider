@@ -5,6 +5,7 @@ import 'package:front_flutter/services/dog_service.dart';
 import 'package:front_flutter/utilities/dialog_utils.dart';
 
 import '../models/dog/dog.dart';
+import '../strings.dart';
 
 class UserDogsProvider extends ChangeNotifier {
   List<Dog>? _dogs;
@@ -24,7 +25,7 @@ class UserDogsProvider extends ChangeNotifier {
     } else {
       _dogs = [];
       final error = value as ApiError;
-      if (context.mounted) {
+      if (context.mounted  && error.message != ErrorStrings.checkInternetConnection) {
         showErrorDialog(context: context, message: error.message);
       }
     }

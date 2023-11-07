@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:front_flutter/exceptions/api_error.dart';
 import 'package:front_flutter/exceptions/result.dart';
 import 'package:front_flutter/services/walk_service.dart';
+import 'package:front_flutter/strings.dart';
 import 'package:front_flutter/utilities/dialog_utils.dart';
 
 import '../models/walk.dart';
@@ -21,7 +22,7 @@ class ActiveWalkProvider extends ChangeNotifier {
       walk = value;
     } else {
       final error = value as ApiError;
-      if (context.mounted) {
+      if (context.mounted && error.message != ErrorStrings.checkInternetConnection) {
         showErrorDialog(context: context, message: error.message);
       }
     }

@@ -3,6 +3,8 @@ abstract class AppStrings {
   static const registerSuccessBody = "You can login to the application now.";
   static const dogsLimitTitle = "Limit reached";
   static const dogsLimitBody = "You can select only 3 dogs to walk with.";
+  static const updated = "Updated";
+  static const passwordChanged = "Your password has been changed.";
 }
 
 abstract class ErrorStrings {

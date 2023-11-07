@@ -12,54 +12,54 @@ import '../models/user.dart';
 class UserService  extends BasicService {
   final String path = '/user';
 
-  Future<User?> getCurrentUser() async {
-    try {
-      Response response = await dio.get('/user',);
-      Map<String, dynamic> rawData = response.data;
-      User user = _getUserFromData(rawData);
+  Future<Result<User, ApiError>> getCurrentUser() async {
+    return await handleRequest(() async {
+      Response response = await dio.get(path);
 
-      return user;
-    } on DioException catch (e) {
-      if (e.response!.statusCode == 401) {
-        return null;
+      switch (response.statusCode) {
+        case 200:
+          Map<String, dynamic> rawData = response.data;
+          User user = _getUserFromData(rawData);
+          return user;
+        default:
+          throw Exception(ErrorStrings.defaultError);
       }
-      rethrow;
-    }
+    });
   }
 
-  Future<void> updatePosition(LatLng newPosition) async {
-    try {
+  Future<Result<int, ApiError>> updatePosition(LatLng newPosition) async {
+    return await handleRequest(() async {
       Response response = await dio.patch(
-        '/user/location',
-        data: {
-          "latitude": newPosition.latitude,
-          "longitude": newPosition.longitude
-        }
+          '$path/location',
+          data: {
+            "latitude": newPosition.latitude,
+            "longitude": newPosition.longitude
+          }
       );
 
-      return response.data;
-    } on DioException {
-      rethrow;
-    }
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
-  Future<dynamic> getUserById(int userId) async {
-    try {
-      Response response = await dio.get(
-        '/user/$userId'
-      );
+  Future<Result<User, ApiError>> getUserById(int userId) async {
+    return await handleRequest(() async {
+      Response response = await dio.get('$path/$userId');
 
-      Map<String, dynamic> rawData = response.data;
-      User user = _getUserFromData(rawData);
+      switch (response.statusCode) {
+        case 200:
+          Map<String, dynamic> rawData = response.data;
+          User user = _getUserFromData(rawData);
 
-      return user;
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        return 404;
-      } else {
-        return null;
+          return user;
+        default:
+          throw Exception(ErrorStrings.defaultError);
       }
-    }
+    });
   }
 
   User _getUserFromData(Map<String, dynamic> rawData) {
@@ -77,25 +77,29 @@ class UserService  extends BasicService {
     );
   }
 
-  Future<bool> updatePassword(String oldPassword, String newPassword) async {
-    try {
+  Future<Result<int, ApiError>> updatePassword(String oldPassword, String newPassword) async {
+    return await handleRequest(() async {
       Response response = await dio.patch(
-        '/user/password',
-        data: {
-          'oldPassword': oldPassword,
-          'newPassword': newPassword
-        }
+          '$path/password',
+          data: {
+            'oldPassword': oldPassword,
+            'newPassword': newPassword
+          }
       );
-      return response.data;
-    } on DioException {
-      rethrow;
-    }
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 
   Future<Result<int, ApiError>> updateUserPhoto(String photoName) async {
     return await handleRequest(() async {
       Response response = await dio.patch(
-          '/user/photo',
+          '$path/photo',
           data: {
             "photoName": photoName
           }
@@ -110,15 +114,19 @@ class UserService  extends BasicService {
     });
   }
 
-  Future<bool> updateUser(UserUpdateRequest request) async {
-    try {
+  Future<Result<int, ApiError>> updateUser(UserUpdateRequest request) async {
+    return await handleRequest(() async {
       Response response = await dio.put(
-        '/user/details',
-        data: request.toJson()
+          '$path/details',
+          data: request.toJson()
       );
-      return true;
-    } on DioException {
-      return false;
-    }
+
+      switch (response.statusCode) {
+        case 200:
+          return response.statusCode!;
+        default:
+          throw Exception(ErrorStrings.defaultError);
+      }
+    });
   }
 }

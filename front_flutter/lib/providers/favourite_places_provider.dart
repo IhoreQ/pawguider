@@ -6,6 +6,7 @@ import 'package:front_flutter/services/place_service.dart';
 import 'package:front_flutter/utilities/dialog_utils.dart';
 
 import '../models/place.dart';
+import '../strings.dart';
 
 class FavouritePlacesProvider extends ChangeNotifier {
   List<Place>? _favouritePlaces;
@@ -24,7 +25,7 @@ class FavouritePlacesProvider extends ChangeNotifier {
       _favouritePlaces = [];
       final error = value as ApiError;
 
-      if (context.mounted) {
+      if (context.mounted  && error.message != ErrorStrings.checkInternetConnection) {
         showErrorDialog(context: context, message: error.message);
       }
     }

@@ -392,9 +392,14 @@ class _UserEditScreenState extends State<UserEditScreen> {
       });
 
       final request = UserUpdateRequest(_firstNameController.text, _lastNameController.text, _selectedGender, _selectedCity, _phoneController.text);
-      bool isUpdated = await userService.updateUser(request);
+      final result = await userService.updateUser(request);
 
-      if (isUpdated) {
+      final value = switch (result) {
+        Success(value: final successCode) => successCode,
+        Failure(error: final error) => error
+      };
+
+      if (value is! ApiError) {
         if (context.mounted) {
           await userProvider.fetchCurrentUser(context);
           int cityId = userProvider.user!.cityId;
@@ -402,6 +407,10 @@ class _UserEditScreenState extends State<UserEditScreen> {
             placesProvider.fetchPlacesByCityId(context, cityId);
             context.router.pop();
           }
+        }
+      } else {
+        if (context.mounted) {
+          showErrorDialog(context: context, message: value.message);
         }
       }
 

@@ -1,8 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:front_flutter/exceptions/api_error.dart';
+import 'package:front_flutter/exceptions/result.dart';
 import 'package:front_flutter/providers/loading_provider.dart';
 import 'package:front_flutter/services/user_service.dart';
+import 'package:front_flutter/strings.dart';
+import 'package:front_flutter/utilities/dialog_utils.dart';
 import 'package:front_flutter/utilities/validator.dart';
 import 'package:front_flutter/widgets/form_field/password_form_field.dart';
 import 'package:front_flutter/widgets/submit_button.dart';
@@ -109,36 +113,32 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
     );
   }
 
-  Future<void> updatePassword() async {
+  Future updatePassword() async {
     if (_formKey.currentState!.validate()) {
       loadingProvider.setLoading(true);
       String oldPassword = _currentPasswordController.text;
       String newPassword = _newPasswordController.text;
-      bool isChanged = await userService.updatePassword(oldPassword, newPassword);
+
+      final result = await userService.updatePassword(oldPassword, newPassword);
+      final value = switch (result) {
+        Success(value: final successCode) => successCode,
+        Failure(error: final error) => error,
+      };
 
       if (context.mounted) {
         loadingProvider.setLoading(false);
-        if (!isChanged) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const ErrorDialog(
-                title: 'Password change error',
-                content: 'Provided wrong current password.',
-              );
-            },
+        if (value is! ApiError) {
+          showInformationDialog(
+              context: context,
+              title: AppStrings.updated,
+              message: AppStrings.passwordChanged,
+              onPressed: () {
+                context.router.root.pop();
+                context.router.pop();
+              }
           );
         } else {
-          context.router.pop();
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const ErrorDialog(
-                title: 'Updated',
-                content: 'Your password has been updated.',
-              );
-            },
-          );
+          showErrorDialog(context: context, message: value.message);
         }
       }
     }
