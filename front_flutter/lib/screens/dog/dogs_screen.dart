@@ -97,6 +97,7 @@ class _DogsListPageState extends State<DogsListPage> {
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: Colors.white,
         body: ListView(
           children: [
             Container(

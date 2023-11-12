@@ -57,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Consumer<UserProvider>(builder: (context, userProvider, _) {
         return userProvider.user == null ?
         const SizedLoadingIndicator(color: AppColor.primaryOrange)

@@ -89,6 +89,7 @@ class _DogDetailsScreenState extends State<DogDetailsScreen> {
     const double iconSize = 30.0;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(widget.dog != null ? "Edit a dog" : "Add a dog"),
         titleTextStyle: AppTextStyle.appBarTitleHeading,

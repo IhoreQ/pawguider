@@ -78,6 +78,7 @@ class _UserEditScreenState extends State<UserEditScreen> {
     const double iconSize = 30.0;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Edit profile"),
         titleTextStyle: AppTextStyle.appBarTitleHeading,

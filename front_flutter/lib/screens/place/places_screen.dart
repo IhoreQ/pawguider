@@ -47,6 +47,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
       color: AppColor.primaryOrange,
       onRefresh: () => placesProvider.fetchPlacesByCityId(context, userProvider.user!.cityId),
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: ListView(
           children: [
             Container(

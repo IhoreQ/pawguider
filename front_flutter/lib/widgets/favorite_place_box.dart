@@ -28,8 +28,9 @@ class FavoritePlaceBox extends StatelessWidget {
             fit: BoxFit.cover,
           ),
           Positioned(
-            bottom: 10,
+            bottom: 0,
             child: BlurryContainer(
+              height: 50.0,
               width: imageSize,
               padding: EdgeInsets.zero,
               borderRadius: BorderRadius.circular(10.0),

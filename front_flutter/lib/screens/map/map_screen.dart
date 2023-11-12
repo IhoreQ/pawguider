@@ -38,6 +38,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Consumer2<UserLocationProvider, PlacesAreasProvider>(
         builder: (context, userLocationProvider, placesAreasProvider, _) {
           return userLocationProvider.currentPosition != null ? GoogleMap(
@@ -52,14 +53,6 @@ class _MapScreenState extends State<MapScreen> {
 
 
             },
-            // markers: {
-            //   Marker(
-            //     markerId: const MarkerId("5"),
-            //     position: LatLng(50.07643195460102, 19.93824100367522),
-            //     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-            //     flat: true
-            //   )
-            // },
             polygons: placesAreasProvider.areas != null ? Set.from(placesAreasProvider.areas!.map((area) {
               return Polygon(
                 polygonId: PolygonId(area.id.toString()),
