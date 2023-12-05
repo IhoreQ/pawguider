@@ -6,7 +6,7 @@ spring:
   datasource:
     url: 'jdbc:postgresql://localhost:5432/dogout'
     username: postgres
-    password: wncgsr666
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: update

@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:fluentui_icons/fluentui_icons.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:front_flutter/providers/user_provider.dart';
 import 'package:front_flutter/routes/router.dart';
@@ -111,18 +112,17 @@ class TopBar extends StatelessWidget {
         final authService = AuthService();
         authService.logout(context);
       },
-      child: Text("Log Out", style: AppTextStyle.semiBoldOrange),
+      child: const Text("Log Out", style: TextStyle(color: AppColor.darkText)),
     );
     Widget cancelButton = TextButton(
       style: AppButtonStyle.lightSplashColor,
       onPressed:  () {
         Navigator.of(context, rootNavigator: true).pop();
       },
-      child: Text("Cancel", style: AppTextStyle.mediumDark,),
+      child: const Text("Cancel", style: TextStyle(color: AppColor.darkText),),
     );
-    AlertDialog alert = AlertDialog(
-      surfaceTintColor: Colors.white,
-      title: Text("Log out of your account?", style: AppTextStyle.semiBoldDark.copyWith(fontSize: 20.0)),
+    CupertinoAlertDialog alert = CupertinoAlertDialog(
+      title: const Text("Log out of your account?"),
       actions: [
         cancelButton,
         logOutButton,

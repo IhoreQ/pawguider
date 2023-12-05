@@ -46,6 +46,7 @@ class _EditPasswordScreenState extends State<EditPasswordScreen> {
     const double iconSize = 30.0;
 
     return Scaffold(
+      backgroundColor: Colors.white,
         appBar: AppBar(
           title: const Text("Change password"),
           titleTextStyle: AppTextStyle.appBarTitleHeading,

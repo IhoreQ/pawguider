@@ -9,7 +9,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "dogs_sizes", schema = "public", catalog = "dogout")
+@Table(name = "dog_sizes", schema = "public", catalog = "dogout")
 public class DogSize {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
