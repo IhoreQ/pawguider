@@ -4,7 +4,7 @@ import 'package:front_flutter/exceptions/result.dart';
 import 'package:front_flutter/services/place_service.dart';
 import 'package:front_flutter/utilities/dialog_utils.dart';
 
-import '../models/place.dart';
+import '../models/place/place.dart';
 
 class PlacesProvider extends ChangeNotifier {
   List<Place>? _places;

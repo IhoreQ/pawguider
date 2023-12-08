@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:front_flutter/exceptions/api_error.dart';
-import 'package:front_flutter/models/place_area.dart';
+import 'package:front_flutter/models/place/place_area.dart';
 import 'package:front_flutter/services/basic_service.dart';
 import 'package:front_flutter/strings.dart';
 import 'package:front_flutter/utilities/constants.dart';
@@ -8,7 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../exceptions/result.dart';
 import '../models/dog/dog.dart';
-import '../models/place.dart';
+import '../models/place/place.dart';
 
 class PlaceService extends BasicService {
   final String path = '/place';

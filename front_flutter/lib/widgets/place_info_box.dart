@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:gap/gap.dart';
 
-import '../models/place.dart';
+import '../models/place/place.dart';
 import '../routes/router.dart';
 import 'overlay_inkwell.dart';
 

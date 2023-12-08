@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 
 import '../../exceptions/result.dart';
 import '../../models/dog/behavior.dart';
-import '../../models/place.dart';
+import '../../models/place/place.dart';
 import '../../styles.dart';
 import '../../widgets/common_loading_indicator.dart';
 import '../error_screen.dart';

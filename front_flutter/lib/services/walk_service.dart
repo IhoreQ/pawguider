@@ -6,7 +6,7 @@ import 'package:front_flutter/strings.dart';
 import 'package:front_flutter/utilities/constants.dart';
 
 import '../exceptions/result.dart';
-import '../models/place.dart';
+import '../models/place/place.dart';
 
 class WalkService extends BasicService {
   final String path = "/walk";

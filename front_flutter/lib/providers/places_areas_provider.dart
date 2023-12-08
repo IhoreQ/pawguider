@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:front_flutter/exceptions/api_error.dart';
 import 'package:front_flutter/exceptions/result.dart';
-import 'package:front_flutter/models/place_area.dart';
+import 'package:front_flutter/models/place/place_area.dart';
 import 'package:front_flutter/services/place_service.dart';
 import 'package:front_flutter/utilities/dialog_utils.dart';
 

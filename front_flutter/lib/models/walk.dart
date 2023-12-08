@@ -1,4 +1,4 @@
-import 'package:front_flutter/models/place.dart';
+import 'package:front_flutter/models/place/place.dart';
 
 class Walk {
 

@@ -2,7 +2,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:blurrycontainer/blurrycontainer.dart';
 import 'package:flutter/material.dart';
-import 'package:front_flutter/models/place.dart';
+import 'package:front_flutter/models/place/place.dart';
 import 'package:front_flutter/styles.dart';
 import 'package:front_flutter/widgets/overlay_inkwell.dart';
 
