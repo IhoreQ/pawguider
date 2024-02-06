@@ -40,7 +40,7 @@ public class DogController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) {
+    public ResponseEntity<DogInfoResponse> getDog(@RequestHeader("Authorization") String header, @PathVariable Long id) {
         User user = userService.getUserFromHeader(header);
         Dog dog = dogService.getDogById(id);
 
