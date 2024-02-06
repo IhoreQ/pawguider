@@ -15,7 +15,6 @@ import 'styles.dart';
 
 void main() {
   runApp(App());
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: AppColor.primaryOrange,

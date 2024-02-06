@@ -8,7 +8,7 @@ abstract class DioConfig {
       BaseOptions(
         connectTimeout: const Duration(milliseconds: 30000),
         receiveTimeout: const Duration(milliseconds: 30000),
-        baseUrl: 'http://10.0.2.2:8080/api/v1',
+        baseUrl: 'http://192.168.1.96:8080/api/v1',
       ),
     );
 
