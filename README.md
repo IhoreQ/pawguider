@@ -50,7 +50,6 @@ PawGuider comprises of two main components:
     <img src="./screenshots/map.png" width="300">
     <img src="./screenshots/places-page.png" width="300">
     <img src="./screenshots/place-profile.png" width="300">
-    <img src="./screenshots/place-profile-2.png" width="300">
 </div>
 
 <br>
